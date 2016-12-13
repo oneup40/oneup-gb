@@ -3,18 +3,19 @@
 #include "libretro.h"
 
 #include <iostream>
+#include <memory>
+
+#include "Machine.hpp"
 
 static constexpr const char* LIBNAME = "oneup-gb-lr";
 #define LOG_CALL do { std::cout << LIBNAME << " " << __func__ << std::endl; } while (0)
 
-RETRO_API unsigned retro_api_version(void) {
-	LOG_CALL;
-	return RETRO_API_VERSION;
-}
+std::unique_ptr<gblr::Machine> g_machine;
 
-RETRO_API void retro_init(void) {
-	LOG_CALL;
-}
+RETRO_API unsigned retro_api_version(void) { return RETRO_API_VERSION; }
+RETRO_API void retro_init(void) { g_machine = std::make_unique<gblr::Machine>(); }
+RETRO_API void retro_deinit(void) { g_machine.release(); }
+RETRO_API void retro_run(void) { g_machine->Tick(); }
 
 struct {
 	retro_environment_t 		environment;
@@ -77,8 +78,6 @@ RETRO_API void retro_get_system_av_info(struct retro_system_av_info *info) {
 	*info = system_av_info;
 }
 
-RETRO_API void retro_run(void) { LOG_CALL; }
-
 RETRO_API size_t retro_serialize_size(void) {
 	LOG_CALL;
 	return 0;
@@ -96,7 +95,6 @@ RETRO_API bool retro_unserialize(const void*, size_t) {
 
 RETRO_API void retro_unload_game(void) { LOG_CALL; }
 
-RETRO_API void retro_deinit(void) { LOG_CALL; }
 RETRO_API void retro_reset(void) { LOG_CALL; }
 
 RETRO_API void retro_cheat_reset(void) { LOG_CALL; }
