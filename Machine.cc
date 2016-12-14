@@ -8,51 +8,46 @@
 
 namespace gblr {
 
-Machine::Machine() : cpu_(this) {}
+Machine::Machine() : cpu(this), mapper(this) {}
 
 bool Machine::Tick() {
 	bool good = true;
-	good = good && cpu_.Tick();
+	good = good && cpu.Tick();
 	return good;
 }
 
-void Machine::Read(u16 addr, size_t len, u8 *dst, bool force) {
-	(void) force;
-	while (len) {
-		if (addr >= 0xFF00) {
-			if (addr == 0xFF0F) 		{ *dst = cpu_.if_; }
-			else if (addr == 0xFFFF) 	{ *dst = cpu_.ie_; }
-			else 						{ assert(0); }
-
-			++dst;
-			--len;
-			++addr;
-		} else {
-			assert(0);
-		}
+u8 Machine::Read(u16 addr, bool force) {
+	if (addr < 0x8000) {
+		return mapper.Read(addr, force);
+	} else if (addr == 0xFF0F) {
+		return cpu.if_;
+	} else if (addr == 0xFFFF) {
+		return cpu.ie_;
+	} else {
+		assert(0);
+		return 0;
 	}
 }
 
-void Machine::Write(u16 addr, size_t len, const u8 *src, bool force) {
-	(void) force;
-	while (len) {
-		if (addr >= 0xFF00) {
-			if (addr == 0xFF0F) 		{ cpu_.if_ = *src & 0x1F; }
-			else if (addr == 0xFFFF) 	{ cpu_.ie_ = *src & 0x1F; }
-			else 						{ assert(0); }
-
-			++src;
-			--len;
-			++addr;
-		} else {
-			assert(0);
-		}
+void Machine::Write(u16 addr, u8 val, bool force) {
+	if (addr < 0x8000) {
+		mapper.Write(addr, val, force);
+	} else if (addr == 0xFF0F) {
+		cpu.if_ = val & 0x1F;
+	} else if (addr == 0xFFFF) {
+		cpu.ie_ = val & 0x1F;
+	} else {
+		assert(0);
 	}
 }
 
-void Machine::Interrupt(u8 num) { cpu_.Interrupt(num); }
+void Machine::Interrupt(u8 num) { cpu.Interrupt(num); }
 
 void Machine::Log(const std::string &msg) { std::cerr << msg << std::endl; }
+
+bool Machine::LoadGame(const retro_game_info *game) { return Loader::Load(game, this); }
+
+void Machine::UnloadGame() { mapper.Unload(); }
 
 }	// namespace gblr
 

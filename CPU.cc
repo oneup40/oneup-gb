@@ -7,10 +7,10 @@ namespace gblr {
 
 bool CPU::FetchInstruction(Instruction *ins) {
     ins->pc = reg_.pc++;
-    m_->Read(ins->pc, 1, &ins->bytes[ins->nbytes++]);
+    ins->bytes[ins->nbytes++] = m_->Read(ins->pc);
 
     if (ins->bytes[0] == 0xcb) {
-        m_->Read(reg_.pc++, 1, &ins->bytes[ins->nbytes++]);
+    	ins->bytes[ins->nbytes++] = m_->Read(reg_.pc++);
     }
 
     return true;
@@ -35,31 +35,30 @@ bool CPU::Decode(Instruction *ins) {
 }
 
 bool CPU::FetchOperand(Instruction *ins, AddrMode am, u16 *ea, u32 *val) {
-    u8 tmp8;
-
     switch (am) {
         case AM_NONE:
             return true;
         case AM_IMM8:
         case AM_SPIMM8:
-            m_->Read(reg_.pc, 1, ins->byte_ptr());
+        	*ins->byte_ptr() = m_->Read(reg_.pc);
             ++reg_.pc;
             *val = *ins->byte_ptr();
             ++ins->nbytes;
             return true;
         case AM_IMM16:
-            m_->Read(reg_.pc, 2, ins->byte_ptr());
+        	*ins->byte_ptr() = m_->Read(reg_.pc);
+        	*(ins->byte_ptr() + 1) = m_->Read(reg_.pc + 1);
             reg_.pc += 2;
             *val = letoh(*reinterpret_cast<u16*>(ins->byte_ptr()));
             ins->nbytes += 2;
             return true;
         case AM_MIMM16:
-            m_->Read(reg_.pc, 2, ins->byte_ptr());
+        	*ins->byte_ptr() = m_->Read(reg_.pc);
+        	*(ins->byte_ptr() + 1) = m_->Read(reg_.pc + 1);
             reg_.pc += 2;
             *ea = letoh(*reinterpret_cast<u16*>(ins->byte_ptr()));
             ins->nbytes += 2;
-            m_->Read(*ea, 1, &tmp8);
-            *val = tmp8;
+            *val = m_->Read(*ea);
             return true;
         case AM_A:
             *val = reg_.a;
@@ -98,44 +97,35 @@ bool CPU::FetchOperand(Instruction *ins, AddrMode am, u16 *ea, u32 *val) {
             *val = reg_.sp;
             return true;
         case AM_MBC:
-            m_->Read(reg_.bc, 1, &tmp8);
             *ea = reg_.bc;
-            *val = tmp8;
+            *val = m_->Read(*ea);
             return true;
         case AM_MDE:
-            m_->Read(reg_.de, 1, &tmp8);
             *ea = reg_.de;
-            *val = tmp8;
+            *val = m_->Read(*ea);
             return true;
         case AM_MHL:
-            m_->Read(reg_.hl, 1, &tmp8);
             *ea = reg_.hl;
-            *val = tmp8;
+            *val = m_->Read(*ea);
             return true;
         case AM_MHLI:
-            m_->Read(reg_.hl, 1, &tmp8);
-            *ea = reg_.hl;
-            *val = tmp8;
-            ++reg_.hl;
+            *ea = reg_.hl++;
+            *val = m_->Read(*ea);
             return true;
         case AM_MHLD:
-            m_->Read(reg_.hl, 1, &tmp8);
-            *ea = reg_.hl;
-            *val = tmp8;
-            --reg_.hl;
+            *ea = reg_.hl--;
+            *val = m_->Read(*ea);
             return true;
         case AM_HMIMM8:
-            m_->Read(reg_.pc, 1, ins->byte_ptr());
+            *ins->byte_ptr() = m_->Read(reg_.pc);
             ++reg_.pc;
             *ea = 0xff00 | *ins->byte_ptr();
             ++ins->nbytes;
-            m_->Read(*ea, 1, &tmp8);
-            *val = tmp8;
+            *val = m_->Read(*ea);
             return true;
         case AM_HMC:
             *ea = 0xff00 | reg_.c;
-            m_->Read(*ea, 1, &tmp8);
-            *val = tmp8;
+            *val = m_->Read(*ea);
             return true;
         default:
             m_->Log("CPU::FetchOperand: AddrMode " + to_string(am) + " not implemented");
@@ -152,11 +142,23 @@ bool CPU::FetchOperands(Instruction *ins) {
     return good;
 }
 
+static inline u16 read_u16(Machine *m, u16 addr) {
+	// little endian
+	u16 val = m->Read(addr);
+	val |= m->Read(addr+1) << 8;
+	return val;
+}
+
+static inline void write_u16(Machine *m, u16 addr, u16 val) {
+	// little endian
+	m->Write(addr, val & 0xff);
+	m->Write(addr+1, (val >> 8) & 0xff);
+}
+
 bool CPU::Execute(Instruction *ins) {
     busy_ += ins->cycles;
 
     u8 tmp8 = 0;
-    u16 tmp16 = 0;
     u32 tmp32 = 0;
 
     switch (ins->op) {
@@ -166,13 +168,11 @@ bool CPU::Execute(Instruction *ins) {
             ins->dst = ins->src;
             break;
         case OP_PUSH:
-            tmp16 = htole(ins->src);
             reg_.sp -= 2;
-            m_->Write(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
+            write_u16(m_, reg_.sp, ins->src);
             return true;
         case OP_POP:
-            m_->Read(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
-            ins->dst = letoh(tmp16);
+            ins->dst = read_u16(m_, reg_.sp);
             reg_.sp += 2;
             return true;
         case OP_INC8:
@@ -443,27 +443,23 @@ bool CPU::Execute(Instruction *ins) {
                 if (ins->op == OP_JP)         { reg_.pc = ins->src; }
                 else if (ins->op == OP_JR)    { reg_.pc += i8(ins->src); }
                 else if (ins->op == OP_RST) {
-                    tmp16 = htole(reg_.pc);
                     reg_.sp -= 2;
-                    m_->Write(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
+                    write_u16(m_, reg_.sp, reg_.pc);
                     reg_.pc = ins->bytes[0] & 0x38;
                 }
                 else if (ins->op == OP_CALL) {
-                    tmp16 = htole(reg_.pc);
                     reg_.sp -= 2;
-                    m_->Write(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
+                    write_u16(m_, reg_.sp, reg_.pc);
                     reg_.pc = ins->src;
                 }
                 else if (ins->op == OP_RETI) {
                     ime_ = true;
-                    m_->Read(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
+                    reg_.pc = read_u16(m_, reg_.sp);
                     reg_.sp += 2;
-                    reg_.pc = letoh(tmp16);
                 }
                 else if (ins->op == OP_RET) {
-                    m_->Read(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
+                    reg_.pc = read_u16(m_, reg_.sp);
                     reg_.sp += 2;
-                    reg_.pc = letoh(tmp16);
                 }
                 else { assert(0); }
             }
@@ -481,8 +477,6 @@ bool CPU::Execute(Instruction *ins) {
 }
 
 bool CPU::Store(Instruction *ins) {
-    u8 dst8 = ins->dst;
-
     switch (ins->dst_am) {
         case AM_NONE:
             return true;
@@ -495,8 +489,7 @@ bool CPU::Store(Instruction *ins) {
             // special case: LD (imm16), SP seems to be the only instruction that
             // requires a 2-byte write
             if (ins->src_am == AM_SP) {
-                u16 dst16 = ins->dst;
-                m_->Write(ins->dst_ea, 2, reinterpret_cast<u8*>(&dst16));
+                write_u16(m_, ins->dst_ea, ins->dst);
                 return true;
             }
             /* no break */
@@ -507,7 +500,7 @@ bool CPU::Store(Instruction *ins) {
         case AM_MHLD:
         case AM_HMIMM8:
         case AM_HMC:
-            m_->Write(ins->dst_ea, 1, &dst8);
+            m_->Write(ins->dst_ea, ins->dst);
             return true;
         case AM_A:
             reg_.a = ins->dst;
@@ -557,18 +550,17 @@ bool CPU::Step() {
     u8 pending = ie_ & if_;
     if (pending) { halt_ = false; }
     if (ime_ && pending) {
-        u16 tmp16 = htole(reg_.pc);
         reg_.sp -= 2;
-        m_->Write(reg_.sp, 2, reinterpret_cast<u8*>(&tmp16));
+        write_u16(m_, reg_.sp, reg_.pc);
         busy_ += 5;
         halt_ = false;
 
         ime_ = false;
-        if (pending & 0x01)         { if_ &= ~0x01; reg_.pc = 0x0040; }
-        else if (pending & 0x02)     { if_ &= ~0x02; reg_.pc = 0x0048; }
-        else if (pending & 0x04)     { if_ &= ~0x04; reg_.pc = 0x0050; }
-        else if (pending & 0x08)     { if_ &= ~0x08; reg_.pc = 0x0058; }
-        else if (pending & 0x10)     { if_ &= ~0x10; reg_.pc = 0x0060; }
+        if (pending & 0x01)    		{ if_ &= ~0x01; reg_.pc = 0x0040; }
+        else if (pending & 0x02)    { if_ &= ~0x02; reg_.pc = 0x0048; }
+        else if (pending & 0x04)    { if_ &= ~0x04; reg_.pc = 0x0050; }
+        else if (pending & 0x08)    { if_ &= ~0x08; reg_.pc = 0x0058; }
+        else if (pending & 0x10)    { if_ &= ~0x10; reg_.pc = 0x0060; }
         else                        { assert(0); }
 
         return true;

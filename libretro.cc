@@ -13,9 +13,13 @@ static constexpr const char* LIBNAME = "oneup-gb-lr";
 std::unique_ptr<gblr::Machine> g_machine;
 
 RETRO_API unsigned retro_api_version(void) { return RETRO_API_VERSION; }
+
 RETRO_API void retro_init(void) { g_machine = std::make_unique<gblr::Machine>(); }
 RETRO_API void retro_deinit(void) { g_machine.release(); }
 RETRO_API void retro_run(void) { g_machine->Tick(); }
+
+RETRO_API bool retro_load_game(const struct retro_game_info *game) { return g_machine->LoadGame(game); }
+RETRO_API void retro_unload_game(void) { g_machine->UnloadGame(); }
 
 struct {
 	retro_environment_t 		environment;
@@ -64,10 +68,6 @@ RETRO_API void retro_get_system_info(struct retro_system_info *info) {
 	*info = system_info;
 }
 
-RETRO_API bool retro_load_game(const struct retro_game_info*) {
-	LOG_CALL;
-	return true;
-}
 
 static constexpr const retro_system_av_info system_av_info = {
 	{160, 144, 160, 144, 0.0},
@@ -92,8 +92,6 @@ RETRO_API bool retro_unserialize(const void*, size_t) {
 	LOG_CALL;
 	return true;
 }
-
-RETRO_API void retro_unload_game(void) { LOG_CALL; }
 
 RETRO_API void retro_reset(void) { LOG_CALL; }
 
