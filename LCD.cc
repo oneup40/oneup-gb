@@ -8,6 +8,39 @@
 
 namespace gblr {
 
+u8 LCD::FindTilenum(u8 y, u8 x, bool alt_base) {
+	size_t addr = alt_base ? 0x1C00 : 0x1800;
+	addr |= (y & 0xF8) << 2;
+	addr |= x >> 3;
+
+	return vram_[addr];
+}
+
+std::pair<u8, u8> LCD::FindPattern(u8 tilenum, u8 y, bool alt_base) {
+	size_t pattern_ofs = (alt_base && tilenum < 0x80) ? 0x1000 : 0;
+	pattern_ofs |= tilenum << 4;
+	pattern_ofs |= (y & 7) << 1;
+
+	u8 lower = vram_[pattern_ofs],
+	   upper = vram_[pattern_ofs | 1];
+
+	return std::make_pair(lower, upper);
+}
+
+u8 LCD::ExtractPatternDot(std::pair<u8, u8> pattern, u8 x) {
+	u8 dot = 0;
+	u8 mask = 0x80 >> (x & 7);
+	if (pattern.first & mask) { dot |= 1; }
+	if (pattern.second & mask) { dot |= 2; }
+
+	return dot;
+}
+
+u8 LCD::PalettizeDot(u8 dot, u8 palette) {
+	u8 shift = dot * 2;
+	return (palette >> shift) & 3;
+}
+
 u8 LCD::RenderWindowDot() {
 	if ((lcdc_ & 0x21) != 0x21) { return 0x80; }
 	if (wy_ > ly_) { return 0x80; }
@@ -17,27 +50,10 @@ u8 LCD::RenderWindowDot() {
 	u8 y = ly_ - wy_;
 	u8 x = (dot_ - 80) - (wx_ - 7);
 
-	size_t tileofs = (lcdc_ & 0x40) ? 0x1C00 : 0x1800;
-	tileofs |= ((y & 0xF8) << 2) | (x >> 3);
-	u8 tilenum = vram_[tileofs];
-
-	size_t pattern_ofs = ((lcdc_ & 0x10) || tilenum >= 0x80) ? 0 : 0x1000;
-	pattern_ofs |= tilenum << 4;
-	pattern_ofs |= (y & 7) << 1;
-	u8 lower = vram_[pattern_ofs],
-	   upper = vram_[pattern_ofs | 1];
-
-	u8 dot = 0;
-	u8 mask = 0x80 >> (x & 7);
-	if (lower & mask) { dot |= 1; }
-	if (upper & mask) { dot |= 2; }
-
-	if (!dot) { return 0x80; }
-
-	u8 pal = bgp_;
-	u8 shift = dot * 2;
-
-	return (pal >> shift) & 3;
+	u8 tilenum = FindTilenum(y, x, lcdc_ & 0x40);
+	auto pattern = FindPattern(tilenum, y, !(lcdc_ & 0x10));
+	u8 dot = ExtractPatternDot(pattern, x);
+	return PalettizeDot(dot, bgp_);
 }
 
 u8 LCD::RenderSpriteDot(bool wnd) {
@@ -45,11 +61,6 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 
 	std::array<u8, 40> sprites;
 	size_t n_sprites = 0;
-
-	// [0] y
-	// [1] x
-	// [2] tile
-	// [3] flags
 
 	// TODO: 8x16 sprites
 
@@ -95,24 +106,10 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 	if (oam_[n + 3] & 0x20) { x = 7 - x; }
 
 	u8 tilenum = oam_[n + 2];
-
-	size_t pattern_ofs = 0x0000;
-	pattern_ofs |= tilenum << 4;
-	pattern_ofs |= (y & 7) << 1;
-	u8 lower = vram_[pattern_ofs],
-	   upper = vram_[pattern_ofs | 1];
-
-	u8 dot = 0;
-	u8 mask = 0x80 >> (x & 7);
-	if (lower & mask) { dot |= 1; }
-	if (upper & mask) { dot |= 2; }
-
+	auto pattern = FindPattern(tilenum, y, false);
+	u8 dot = ExtractPatternDot(pattern, x);
 	if (!dot) { return 0x80; }
-
-	u8 pal = (oam_[n + 3] & 0x10) ? obp1_ : obp0_;
-	u8 shift = dot * 2;
-
-	return (pal >> shift) & 3;
+	return PalettizeDot(dot, (oam_[n + 3] & 0x10) ? obp1_ : obp0_);
 }
 
 u8 LCD::RenderBackgroundDot() {
@@ -121,33 +118,16 @@ u8 LCD::RenderBackgroundDot() {
 	u8 y = scy_ + ly_;
 	u8 x = scx_ + (dot_ - 80);
 
-	size_t tileofs = (lcdc_ & 0x08) ? 0x1C00 : 0x1800;
-	tileofs |= ((y & 0xF8) << 2) | (x >> 3);
-	u8 tilenum = vram_[tileofs];
-
-	size_t pattern_ofs = ((lcdc_ & 0x10) || tilenum >= 0x80) ? 0 : 0x1000;
-	pattern_ofs |= tilenum << 4;
-	pattern_ofs |= (y & 7) << 1;
-	u8 lower = vram_[pattern_ofs],
-	   upper = vram_[pattern_ofs | 1];
-
-	u8 dot = 0;
-	u8 mask = 0x80 >> (x & 7);
-	if (lower & mask) { dot |= 1; }
-	if (upper & mask) { dot |= 2; }
-
-	if (!dot) { return 0x80; }
-
-	u8 pal = bgp_;
-	u8 shift = dot * 2;
-
-	return (pal >> shift) & 3;
+	u8 tilenum = FindTilenum(y, x, lcdc_ & 0x08);
+	auto pattern = FindPattern(tilenum, y, !(lcdc_ & 0x10));
+	u8 dot = ExtractPatternDot(pattern, x);
+	return PalettizeDot(dot, bgp_);
 }
 
 void LCD::RenderDot() {
 	u8 wnd_dot = RenderWindowDot();
+	u8 spr_dot = RenderSpriteDot(wnd_dot & 3);
 	u8 bg_dot  = RenderBackgroundDot();
-	u8 spr_dot = RenderSpriteDot(bg_dot != 0x80 || wnd_dot != 0x80);
 
 	u8 dot = spr_dot;
 	if (dot == 0x80) { dot = wnd_dot; }

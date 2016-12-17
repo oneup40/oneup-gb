@@ -24,6 +24,11 @@ class LCD {
 
 	friend class Machine;
 
+	u8 FindTilenum(u8 y, u8 x, bool alt_base);
+	std::pair<u8, u8> FindPattern(u8 tilenum, u8 y, bool alt_base);
+	u8 ExtractPatternDot(std::pair<u8, u8> pattern, u8 x);
+	u8 PalettizeDot(u8 dot, u8 palette);
+
 	u8 RenderWindowDot();
 	u8 RenderBackgroundDot();
 	u8 RenderSpriteDot(bool bgwnd);
