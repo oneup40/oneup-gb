@@ -31,12 +31,12 @@ void Mapper::Unload() {
 	bank_ = 1;
 }
 
-u8 Mapper::Read(u16 addr, bool) {
+u8 Mapper::ReadROM(u16 addr, bool) {
 	size_t index = Index(addr);
     return data_[index];
 }
 
-void Mapper::Write(u16 addr, u8 val, bool debug) {
+void Mapper::WriteROM(u16 addr, u8 val, bool debug) {
 	size_t index = Index(addr);
 
     if (debug) { data_[index] = val; return; }
@@ -64,6 +64,15 @@ void Mapper::Write(u16 addr, u8 val, bool debug) {
 			assert(0);
 			break;
     }
+}
+
+u8 Mapper::ReadRAM(u16, bool) {
+	// TODO
+	return 0;
+}
+
+void Mapper::WriteRAM(u16, u8, bool) {
+	// TODO
 }
 
 }

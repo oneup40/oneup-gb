@@ -51,8 +51,11 @@ public:
 	void Init(MapperNumber number, const u8 *data, size_t size);
 	void Unload();
 
-	u8 Read(u16 addr, bool debug);
-	void Write(u16 addr, u8 val, bool debug);
+	u8 ReadROM(u16 addr, bool debug);
+	void WriteROM(u16 addr, u8 val, bool debug);
+
+	u8 ReadRAM(u16 addr, bool debug);
+	void WriteRAM(u16 addr, u8 val, bool debug);
 };
 
 }

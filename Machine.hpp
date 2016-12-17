@@ -5,6 +5,7 @@
 #include "libretro.h"
 
 #include "CPU.hpp"
+#include "LCD.hpp"
 #include "Loader.hpp"
 #include "Mapper.hpp"
 
@@ -12,7 +13,12 @@ namespace gblr {
 
 struct Machine {
 	CPU cpu;
+	LCD lcd;
 	Mapper mapper;
+	std::array<u8, 0x2000> wram;
+	std::array<u8, 0x80> hram;
+
+	bool frame_ready;
 
 	Machine();
 	Machine(const Machine&) = delete;
@@ -28,6 +34,10 @@ struct Machine {
 
 	bool LoadGame(const retro_game_info *game);
 	void UnloadGame();
+
+	bool FrameReady() const;
+	const u32* GetFrame() const;
+	void ResetFrame();
 };
 
 } // namespace gblr
