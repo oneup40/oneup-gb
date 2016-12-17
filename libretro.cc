@@ -44,16 +44,34 @@ static gblr::Button do_button_poll() {
 	return gblr::Button(btn);
 }
 
+unsigned long long g_ticks = 0,
+				   g_audio_frames = 0;
+std::array<int16_t, 32 * 1024 * 1024> g_samples;
+
 RETRO_API void retro_init(void) {
 	g_machine = std::make_unique<gblr::Machine>();
 	g_machine->btn_poller = do_button_poll;
+
+	g_samples.fill(0);
 }
 RETRO_API void retro_deinit(void) { g_machine.release(); }
+
 RETRO_API void retro_run(void) {
 	g_machine->ResetFrame();
 
 	while (!g_machine->FrameReady()) {
 		g_machine->Tick();
+		++g_ticks;
+	}
+
+	unsigned long long audio_frames = g_ticks / 48000;
+	while (g_audio_frames < audio_frames) {
+		unsigned n_frames = audio_frames - g_audio_frames;
+		if (n_frames > g_samples.size() / 2) { n_frames = g_samples.size() / 2; }
+
+		callbacks.audio_sample_batch(g_samples.data(), n_frames);
+
+		g_audio_frames += n_frames;
 	}
 
 	callbacks.video_refresh(g_machine->GetFrame(), 160, 144, 160*4);
@@ -87,7 +105,7 @@ RETRO_API void retro_get_system_info(struct retro_system_info *info) {
 
 static constexpr const retro_system_av_info system_av_info = {
 	{160, 144, 160, 144, 0.0},
-	{60.0, 0.0}
+	{60.0, 48000.0}
 };
 RETRO_API void retro_get_system_av_info(struct retro_system_av_info *info) {
 	enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
