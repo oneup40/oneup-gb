@@ -40,7 +40,7 @@ static gblr::Button do_button_poll() {
 
 	g_polled = true;
 
-	std::cerr << "do_button_poll: return $" << std::hex << unsigned(btn) << std::dec << std::endl;
+	//std::cerr << "do_button_poll: return $" << std::hex << unsigned(btn) << std::dec << std::endl;
 	return gblr::Button(btn);
 }
 

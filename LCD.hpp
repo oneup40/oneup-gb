@@ -20,11 +20,13 @@ class LCD {
 
 	std::array<std::array<u32, 160>, 144> frame_;
 
+	u8 dma_ticks_;
+
 	friend class Machine;
 
 	u8 RenderWindowDot();
-	u8 RenderSpriteDot(bool wnd);
 	u8 RenderBackgroundDot();
+	u8 RenderSpriteDot(bool bgwnd);
 	void RenderDot();
 public:
 	LCD(Machine *m);
@@ -38,6 +40,9 @@ public:
 
 	u8 ReadOAM(u16 addr, bool force = false);
 	void WriteOAM(u16 addr, u8 val, bool force = false);
+
+	u8 ReadDMA(bool force = false);
+	void WriteDMA(u8 val, bool force = false);
 
 	bool Tick();
 };

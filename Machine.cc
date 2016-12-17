@@ -38,7 +38,7 @@ u8 Machine::Read(u16 addr, bool force) {
 			case 0x43:	return lcd.scx_;
 			case 0x44:	return lcd.ly_;
 			case 0x45:	return lcd.lyc_;
-			case 0x46:	return lcd.dma_;
+			case 0x46:	return lcd.ReadDMA(force);
 			case 0x47:	return lcd.bgp_;
 			case 0x48:	return lcd.obp0_;
 			case 0x49:	return lcd.obp1_;
@@ -68,7 +68,7 @@ void Machine::Write(u16 addr, u8 val, bool force) {
 			case 0x43:	lcd.scx_ = val; break;
 			case 0x44:	lcd.ly_ = 0; break;
 			case 0x45:	lcd.lyc_ = val; break;
-			case 0x46:	lcd.dma_ = val; break;
+			case 0x46:	lcd.WriteDMA(val, force); break;
 			case 0x47:	lcd.bgp_ = val; break;
 			case 0x48:	lcd.obp0_ = val; break;
 			case 0x49:	lcd.obp1_ = val; break;
