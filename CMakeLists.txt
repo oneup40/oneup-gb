@@ -12,7 +12,7 @@ if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "CMAKE_BUILD_TYPE not defined, defaulting to Release")
 endif(NOT CMAKE_BUILD_TYPE) 
 
-set(LIBGBLR_SRC libretro.cc CPU.cc LCD.cc Loader.cc Machine.cc Mapper.cc)
+set(LIBGBLR_SRC libretro.cc CPU.cc Joypad.cc LCD.cc Loader.cc Machine.cc Mapper.cc)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_compile_options(-O3)

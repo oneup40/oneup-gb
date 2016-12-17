@@ -9,7 +9,7 @@
 namespace gblr {
 
 Machine::Machine()
-	: cpu(this), lcd(this), mapper(this), frame_ready(false)
+	: cpu(this), lcd(this), mapper(this), joypad(this), frame_ready(false)
 {
 	wram.fill(0);
 }
@@ -30,6 +30,7 @@ u8 Machine::Read(u16 addr, bool force) {
 	else if (addr < 0xFF00)		{ return 0; }
 	else if (addr < 0xFF80)		{
 		switch (addr & 0xFF) {
+			case 0x00:	return joypad.ReadJoyp(force);
 			case 0x0F:	return cpu.if_;
 			case 0x40:	return lcd.lcdc_;
 			case 0x41:	return lcd.stat_;
@@ -59,6 +60,7 @@ void Machine::Write(u16 addr, u8 val, bool force) {
 	else if (addr < 0xFF00)		{ }
 	else if (addr < 0xFF80)		{
 		switch (addr & 0xFF) {
+			case 0x00:	joypad.WriteJoyp(val, force); break;
 			case 0x0F:	cpu.if_ = val & 0x1F; break;
 			case 0x40:	lcd.lcdc_ = val; break;
 			case 0x41:	lcd.stat_ = val; break;

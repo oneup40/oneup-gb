@@ -23,7 +23,31 @@ struct {
 	retro_input_state_t			input_state;
 } callbacks;
 
-RETRO_API void retro_init(void) { g_machine = std::make_unique<gblr::Machine>(); }
+bool g_polled = true;
+
+static gblr::Button do_button_poll() {
+	callbacks.input_poll();
+
+	gblr::u8 btn = 0;
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN)) 		{ btn |= gblr::BTN_DOWN; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP)) 		{ btn |= gblr::BTN_UP; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT)) 		{ btn |= gblr::BTN_LEFT; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT)) 	{ btn |= gblr::BTN_RIGHT; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START)) 	{ btn |= gblr::BTN_START; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT)) 	{ btn |= gblr::BTN_SELECT; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B)) 		{ btn |= gblr::BTN_B; }
+	if (callbacks.input_state(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A)) 		{ btn |= gblr::BTN_A; }
+
+	g_polled = true;
+
+	std::cerr << "do_button_poll: return $" << std::hex << unsigned(btn) << std::dec << std::endl;
+	return gblr::Button(btn);
+}
+
+RETRO_API void retro_init(void) {
+	g_machine = std::make_unique<gblr::Machine>();
+	g_machine->btn_poller = do_button_poll;
+}
 RETRO_API void retro_deinit(void) { g_machine.release(); }
 RETRO_API void retro_run(void) {
 	g_machine->ResetFrame();
