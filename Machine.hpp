@@ -25,9 +25,11 @@ enum Button : u8 {
 	BTN_SELECT	= 0x40,
 	BTN_START	= 0x80
 };
-using ButtonPoller = std::function<Button()>;
+
+class LRConnector;
 
 struct Machine {
+	LRConnector *frontend;
 	CPU cpu;
 	LCD lcd;
 	Mapper mapper;
@@ -38,9 +40,7 @@ struct Machine {
 
 	bool frame_ready;
 
-	ButtonPoller btn_poller;
-
-	Machine();
+	Machine(LRConnector *frontend);
 	Machine(const Machine&) = delete;
 	Machine(Machine&&) = delete;
 	Machine& operator=(const Machine&) = delete;

@@ -1,6 +1,8 @@
 // Copyright 2016 oneup
 
 #include "Joypad.hpp"
+
+#include "LRConnector.hpp"
 #include "Machine.hpp"
 
 namespace gblr {
@@ -11,7 +13,7 @@ u8 Joypad::ReadJoyp(bool) {
 	// This is all active low logic!
 	joyp_ |= 0x0F;
 
-	Button btn = m_->btn_poller();
+	Button btn = m_->frontend->PollInput();
 
 	if (!(joyp_ & 0x10)) {
 		if (btn & BTN_RIGHT) 	{ joyp_ &= ~0x01; }

@@ -6,10 +6,13 @@
 
 #include <cassert>
 
+#include "LRConnector.hpp"
+
 namespace gblr {
 
-Machine::Machine()
-	: cpu(this), lcd(this), mapper(this), joypad(this), timer(this),
+Machine::Machine(LRConnector *frontend)
+	: frontend(frontend),
+	  cpu(this), lcd(this), mapper(this), joypad(this), timer(this),
 	  frame_ready(false)
 {
 	wram.fill(0);
