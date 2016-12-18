@@ -68,7 +68,7 @@ MemDescriptor LRConnector::GetRTC() {
 }
 
 MemDescriptor LRConnector::GetVRAM() {
-	return MemDescriptor{nullptr, 0};
+	return MemDescriptor{m_.lcd.vram.data(), m_.lcd.vram.size()};
 }
 
 MemDescriptor LRConnector::GetMemory(unsigned id) {

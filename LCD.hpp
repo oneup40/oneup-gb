@@ -14,10 +14,6 @@ class LCD {
 	u8 lcdc_, stat_, scy_, scx_, ly_, lyc_, dma_, bgp_, obp0_, obp1_, wy_, wx_;
 	unsigned dot_;
 
-	std::array<u8, 0x2000> vram_;
-	// note: oam is actually 0xA0 bytes but masks etc. are easier with 0x100
-	std::array<u8, 0x100> oam_;
-
 	std::array<std::array<u32, 160>, 144> frame_;
 
 	u8 dma_ticks_;
@@ -39,6 +35,9 @@ public:
 	LCD(LCD&&) = delete;
 	LCD& operator=(const LCD&) = delete;
 	LCD& operator=(LCD&&) = delete;
+
+	std::array<u8, 0x2000> vram;
+	std::array<u8, 0xA0> oam;
 
 	u8 ReadVRAM(u16 addr, bool force = false);
 	void WriteVRAM(u16 addr, u8 val, bool force = false);

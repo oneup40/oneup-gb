@@ -13,7 +13,7 @@ u8 LCD::FindTilenum(u8 y, u8 x, bool alt_base) {
 	addr |= (y & 0xF8) << 2;
 	addr |= x >> 3;
 
-	return vram_[addr];
+	return vram[addr];
 }
 
 std::pair<u8, u8> LCD::FindPattern(u8 tilenum, u8 y, bool alt_base) {
@@ -21,8 +21,8 @@ std::pair<u8, u8> LCD::FindPattern(u8 tilenum, u8 y, bool alt_base) {
 	pattern_ofs |= tilenum << 4;
 	pattern_ofs |= (y & 7) << 1;
 
-	u8 lower = vram_[pattern_ofs],
-	   upper = vram_[pattern_ofs | 1];
+	u8 lower = vram[pattern_ofs],
+	   upper = vram[pattern_ofs | 1];
 
 	return std::make_pair(lower, upper);
 }
@@ -67,7 +67,7 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 	for (u8 i = 0; i < 40; ++i) {
 		u8 addr = i * 4;
 
-		u8 y = oam_[addr] - 16;
+		u8 y = oam[addr] - 16;
 
 		if (y <= ly_ && ly_ < y + 8) {
 			sprites[n_sprites++] = addr;
@@ -77,8 +77,8 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 	std::sort(sprites.begin(),
 			  sprites.begin() + n_sprites,
 			  [this](u8 lhs, u8 rhs) -> bool {
-				u8 lhs_x = oam_[lhs + 1],
-				   rhs_x = oam_[rhs + 1];
+				u8 lhs_x = oam[lhs + 1],
+				   rhs_x = oam[rhs + 1];
 				return (lhs_x == rhs_x) ? (lhs < rhs) : (lhs_x < rhs_x);
 			  });
 
@@ -86,10 +86,10 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 
 	u8 i = 0;
 	for (; i < n_sprites; ++i) {
-		u8 x = oam_[sprites[i] + 1] - 8;
+		u8 x = oam[sprites[i] + 1] - 8;
 		if (dot_ - 80u < x || x + 8u <= dot_ - 80u) { continue; }
 
-		u8 flags = oam_[sprites[i] + 3];
+		u8 flags = oam[sprites[i] + 3];
 		if (wnd && (flags & 0x80)) { continue; }
 
 		break;
@@ -99,17 +99,17 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 
 	u8 n = sprites[i];
 
-	u8 y = ly_ - oam_[n];
-	u8 x = (dot_ - 80) - oam_[n + 1];
+	u8 y = ly_ - oam[n];
+	u8 x = (dot_ - 80) - oam[n + 1];
 
-	if (oam_[n + 3] & 0x40) { y = 7 - y; }
-	if (oam_[n + 3] & 0x20) { x = 7 - x; }
+	if (oam[n + 3] & 0x40) { y = 7 - y; }
+	if (oam[n + 3] & 0x20) { x = 7 - x; }
 
-	u8 tilenum = oam_[n + 2];
+	u8 tilenum = oam[n + 2];
 	auto pattern = FindPattern(tilenum, y, false);
 	u8 dot = ExtractPatternDot(pattern, x);
 	if (!dot) { return 0x80; }
-	return PalettizeDot(dot, (oam_[n + 3] & 0x10) ? obp1_ : obp0_);
+	return PalettizeDot(dot, (oam[n + 3] & 0x10) ? obp1_ : obp0_);
 }
 
 u8 LCD::RenderBackgroundDot() {
@@ -157,8 +157,8 @@ LCD::LCD(Machine *m)
 	  dot_(0),
 	  dma_ticks_(0)
 {
-	vram_.fill(0);
-	oam_.fill(0);
+	vram.fill(0);
+	oam.fill(0);
 	for (auto &row : frame_) {
 		row.fill(0);
 	}
@@ -166,22 +166,24 @@ LCD::LCD(Machine *m)
 
 u8 LCD::ReadVRAM(u16 addr, bool) {
 	// TODO: check if vram is accessible
-	return vram_[addr & (vram_.size() - 1)];
+	return vram[addr & (vram.size() - 1)];
 }
 
 void LCD::WriteVRAM(u16 addr, u8 val, bool) {
 	// TODO: check if vram is accessible
-	vram_[addr & (vram_.size() - 1)] = val;
+	vram[addr & (vram.size() - 1)] = val;
 }
 
 u8 LCD::ReadOAM(u16 addr, bool) {
 	// TODO: check if oam is accessible
-	return oam_[addr & (oam_.size() - 1)];
+	assert((addr & 0xFF) < oam.size());
+	return oam[addr & 0xFF];
 }
 
 void LCD::WriteOAM(u16 addr, u8 val, bool) {
 	// TODO: check if oam is accessible
-	oam_[addr & (oam_.size() - 1)] = val;
+	assert((addr & 0xFF) < oam.size());
+	oam[addr & 0xFF] = val;
 }
 
 u8 LCD::ReadDMA(bool) {
@@ -199,7 +201,7 @@ bool LCD::Tick() {
 
 	if (dma_ticks_) {
 		u8 ofs = 0xA0 - dma_ticks_;
-		oam_[ofs] = m_->Read((dma_ << 8) | ofs);
+		oam[ofs] = m_->Read((dma_ << 8) | ofs);
 		--dma_ticks_;
 	}
 
