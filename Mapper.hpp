@@ -25,7 +25,6 @@ struct Machine;
 class Mapper {
 	Machine *m_;
 
-	std::vector<u8> rom_data_, ram_data_;
 	bool ram_enable_;
 	MapperNumber number_;
 	size_t bank_;
@@ -33,7 +32,9 @@ class Mapper {
     size_t RomIndex(u16 addr);
     size_t RamIndex(u16 addr);
 public:
-	Mapper(Machine *m) : m_(m), rom_data_(kBankSize * 2, 0), ram_data_(), ram_enable_(false), number_(kMapperNone), bank_(1) {}
+    std::vector<u8> rom, ram;
+
+	Mapper(Machine *m) : m_(m), ram_enable_(false), number_(kMapperNone), bank_(1), rom(kBankSize * 2, 0), ram()  {}
 	Mapper(const Mapper&) = delete;
 	Mapper(Mapper&&) = delete;
 	Mapper& operator=(const Mapper&) = delete;

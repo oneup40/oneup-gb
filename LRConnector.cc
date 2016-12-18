@@ -60,7 +60,7 @@ MemDescriptor LRConnector::GetSystemRAM() {
 }
 
 MemDescriptor LRConnector::GetSaveRAM() {
-	return MemDescriptor{nullptr, 0};
+	return MemDescriptor{m_.mapper.ram.data(), m_.mapper.ram.size()};
 }
 
 MemDescriptor LRConnector::GetRTC() {

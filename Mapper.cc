@@ -22,8 +22,8 @@ size_t Mapper::RomIndex(u16 addr) {
 			break;
 	}
 
-	assert(index < rom_data_.size());
-	index &= (rom_data_.size() - 1);
+	assert(index < rom.size());
+	index &= (rom.size() - 1);
 	return index;
 }
 
@@ -45,14 +45,14 @@ size_t Mapper::RamIndex(u16 addr) {
 
 void Mapper::Init(MapperNumber number, const u8 *data, size_t size) {
 	number_ = number;
-	rom_data_ = std::vector<u8>(data, data + size);
+	rom = std::vector<u8>(data, data + size);
 	switch (number) {
 	case kMapperNone:
 	case kMapperMBC1:
-		ram_data_ = std::vector<u8>();
+		ram = std::vector<u8>();
 		break;
 	case kMapperMBC2:
-		ram_data_ = std::vector<u8>(512, 0);
+		ram = std::vector<u8>(512, 0);
 		break;
 	}
 	bank_ = 1;
@@ -60,21 +60,21 @@ void Mapper::Init(MapperNumber number, const u8 *data, size_t size) {
 
 void Mapper::Unload() {
 	number_ = kMapperNone;
-	rom_data_.clear();
-	ram_data_.clear();
+	rom.clear();
+	ram.clear();
 	ram_enable_ = false;
 	bank_ = 1;
 }
 
 u8 Mapper::ReadROM(u16 addr, bool) {
 	size_t index = RomIndex(addr);
-    return rom_data_[index];
+    return rom[index];
 }
 
 void Mapper::WriteROM(u16 addr, u8 val, bool debug) {
 	size_t index = RomIndex(addr);
 
-    if (debug) { rom_data_[index] = val; return; }
+    if (debug) { rom[index] = val; return; }
 
     switch (number_) {
 		case kMapperNone: break;
@@ -116,7 +116,7 @@ u8 Mapper::ReadRAM(u16 addr, bool) {
 	if (!ram_enable_) { return 0; }
 
 	size_t index = RamIndex(addr);
-	return ram_data_[index];
+	return ram[index];
 }
 
 void Mapper::WriteRAM(u16 addr, u8 val, bool force) {
@@ -128,7 +128,7 @@ void Mapper::WriteRAM(u16 addr, u8 val, bool force) {
 	}
 
 	size_t index = RamIndex(addr);
-	ram_data_[index] = val;
+	ram[index] = val;
 }
 
 }
