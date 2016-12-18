@@ -9,23 +9,12 @@
 namespace gblr {
 
 enum MapperNumber : u8 {
-	kMapperMin = 0,
-
 	kMapperNone = 0,
 	kMapperMBC1 = 1,
-
-	kMapperMax = 1,
-
-	kMapperInvalid = 0xff
+	kMapperMBC2 = 2,
+	//kMapperMBC3 = 3,
+	//kMapperMBC5 = 5,
 };
-
-// silence warning about comparing unsigned value to >= 0
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtype-limits"
-constexpr static inline bool IsValidMapperNumber(u8 number) {
-	return number >= kMapperMin && number <= kMapperMax;
-}
-#pragma GCC diagnostic pop
 
 static constexpr const size_t kBankShift = 14;
 static constexpr const size_t kBankSize = 1ul << kBankShift;
@@ -36,13 +25,15 @@ struct Machine;
 class Mapper {
 	Machine *m_;
 
-	std::vector<u8> data_;
+	std::vector<u8> rom_data_, ram_data_;
+	bool ram_enable_;
 	MapperNumber number_;
 	size_t bank_;
 
-    size_t Index(u16 addr);
+    size_t RomIndex(u16 addr);
+    size_t RamIndex(u16 addr);
 public:
-	Mapper(Machine *m) : m_(m), data_(), number_(kMapperInvalid), bank_(1) {}
+	Mapper(Machine *m) : m_(m), rom_data_(kBankSize * 2, 0), ram_data_(), ram_enable_(false), number_(kMapperNone), bank_(1) {}
 	Mapper(const Mapper&) = delete;
 	Mapper(Mapper&&) = delete;
 	Mapper& operator=(const Mapper&) = delete;

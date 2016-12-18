@@ -8,38 +8,73 @@
 
 namespace gblr {
 
-size_t Mapper::Index(u16 addr) {
+size_t Mapper::RomIndex(u16 addr) {
 	size_t index = addr;
-	if (number_ == kMapperMBC1 && (addr & 0x4000)) {
-		index &= ~0x4000;
-		index |= (bank_ << kBankShift);
+	switch (number_) {
+		case kMapperNone:
+			break;
+		case kMapperMBC1:
+		case kMapperMBC2:
+			if (addr & 0x4000) {
+				index &= ~0x4000;
+				index |= (bank_ << kBankShift);
+			}
+			break;
 	}
 
-	assert(index < data_.size());
+	assert(index < rom_data_.size());
+	index &= (rom_data_.size() - 1);
+	return index;
+}
+
+size_t Mapper::RamIndex(u16 addr) {
+	size_t index = addr;
+
+	switch (number_) {
+		case kMapperNone:
+		case kMapperMBC1:
+			assert(0);
+			return 0;
+		case kMapperMBC2:
+			index = addr & 0x01FF;
+			break;
+	}
+
 	return index;
 }
 
 void Mapper::Init(MapperNumber number, const u8 *data, size_t size) {
 	number_ = number;
-	data_ = std::vector<u8>(data, data + size);
+	rom_data_ = std::vector<u8>(data, data + size);
+	switch (number) {
+	case kMapperNone:
+	case kMapperMBC1:
+		ram_data_ = std::vector<u8>();
+		break;
+	case kMapperMBC2:
+		ram_data_ = std::vector<u8>(512, 0);
+		break;
+	}
 	bank_ = 1;
 }
 
 void Mapper::Unload() {
-	number_ = kMapperInvalid;
-	data_.clear();
+	number_ = kMapperNone;
+	rom_data_.clear();
+	ram_data_.clear();
+	ram_enable_ = false;
 	bank_ = 1;
 }
 
 u8 Mapper::ReadROM(u16 addr, bool) {
-	size_t index = Index(addr);
-    return data_[index];
+	size_t index = RomIndex(addr);
+    return rom_data_[index];
 }
 
 void Mapper::WriteROM(u16 addr, u8 val, bool debug) {
-	size_t index = Index(addr);
+	size_t index = RomIndex(addr);
 
-    if (debug) { data_[index] = val; return; }
+    if (debug) { rom_data_[index] = val; return; }
 
     switch (number_) {
 		case kMapperNone: break;
@@ -60,19 +95,40 @@ void Mapper::WriteROM(u16 addr, u8 val, bool debug) {
 					break;
 			}
 			break;
-		case kMapperInvalid:
-			assert(0);
+		case kMapperMBC2:
+			switch (addr & 0x6000) {
+				case 0x0000:
+					ram_enable_ = addr & 0x0100;
+					break;
+				case 0x2000:
+					bank_ = val & 0x0F;
+					if (!bank_) { bank_ = 1; }
+					break;
+				case 0x4000:
+				case 0x6000:
+					break;
+			}
 			break;
     }
 }
 
-u8 Mapper::ReadRAM(u16, bool) {
-	// TODO
-	return 0;
+u8 Mapper::ReadRAM(u16 addr, bool) {
+	if (!ram_enable_) { return 0; }
+
+	size_t index = RamIndex(addr);
+	return ram_data_[index];
 }
 
-void Mapper::WriteRAM(u16, u8, bool) {
-	// TODO
+void Mapper::WriteRAM(u16 addr, u8 val, bool force) {
+	if (!ram_enable_) { return; }
+
+	if (number_ == kMapperMBC2 && !force) {
+		// MBC2 ram is 4-bit
+		val &= 0x0F;
+	}
+
+	size_t index = RamIndex(addr);
+	ram_data_[index] = val;
 }
 
 }

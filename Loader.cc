@@ -51,14 +51,20 @@ bool Loader::Load(const struct retro_game_info *game, Machine *machine) {
     }
 
     assert(0x147 < game->size);
-    u8 number = data[0x147];
-    if (!IsValidMapperNumber(number)) {
-		machine->Log("Unsupported mapper " + to_string(unsigned(data[0x147])));
-		return false;
+    u8 cart = data[0x147];
+
+    MapperNumber mapper = kMapperNone;
+
+    switch (cart) {
+    	case 0:	mapper = kMapperNone; break;
+    	case 1: mapper = kMapperMBC1; break;
+    	case 5: mapper = kMapperMBC2; break;
+    	default:
+    		std::cerr << "unsupported cartridge type: $" << to_hex(cart, 2) << std::endl;
+    		return false;
     }
 
-    MapperNumber mapper_number = MapperNumber(number);
-    machine->mapper.Init(mapper_number, data, game->size);
+    machine->mapper.Init(mapper, data, game->size);
     return true;
 }
 
