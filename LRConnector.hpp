@@ -24,7 +24,7 @@ class LRConnector {
 	retro_input_state_t			input_state_;
 
 	static constexpr const char *name_ = "oneup-dmg",
-			                    *version_ = "beta",
+			                    *version_ = GIT_BRANCH,
 								*extensions_ = "gb";
 
 	static constexpr const unsigned width_ = 160,

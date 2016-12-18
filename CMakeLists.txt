@@ -5,6 +5,14 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror -march=native -std=c++14")
 cmake_minimum_required(VERSION 3.0.0)
 project(oneup-gb-lr)
 
+execute_process(
+	COMMAND git rev-parse --abbrev-ref HEAD
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_BRANCH
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+add_definitions("-DGIT_BRANCH=\"${GIT_BRANCH}\"")
+
 include_directories(${CMAKE_SOURCE_DIR})
 
 if(NOT CMAKE_BUILD_TYPE)
