@@ -9,15 +9,17 @@
 namespace gblr {
 
 Machine::Machine()
-	: cpu(this), lcd(this), mapper(this), joypad(this), frame_ready(false)
+	: cpu(this), lcd(this), mapper(this), joypad(this), timer(this),
+	  frame_ready(false)
 {
 	wram.fill(0);
 }
 
 bool Machine::Tick() {
 	bool good = true;
-	good = good && cpu.Tick();
-	good = good && lcd.Tick();
+	good = cpu.Tick() && good;
+	good = lcd.Tick() && good;
+	good = timer.Tick() && good;
 	return good;
 }
 
@@ -31,6 +33,10 @@ u8 Machine::Read(u16 addr, bool force) {
 	else if (addr < 0xFF80)		{
 		switch (addr & 0xFF) {
 			case 0x00:	return joypad.ReadJoyp(force);
+			case 0x04:	return timer.ReadDiv(force);
+			case 0x05:	return timer.tima_;
+			case 0x06:	return timer.tma_;
+			case 0x07:	return timer.tac_;
 			case 0x0F:	return cpu.if_;
 			case 0x40:	return lcd.lcdc_;
 			case 0x41:	return lcd.stat_;
@@ -61,6 +67,10 @@ void Machine::Write(u16 addr, u8 val, bool force) {
 	else if (addr < 0xFF80)		{
 		switch (addr & 0xFF) {
 			case 0x00:	joypad.WriteJoyp(val, force); break;
+			case 0x04:	timer.WriteDiv(force); break;
+			case 0x05:	timer.tima_ = val; break;
+			case 0x06:	timer.tma_ = val; break;
+			case 0x07:	timer.tac_ = val; break;
 			case 0x0F:	cpu.if_ = val & 0x1F; break;
 			case 0x40:	lcd.lcdc_ = val; break;
 			case 0x41:	lcd.stat_ = val; break;

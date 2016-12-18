@@ -11,6 +11,7 @@
 #include "LCD.hpp"
 #include "Loader.hpp"
 #include "Mapper.hpp"
+#include "Timer.hpp"
 
 namespace gblr {
 
@@ -31,6 +32,7 @@ struct Machine {
 	LCD lcd;
 	Mapper mapper;
 	Joypad joypad;
+	Timer timer;
 	std::array<u8, 0x2000> wram;
 	std::array<u8, 0x80> hram;
 
