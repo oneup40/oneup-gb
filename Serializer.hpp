@@ -80,6 +80,8 @@ public:
 
 	explicit operator bool() { return static_cast<bool>(*os_); }
 
+	void Fail() { os_->setstate(std::ios_base::failbit); }
+
 	Serializer& SerializeBool(bool val) {
 		u64 raw = htole<u64>(val);
 		DoWrite(raw);
@@ -168,6 +170,8 @@ public:
 	Deserializer& operator=(Deserializer&&) = delete;
 
 	explicit operator bool() { return static_cast<bool>(*is_); }
+
+	void Fail() { is_->setstate(std::ios_base::failbit); }
 
 	Deserializer& DeserializeBool(bool *val) {
 		u64 raw = 0;
@@ -259,7 +263,7 @@ public:
 		(*this) >> extracted;
 		if (!*this) { return *this; }
 
-		if (extracted != code) { is_->setstate(std::ios_base::failbit); }
+		if (extracted != code) { Fail(); }
 		return *this;
 	}
 };

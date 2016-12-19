@@ -25,7 +25,7 @@ class LCD {
 
 	u8 dma_ticks_;
 
-	static constexpr const u8 version_ = 0x00;
+	static constexpr const u8 version_ = 0x01;
 	static constexpr const u64 code_ = eight_cc(version_, 'l','c','d');
 	friend Serializer& operator<<(Serializer &s, const LCD &lcd);
 	friend Deserializer& operator>>(Deserializer &d, LCD &lcd);
@@ -63,12 +63,34 @@ public:
 
 static inline Serializer& operator<<(Serializer &s, const LCD &lcd) {
 	s.Start(LCD::code_);
+
+	std::basic_string<u8> frame;
+	for (size_t y = 0; y < lcd.frame_.size(); ++y) {
+		for (size_t x = 0; x < lcd.frame_[y].size(); x += 4) {
+			u8 dots = 0;
+
+			for (size_t i=0; i < 4; ++i) {
+				dots <<= 2;
+
+				switch (lcd.frame_[y][x + i]) {
+					case 0x00d0f8e0:	dots |= 0; break;
+					case 0x0070c088:	dots |= 1; break;
+					case 0x00566834:	dots |= 2; break;
+					case 0x00201808:	dots |= 3; break;
+					default:			dots |= 3; break;
+				}
+			}
+
+			frame.push_back(dots);
+		}
+	}
+
 	return s << lcd.lcdc_ << lcd.stat_ << lcd.scy_ << lcd.scx_
 			 << lcd.ly_ << lcd.lyc_ << lcd.dma_
 			 << lcd.bgp_ << lcd.obp0_ << lcd.obp1_
 			 << lcd.wy_ << lcd.wx_
 			 << lcd.dot_
-			 << lcd.frame_
+			 << frame
 			 << lcd.dma_ticks_
 			 << lcd.vram
 			 << lcd.oam;
@@ -76,15 +98,46 @@ static inline Serializer& operator<<(Serializer &s, const LCD &lcd) {
 
 static inline Deserializer& operator>>(Deserializer &d, LCD &lcd) {
 	d.Start(LCD::code_);
-	return d >> lcd.lcdc_ >> lcd.stat_ >> lcd.scy_ >> lcd.scx_
-			 >> lcd.ly_ >> lcd.lyc_ >> lcd.dma_
-			 >> lcd.bgp_ >> lcd.obp0_ >> lcd.obp1_
-			 >> lcd.wy_ >> lcd.wx_
-			 >> lcd.dot_
-			 >> lcd.frame_
-			 >> lcd.dma_ticks_
-			 >> lcd.vram
-			 >> lcd.oam;
+
+	std::basic_string<u8> frame;
+
+	d >> lcd.lcdc_ >> lcd.stat_ >> lcd.scy_ >> lcd.scx_
+	  >> lcd.ly_ >> lcd.lyc_ >> lcd.dma_
+	  >> lcd.bgp_ >> lcd.obp0_ >> lcd.obp1_
+	  >> lcd.wy_ >> lcd.wx_
+	  >> lcd.dot_
+	  >> frame
+	  >> lcd.dma_ticks_
+	  >> lcd.vram
+	  >> lcd.oam;
+	if (!d) { return d; }
+
+	if (frame.size() != lcd.frame_.size() * lcd.frame_[0].size() / 4) {
+		std::cerr << "frame.size() == " << frame.size() << std::endl;
+		std::cerr << "should be " << lcd.frame_.size() * lcd.frame_[0].size() / 4 << std::endl;
+		d.Fail();
+		return d;
+	}
+
+	size_t y = 0, x = 0;
+	for (auto dots : frame) {
+		for (unsigned i=0; i < 4; ++i) {
+			u32 px = 0;
+
+			switch (dots & 3) {
+				case 0:	px = 0x00d0f8e0; break;
+				case 1:	px = 0x0070c088; break;
+				case 2:	px = 0x00566834; break;
+				case 3:	px = 0x00201808; break;
+				default: px = 0x00201808; break;
+			}
+			dots >>= 2;
+
+			lcd.frame_[y][x + (4 - i)] = px;
+		}
+	}
+
+	return d;
 }
 
 }	// namespace gblr
