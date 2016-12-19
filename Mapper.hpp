@@ -51,7 +51,7 @@ class Mapper {
     size_t RomIndex(u16 addr);
     size_t RamIndex(u16 addr);
 
-    static constexpr const u8 version_ = 0;
+    static constexpr const u8 version_ = 0x01;
     static constexpr const u64 code_ = eight_cc(version_, 'm','a','p','p','e','r');
     friend Serializer& operator<<(Serializer &s, const Mapper &m);
     friend Deserializer& operator>>(Deserializer &d, Mapper &m);
@@ -75,21 +75,19 @@ public:
 };
 
 static inline Serializer& operator<<(Serializer &s, const Mapper &m) {
-	std::basic_string<u8> rom(m.rom.begin(), m.rom.end()),
-						  ram(m.ram.begin(), m.ram.end());
+	std::basic_string<u8> ram(m.ram.begin(), m.ram.end());
 
 	s.Start(Mapper::code_);
-	return s << m.ram_enable_ << m.number_ << m.bank_ << rom << ram;
+	return s << m.ram_enable_ << m.number_ << m.bank_ << ram;
 }
 
 static inline Deserializer& operator>>(Deserializer &d, Mapper &m) {
-	std::basic_string<u8> rom, ram;
+	std::basic_string<u8> ram;
 
 	d.Start(Mapper::code_);
-	d >> m.ram_enable_ >> m.number_ >> m.bank_ >> rom >> ram;
+	d >> m.ram_enable_ >> m.number_ >> m.bank_ >> ram;
 	if (!d) { return d; }
 
-	std::copy(rom.begin(), rom.end(), m.rom.begin());
 	std::copy(ram.begin(), ram.end(), m.ram.begin());
 
 	return d;
