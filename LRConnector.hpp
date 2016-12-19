@@ -69,8 +69,13 @@ public:
 	void* GetMemoryData(unsigned id);
 	size_t GetMemorySize(unsigned id);
 
+	size_t GetSerializeSize();
+	bool Serialize(void *data, size_t len);
+	bool Unserialize(const void *data, size_t len);
+
 	// machine interface
 	bool SetPixelFormat(enum retro_pixel_format fmt);
+	bool ShowMessage(const char *msg, unsigned frames);
 
 	Button PollInput();
 };

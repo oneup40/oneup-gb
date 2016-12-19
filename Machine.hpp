@@ -40,6 +40,9 @@ struct Machine {
 
 	bool frame_ready;
 
+	static constexpr const u8 version_ = 0x00;
+	static constexpr const u64 code_ = eight_cc(version_,'m','a','c','h','i','n','e');
+
 	Machine(LRConnector *frontend);
 	Machine(const Machine&) = delete;
 	Machine(Machine&&) = delete;
@@ -59,5 +62,8 @@ struct Machine {
 	const u32* GetFrame() const;
 	void ResetFrame();
 };
+
+Serializer& operator<<(Serializer &s, const Machine &m);
+Deserializer& operator>>(Deserializer &d, Machine &m);
 
 } // namespace gblr

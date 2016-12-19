@@ -3,6 +3,7 @@
 // Copyright 2016 oneup
 
 #include "Base.hpp"
+#include "Serializer.hpp"
 
 namespace gblr {
 
@@ -102,6 +103,13 @@ static inline std::string to_string(const Regs &regs) {
     s += "....";
 
     return s;
+}
+
+static inline Serializer& operator<<(Serializer &s, const Regs &reg) {
+	return s << reg.pc << reg.sp << reg.bc << reg.de << reg.hl << reg.af;
+}
+static inline Deserializer& operator>>(Deserializer &d, Regs &reg) {
+	return d >> reg.pc >> reg.sp >> reg.bc >> reg.de >> reg.hl >> reg.af;
 }
 
 }    // namespace gblr

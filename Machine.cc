@@ -108,6 +108,49 @@ const u32* Machine::GetFrame() const { return &lcd.frame_[0][0]; }
 
 void Machine::ResetFrame() { frame_ready = false; }
 
+Serializer& operator<<(Serializer &s, const Machine &m) {
+	std::basic_string<u8> wram(m.wram.begin(), m.wram.end()),
+						  hram(m.hram.begin(), m.hram.end());
+	s.Start(m.code_);
+	return s << m.cpu << m.lcd << m.mapper << m.joypad << m.timer << wram << hram << m.frame_ready;
+}
+
+Deserializer& operator>>(Deserializer &d, Machine &m) {
+	std::basic_string<u8> wram, hram;
+
+	d.Start(m.code_);
+
+	d >> m.cpu;
+	if (!d) { m.frontend->ShowMessage("Error deserializing CPU", 600); return d; }
+
+	d >> m.lcd;
+	if (!d) { m.frontend->ShowMessage("Error deserializing LCD", 600); return d; }
+
+	d >> m.mapper;
+	if (!d) { m.frontend->ShowMessage("Error deserializing mapper", 600); return d; }
+
+	d >> m.joypad;
+	if (!d) { m.frontend->ShowMessage("Error deserializing joypad", 600); return d; }
+
+	d >> m.timer;
+	if (!d) { m.frontend->ShowMessage("Error deserializing timer", 600); return d; }
+
+	d >> wram;
+	if (!d) { m.frontend->ShowMessage("Error deserializing WRAM", 600); return d; }
+
+	d >> hram;
+	if (!d) { m.frontend->ShowMessage("Error deserializing HRAM", 600); return d; }
+
+	d >> m.frame_ready;
+	if (!d) { m.frontend->ShowMessage("Error deserializing machine", 600); return d; }
+
+	std::copy(wram.begin(), wram.end(), m.wram.begin());
+	std::copy(hram.begin(), hram.end(), m.hram.begin());
+
+	return d;
+}
+
+
 }	// namespace gblr
 
 

@@ -3,13 +3,20 @@
 // Copyright 2016 oneup
 
 #include "Base.hpp"
+#include "Serializer.hpp"
 
 namespace gblr {
 
 struct Machine;
 
+class LCD;
+
+static inline Serializer& operator<<(Serializer &s, const LCD &lcd);
+static inline Deserializer& operator>>(Deserializer &d, LCD &lcd);
+
 class LCD {
 	Machine *m_;
+	friend class Machine;
 
 	u8 lcdc_, stat_, scy_, scx_, ly_, lyc_, dma_, bgp_, obp0_, obp1_, wy_, wx_;
 	unsigned dot_;
@@ -18,7 +25,10 @@ class LCD {
 
 	u8 dma_ticks_;
 
-	friend class Machine;
+	static constexpr const u8 version_ = 0x00;
+	static constexpr const u64 code_ = eight_cc(version_, 'l','c','d');
+	friend Serializer& operator<<(Serializer &s, const LCD &lcd);
+	friend Deserializer& operator>>(Deserializer &d, LCD &lcd);
 
 	u8 FindTilenum(u8 y, u8 x, bool alt_base);
 	std::pair<u8, u8> FindPattern(u8 tilenum, u8 y, bool alt_base);
@@ -51,4 +61,30 @@ public:
 	bool Tick();
 };
 
+static inline Serializer& operator<<(Serializer &s, const LCD &lcd) {
+	s.Start(LCD::code_);
+	return s << lcd.lcdc_ << lcd.stat_ << lcd.scy_ << lcd.scx_
+			 << lcd.ly_ << lcd.lyc_ << lcd.dma_
+			 << lcd.bgp_ << lcd.obp0_ << lcd.obp1_
+			 << lcd.wy_ << lcd.wx_
+			 << lcd.dot_
+			 << lcd.frame_
+			 << lcd.dma_ticks_
+			 << lcd.vram
+			 << lcd.oam;
 }
+
+static inline Deserializer& operator>>(Deserializer &d, LCD &lcd) {
+	d.Start(LCD::code_);
+	return d >> lcd.lcdc_ >> lcd.stat_ >> lcd.scy_ >> lcd.scx_
+			 >> lcd.ly_ >> lcd.lyc_ >> lcd.dma_
+			 >> lcd.bgp_ >> lcd.obp0_ >> lcd.obp1_
+			 >> lcd.wy_ >> lcd.wx_
+			 >> lcd.dot_
+			 >> lcd.frame_
+			 >> lcd.dma_ticks_
+			 >> lcd.vram
+			 >> lcd.oam;
+}
+
+}	// namespace gblr

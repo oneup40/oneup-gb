@@ -2,6 +2,10 @@
 
 #include "LRConnector.hpp"
 
+#include <sstream>
+
+#include "Serializer.hpp"
+
 namespace gblr {
 
 LRConnector::LRConnector()
@@ -88,8 +92,48 @@ size_t LRConnector::GetMemorySize(unsigned id) {
 	return GetMemory(id).size;
 }
 
+size_t LRConnector::GetSerializeSize() {
+	std::ostringstream oss(std::ios_base::out | std::ios_base::binary);
+
+	Serializer s(&oss);
+	s << m_;
+
+	return static_cast<bool>(s) ? oss.str().length() : 0;
+}
+
+bool LRConnector::Serialize(void *data, size_t len) {
+	std::ostringstream oss;
+
+	Serializer s(&oss);
+	s << m_;
+
+	auto str = oss.str();
+	if (!s || str.length() != len) { return false; }
+
+	char *buf = static_cast<char*>(data);
+	std::copy(str.begin(), str.end(), buf);
+
+	return true;
+}
+
+bool LRConnector::Unserialize(const void *data, size_t len) {
+	const char *buf = static_cast<const char*>(data);
+	std::string str(buf, buf+len);
+	std::istringstream iss(str, std::ios_base::in | std::ios_base::binary);
+
+	Deserializer d(&iss);
+	d >> m_;
+
+	return static_cast<bool>(d);
+}
+
 bool LRConnector::SetPixelFormat(enum retro_pixel_format fmt) {
 	return environment_(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
+}
+
+bool LRConnector::ShowMessage(const char *msg, unsigned frames) {
+	struct retro_message rmsg{msg, frames};
+	return environment_(RETRO_ENVIRONMENT_SET_MESSAGE, &rmsg);
 }
 
 Button LRConnector::PollInput() {

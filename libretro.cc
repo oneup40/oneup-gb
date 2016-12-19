@@ -79,18 +79,15 @@ RETRO_API size_t retro_get_memory_size(unsigned id) {
 }
 
 RETRO_API size_t retro_serialize_size(void) {
-	LOG_CALL;
-	return 0;
+	return g_core.GetSerializeSize();
 }
 
-RETRO_API bool retro_serialize(void*, size_t) {
-	LOG_CALL;
-	return true;
+RETRO_API bool retro_serialize(void *data, size_t len) {
+	return g_core.Serialize(data, len);
 }
 
-RETRO_API bool retro_unserialize(const void*, size_t) {
-	LOG_CALL;
-	return true;
+RETRO_API bool retro_unserialize(const void *data, size_t len) {
+	return g_core.Unserialize(data, len);
 }
 
 RETRO_API void retro_reset(void) { LOG_CALL; }

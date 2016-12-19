@@ -89,5 +89,19 @@ template <typename T> static inline T letoh(T x) { return x; }
 #error "Unable to detect platform endianness"
 #endif
 
+constexpr static inline u64 eight_cc(u8 a=0, u8 b=0, u8 c=0, u8 d=0, u8 e=0, u8 f=0, u8 g=0, u8 h=0) {
+	u64 x = 0;
+
+	x |= u64(u8(a));
+	x |= u64(u8(b)) << 8;
+	x |= u64(u8(c)) << 16;
+	x |= u64(u8(d)) << 24;
+	x |= u64(u8(e)) << 32;
+	x |= u64(u8(f)) << 40;
+	x |= u64(u8(g)) << 48;
+	x |= u64(u8(h)) << 56;
+
+	return x;
+}
 
 }	// namespace gblr
