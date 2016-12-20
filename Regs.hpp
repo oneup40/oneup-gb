@@ -106,10 +106,10 @@ static inline std::string to_string(const Regs &regs) {
 }
 
 static inline Serializer& operator<<(Serializer &s, const Regs &reg) {
-	return s << reg.pc << reg.sp << reg.bc << reg.de << reg.hl << reg.af;
+    return s << reg.pc << reg.sp << reg.bc << reg.de << reg.hl << reg.af;
 }
 static inline Deserializer& operator>>(Deserializer &d, Regs &reg) {
-	return d >> reg.pc >> reg.sp >> reg.bc >> reg.de >> reg.hl >> reg.af;
+    return d >> reg.pc >> reg.sp >> reg.bc >> reg.de >> reg.hl >> reg.af;
 }
 
 }    // namespace gblr

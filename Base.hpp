@@ -37,35 +37,35 @@ static inline std::string do_to_hex(const T& t, unsigned width) {
     return oss.str();
 }
 
-}	// namespace (anonymous)
+}    // namespace (anonymous)
 
-static inline std::string to_string(int val)                 			{ return do_to_string(val); }
-static inline std::string to_string(long val)                 			{ return do_to_string(val); }
-static inline std::string to_string(long long val)             			{ return do_to_string(val); }
-static inline std::string to_string(unsigned val)             			{ return do_to_string(val); }
-static inline std::string to_string(unsigned long val)         			{ return do_to_string(val); }
-static inline std::string to_string(unsigned long long val)    			{ return do_to_string(val); }
-static inline std::string to_string(float val)                 			{ return do_to_string(val); }
-static inline std::string to_string(double val)             			{ return do_to_string(val); }
-static inline std::string to_string(long double val)         			{ return do_to_string(val); }
+static inline std::string to_string(int val)                { return do_to_string(val); }
+static inline std::string to_string(long val)               { return do_to_string(val); }
+static inline std::string to_string(long long val)          { return do_to_string(val); }
+static inline std::string to_string(unsigned val)           { return do_to_string(val); }
+static inline std::string to_string(unsigned long val)      { return do_to_string(val); }
+static inline std::string to_string(unsigned long long val)	{ return do_to_string(val); }
+static inline std::string to_string(float val)              { return do_to_string(val); }
+static inline std::string to_string(double val)             { return do_to_string(val); }
+static inline std::string to_string(long double val)        { return do_to_string(val); }
 
 static inline std::string to_hex(int val, size_t width)                 { return do_to_hex(val, width); }
 static inline std::string to_hex(long val, size_t width)                { return do_to_hex(val, width); }
 static inline std::string to_hex(long long val, size_t width)           { return do_to_hex(val, width); }
 static inline std::string to_hex(unsigned val, size_t width)            { return do_to_hex(val, width); }
 static inline std::string to_hex(unsigned long val, size_t width)       { return do_to_hex(val, width); }
-static inline std::string to_hex(unsigned long long val, size_t width)	{ return do_to_hex(val, width); }
+static inline std::string to_hex(unsigned long long val, size_t width)  { return do_to_hex(val, width); }
 
-static inline u8 bswap8(u8 x) { return x; }
-static inline u16 bswap16(u16 x) { return __builtin_bswap16(x); }
-static inline u32 bswap32(u32 x) { return __builtin_bswap32(x); }
-static inline u64 bswap64(u64 x) { return __builtin_bswap64(x); }
+static inline u8 bswap8(u8 x) 	    { return x; }
+static inline u16 bswap16(u16 x)    { return __builtin_bswap16(x); }
+static inline u32 bswap32(u32 x)    { return __builtin_bswap32(x); }
+static inline u64 bswap64(u64 x)    { return __builtin_bswap64(x); }
 
 template <typename T> static inline T bswap(T x);
-template <> inline u8 bswap<>(u8 x) { return bswap8(x); }
-template <> inline u16 bswap<>(u16 x) { return bswap16(x); }
-template <> inline u32 bswap<>(u32 x) { return bswap32(x); }
-template <> inline u64 bswap<>(u64 x) { return bswap64(x); }
+template <> inline u8 bswap<>(u8 x)     { return bswap8(x); }
+template <> inline u16 bswap<>(u16 x)   { return bswap16(x); }
+template <> inline u32 bswap<>(u32 x)   { return bswap32(x); }
+template <> inline u64 bswap<>(u64 x)   { return bswap64(x); }
 
 #if (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) \
     || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) \
@@ -90,18 +90,18 @@ template <typename T> static inline T letoh(T x) { return x; }
 #endif
 
 constexpr static inline u64 eight_cc(u8 a=0, u8 b=0, u8 c=0, u8 d=0, u8 e=0, u8 f=0, u8 g=0, u8 h=0) {
-	u64 x = 0;
+    u64 x = 0;
 
-	x |= u64(u8(a));
-	x |= u64(u8(b)) << 8;
-	x |= u64(u8(c)) << 16;
-	x |= u64(u8(d)) << 24;
-	x |= u64(u8(e)) << 32;
-	x |= u64(u8(f)) << 40;
-	x |= u64(u8(g)) << 48;
-	x |= u64(u8(h)) << 56;
+    x |= u64(u8(a));
+    x |= u64(u8(b)) << 8;
+    x |= u64(u8(c)) << 16;
+    x |= u64(u8(d)) << 24;
+    x |= u64(u8(e)) << 32;
+    x |= u64(u8(f)) << 40;
+    x |= u64(u8(g)) << 48;
+    x |= u64(u8(h)) << 56;
 
-	return x;
+    return x;
 }
 
-}	// namespace gblr
+}    // namespace gblr

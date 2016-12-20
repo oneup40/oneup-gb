@@ -165,10 +165,10 @@ class CPU {
     friend Deserializer& operator>>(Deserializer &d, CPU &cpu);
 public:
     CPU(Machine *machine);
-	CPU(const CPU&) = delete;
-	CPU(CPU&&) = delete;
-	CPU& operator=(const CPU&) = delete;
-	CPU& operator=(CPU&&) = delete;
+    CPU(const CPU&) = delete;
+    CPU(CPU&&) = delete;
+    CPU& operator=(const CPU&) = delete;
+    CPU& operator=(CPU&&) = delete;
 
     bool Tick();
     void Interrupt(u8 num);
@@ -177,13 +177,13 @@ public:
 };
 
 static inline Serializer& operator<<(Serializer &s, const CPU &cpu) {
-	s.Start(CPU::code_);
-	return s << cpu.busy_ << cpu.reg_ << cpu.if_ << cpu.ie_ << cpu.ime_ << cpu.halt_;
+    s.Start(CPU::code_);
+    return s << cpu.busy_ << cpu.reg_ << cpu.if_ << cpu.ie_ << cpu.ime_ << cpu.halt_;
 }
 
 static inline Deserializer& operator>>(Deserializer &d, CPU &cpu) {
-	d.Start(CPU::code_);
-	return d >> cpu.busy_ >> cpu.reg_ >> cpu.if_ >> cpu.ie_ >> cpu.ime_ >> cpu.halt_;
+    d.Start(CPU::code_);
+    return d >> cpu.busy_ >> cpu.reg_ >> cpu.if_ >> cpu.ie_ >> cpu.ime_ >> cpu.halt_;
 }
 
 } // namespace gblr

@@ -10,7 +10,7 @@ bool CPU::FetchInstruction(Instruction *ins) {
     ins->bytes[ins->nbytes++] = m_->Read(ins->pc);
 
     if (ins->bytes[0] == 0xcb) {
-    	ins->bytes[ins->nbytes++] = m_->Read(reg_.pc++);
+        ins->bytes[ins->nbytes++] = m_->Read(reg_.pc++);
     }
 
     return true;
@@ -40,21 +40,21 @@ bool CPU::FetchOperand(Instruction *ins, AddrMode am, u16 *ea, u32 *val) {
             return true;
         case AM_IMM8:
         case AM_SPIMM8:
-        	*ins->byte_ptr() = m_->Read(reg_.pc);
+            *ins->byte_ptr() = m_->Read(reg_.pc);
             ++reg_.pc;
             *val = *ins->byte_ptr();
             ++ins->nbytes;
             return true;
         case AM_IMM16:
-        	*ins->byte_ptr() = m_->Read(reg_.pc);
-        	*(ins->byte_ptr() + 1) = m_->Read(reg_.pc + 1);
+            *ins->byte_ptr() = m_->Read(reg_.pc);
+            *(ins->byte_ptr() + 1) = m_->Read(reg_.pc + 1);
             reg_.pc += 2;
             *val = letoh(*reinterpret_cast<u16*>(ins->byte_ptr()));
             ins->nbytes += 2;
             return true;
         case AM_MIMM16:
-        	*ins->byte_ptr() = m_->Read(reg_.pc);
-        	*(ins->byte_ptr() + 1) = m_->Read(reg_.pc + 1);
+            *ins->byte_ptr() = m_->Read(reg_.pc);
+            *(ins->byte_ptr() + 1) = m_->Read(reg_.pc + 1);
             reg_.pc += 2;
             *ea = letoh(*reinterpret_cast<u16*>(ins->byte_ptr()));
             ins->nbytes += 2;
@@ -143,16 +143,16 @@ bool CPU::FetchOperands(Instruction *ins) {
 }
 
 static inline u16 read_u16(Machine *m, u16 addr) {
-	// little endian
-	u16 val = m->Read(addr);
-	val |= m->Read(addr+1) << 8;
-	return val;
+    // little endian
+    u16 val = m->Read(addr);
+    val |= m->Read(addr+1) << 8;
+    return val;
 }
 
 static inline void write_u16(Machine *m, u16 addr, u16 val) {
-	// little endian
-	m->Write(addr, val & 0xff);
-	m->Write(addr+1, (val >> 8) & 0xff);
+    // little endian
+    m->Write(addr, val & 0xff);
+    m->Write(addr+1, (val >> 8) & 0xff);
 }
 
 bool CPU::Execute(Instruction *ins) {
@@ -556,7 +556,7 @@ bool CPU::Step() {
         halt_ = false;
 
         ime_ = false;
-        if (pending & 0x01)    		{ if_ &= ~0x01; reg_.pc = 0x0040; }
+        if (pending & 0x01)            { if_ &= ~0x01; reg_.pc = 0x0040; }
         else if (pending & 0x02)    { if_ &= ~0x02; reg_.pc = 0x0048; }
         else if (pending & 0x04)    { if_ &= ~0x04; reg_.pc = 0x0050; }
         else if (pending & 0x08)    { if_ &= ~0x08; reg_.pc = 0x0058; }
@@ -619,4 +619,4 @@ void CPU::Interrupt(u8 num) {
     if_ |= num;
 }
 
-}	// namespace gblr
+}    // namespace gblr

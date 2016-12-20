@@ -13,7 +13,7 @@
 namespace gblr {
 
 bool Loader::Load(const struct retro_game_info *game, Machine *machine) {
-	const u8 *data = static_cast<const u8*>(game->data);
+    const u8 *data = static_cast<const u8*>(game->data);
 
     if (game->size < 2 * kBankSize) {
         machine->Log("Expected at least two 16KiB banks");
@@ -56,12 +56,12 @@ bool Loader::Load(const struct retro_game_info *game, Machine *machine) {
     MapperNumber mapper = kMapperNone;
 
     switch (cart) {
-    	case 0:	mapper = kMapperNone; break;
-    	case 1: mapper = kMapperMBC1; break;
-    	case 5: mapper = kMapperMBC2; break;
-    	default:
-    		std::cerr << "unsupported cartridge type: $" << to_hex(cart, 2) << std::endl;
-    		return false;
+        case 0: mapper = kMapperNone; break;
+        case 1: mapper = kMapperMBC1; break;
+        case 5: mapper = kMapperMBC2; break;
+        default:
+            std::cerr << "unsupported cartridge type: $" << to_hex(cart, 2) << std::endl;
+            return false;
     }
 
     machine->mapper.Init(mapper, data, game->size);
