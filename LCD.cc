@@ -85,36 +85,34 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 
     u8 i = 0;
     for (; i < n_sprites; ++i) {
-        u8 x = oam[sprites[i] + 1] - 8;
-        if (dot_ - 80u < x || x + 8u <= dot_ - 80u) { continue; }
+        u8 origin_x = oam[sprites[i] + 1] - 8;
+        if (dot_ - 80u < origin_x || origin_x + 8u <= dot_ - 80u) { continue; }
 
         u8 flags = oam[sprites[i] + 3];
         if (wnd && (flags & 0x80)) { continue; }
 
-        break;
+        u8 n = sprites[i];
+
+        u8 y = ly_ - oam[n];
+        u8 x = (dot_ - 80) - oam[n + 1];
+        u8 tilenum = oam[n + 2];
+
+        if (lcdc_ & 0x04) {
+            tilenum &= ~0x01;
+            tilenum |= (y & 0x08) >> 3;
+            y &= ~0x08;
+        }
+
+        if (oam[n + 3] & 0x40) { y = 7 - y; }
+        if (oam[n + 3] & 0x20) { x = 7 - x; }
+
+        auto pattern = FindPattern(tilenum, y, false);
+        u8 dot = ExtractPatternDot(pattern, x);
+        if (!dot) { continue; }
+        return PalettizeDot(dot, (oam[n + 3] & 0x10) ? obp1_ : obp0_);
     }
 
-    if (i >= n_sprites) { return 0x80; }
-
-    u8 n = sprites[i];
-
-    u8 y = ly_ - oam[n];
-    u8 x = (dot_ - 80) - oam[n + 1];
-    u8 tilenum = oam[n + 2];
-
-    if (lcdc_ & 0x04) {
-        tilenum &= ~0x01;
-        tilenum |= (y & 0x08) >> 3;
-        y &= ~0x08;
-    }
-
-    if (oam[n + 3] & 0x40) { y = 7 - y; }
-    if (oam[n + 3] & 0x20) { x = 7 - x; }
-
-    auto pattern = FindPattern(tilenum, y, false);
-    u8 dot = ExtractPatternDot(pattern, x);
-    if (!dot) { return 0x80; }
-    return PalettizeDot(dot, (oam[n + 3] & 0x10) ? obp1_ : obp0_);
+    return 0x80;
 }
 
 u8 LCD::RenderBackgroundDot() {
