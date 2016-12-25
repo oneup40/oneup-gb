@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project(oneup-gb-lr)
 
 if (MSVC)
-	set (CMAKE_CXX_FLAGS "/Wall /WX")
+	set (CMAKE_CXX_FLAGS "/W3 /WX /EHsc")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror -march=native")
 else (MSVC)
