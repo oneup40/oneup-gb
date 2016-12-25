@@ -139,7 +139,7 @@ void LCD::RenderDot() {
 
     u32 color = 0;
     switch (dot) {
-        case 0:    color = 0x00d0f8e0; break;
+        case 0: color = 0x00d0f8e0; break;
         case 1: color = 0x0070c088; break;
         case 2: color = 0x00566834; break;
         case 3: color = 0x00201808; break;
