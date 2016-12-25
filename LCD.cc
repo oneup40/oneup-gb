@@ -50,8 +50,8 @@ u8 LCD::RenderWindowDot() {
     u8 y = ly_ - wy_;
     u8 x = (dot_ - 80) - (wx_ - 7);
 
-    u8 tilenum = FindTilenum(y, x, lcdc_ & 0x40);
-    auto pattern = FindPattern(tilenum, y, !(lcdc_ & 0x10));
+    u8 tilenum = FindTilenum(y, x, (lcdc_ & 0x40) != 0);
+    auto pattern = FindPattern(tilenum, y, (lcdc_ & 0x10) == 0);
     u8 dot = ExtractPatternDot(pattern, x);
     return PalettizeDot(dot, bgp_);
 }
@@ -123,15 +123,15 @@ u8 LCD::RenderBackgroundDot() {
     u8 y = scy_ + ly_;
     u8 x = scx_ + (dot_ - 80);
 
-    u8 tilenum = FindTilenum(y, x, lcdc_ & 0x08);
-    auto pattern = FindPattern(tilenum, y, !(lcdc_ & 0x10));
+    u8 tilenum = FindTilenum(y, x, (lcdc_ & 0x08) != 0);
+    auto pattern = FindPattern(tilenum, y, (lcdc_ & 0x10) == 0);
     u8 dot = ExtractPatternDot(pattern, x);
     return PalettizeDot(dot, bgp_);
 }
 
 void LCD::RenderDot() {
     u8 wnd_dot = RenderWindowDot();
-    u8 spr_dot = RenderSpriteDot(wnd_dot & 3);
+    u8 spr_dot = RenderSpriteDot((wnd_dot & 3) != 0);
     u8 bg_dot  = RenderBackgroundDot();
 
     u8 dot = spr_dot;

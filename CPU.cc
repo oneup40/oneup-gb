@@ -262,7 +262,7 @@ bool CPU::Execute(Instruction *ins) {
             reg_.clrf(FLAG_Z);
             reg_.clrf(FLAG_N);
             reg_.clrf(FLAG_H);
-            reg_.setfb(FLAG_C, reg_.a & 0x80);
+            reg_.setfb(FLAG_C, (reg_.a & 0x80) != 0);
             reg_.a = tmp32;
             break;
         case OP_RLCA:
@@ -286,7 +286,7 @@ bool CPU::Execute(Instruction *ins) {
             reg_.clrf(FLAG_Z);
             reg_.clrf(FLAG_N);
             reg_.clrf(FLAG_H);
-            reg_.setfb(FLAG_C, reg_.a & 0x80);
+            reg_.setfb(FLAG_C, (reg_.a & 0x80) != 0);
             break;
         case OP_RL:
             tmp32 = ins->dst << 1;
@@ -294,7 +294,7 @@ bool CPU::Execute(Instruction *ins) {
             reg_.setfb(FLAG_Z, (tmp32 & 0xff) == 0);
             reg_.clrf(FLAG_N);
             reg_.clrf(FLAG_H);
-            reg_.setfb(FLAG_C, ins->dst & 0x80);
+            reg_.setfb(FLAG_C, (ins->dst & 0x80) != 0);
             ins->dst = tmp32;
             break;
         case OP_RLC:
@@ -303,7 +303,7 @@ bool CPU::Execute(Instruction *ins) {
             reg_.setfb(FLAG_Z, (tmp32 & 0xff) == 0);
             reg_.clrf(FLAG_N);
             reg_.clrf(FLAG_H);
-            reg_.setfb(FLAG_C, ins->dst & 0x80);
+            reg_.setfb(FLAG_C, (ins->dst & 0x80) != 0);
             ins->dst = tmp32;
             break;
         case OP_RR:
@@ -329,7 +329,7 @@ bool CPU::Execute(Instruction *ins) {
             reg_.setfb(FLAG_Z, (tmp32 & 0xff) == 0);
             reg_.clrf(FLAG_N);
             reg_.clrf(FLAG_H);
-            reg_.setfb(FLAG_C, ins->dst & 0x80);
+            reg_.setfb(FLAG_C, (ins->dst & 0x80) != 0);
             ins->dst = tmp32;
             break;
         case OP_SRA:

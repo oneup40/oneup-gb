@@ -5,6 +5,8 @@
 #include "Base.hpp"
 #include "Serializer.hpp"
 
+#include <array>
+
 namespace gblr {
 
 struct Machine;
@@ -16,7 +18,7 @@ static inline Deserializer& operator>>(Deserializer &d, LCD &lcd);
 
 class LCD {
     Machine *m_;
-    friend class Machine;
+    friend struct Machine;
 
     u8 lcdc_, stat_, scy_, scx_, ly_, lyc_, dma_, bgp_, obp0_, obp1_, wy_, wx_;
     unsigned dot_;

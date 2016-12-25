@@ -226,7 +226,7 @@ Deserializer& Deserializer::DeserializeUint(T *val) {
 
     u64 raw = 0;
     DoRead(&raw);
-    *val = letoh(raw);
+    *val = T(letoh(raw));
 
     return *this;
 }
@@ -237,7 +237,7 @@ Deserializer& Deserializer::DeserializeInt(T *val) {
 
     i64 raw = 0;
     DoRead(&raw);
-    *val = letoh(raw);
+    *val = T(letoh(raw));
 
     return *this;
 }
@@ -249,7 +249,7 @@ Deserializer& Deserializer::DeserializeFloat(T *val) {
 
     double raw = 0;
     DoRead(&raw);
-    *val = raw;
+    *val = T(raw);
 
     return *this;
 }

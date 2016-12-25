@@ -20,55 +20,16 @@ enum Optype : u8 {
 };
 
 static constexpr const char* optype_names[] = {
-    [OP_NOP] = "nop",
-    [OP_LD] = "ld",
-    [OP_PUSH] = "push",
-    [OP_POP] = "pop",
-    [OP_INC8] = "inc",
-    [OP_INC16] = "inc",
-    [OP_DEC8] = "dec",
-    [OP_DEC16] = "dec",
-    [OP_ADD8] = "add",
-    [OP_ADD16] = "add",
-    [OP_ADDSP] = "ld",
-    [OP_ADC] = "adc",
-    [OP_SUB] = "sub",
-    [OP_SBC] = "sbc",
-    [OP_CP] = "cp",
-    [OP_DAA] = "daa",
-    [OP_RLA] = "rla",
-    [OP_RLCA] = "rlca",
-    [OP_RRA] = "rra",
-    [OP_RRCA] = "rrca",
-    [OP_RL] = "rl",
-    [OP_RLC] = "rlc",
-    [OP_RR] = "rr",
-    [OP_RRC] = "rrc",
-    [OP_SLA] = "sla",
-    [OP_SRA] = "sra",
-    [OP_SWAP] = "swap",
-    [OP_SRL] = "srl",
-    [OP_BIT] = "bit",
-    [OP_RES] = "res",
-    [OP_SET] = "set",
-    [OP_CPL] = "cpl",
-    [OP_AND] = "and",
-    [OP_XOR] = "xor",
-    [OP_OR] = "or",
-    [OP_SCF] = "scf",
-    [OP_CCF] = "ccf",
-    [OP_DI] = "di",
-    [OP_EI] = "ei",
-    [OP_JR] = "jr",
-    [OP_JP] = "jp",
-    [OP_CALL] = "call",
-    [OP_RET] = "ret",
-    [OP_RETI] = "reti",
-    [OP_STOP] = "stop",
-    [OP_HALT] = "halt",
-    [OP_RST] = "rst",
-    [OP_CB] = "cb",
-    [OP_UD] = "ud"
+    "nop",
+    "ld", "push", "pop",
+    "inc", "inc", "dec", "dec", "add", "add", "ld", "adc", "sub", "sbc", "cp", "daa",
+    "rla", "rlca", "rra", "rrca",
+    "rl", "rlc", "rr", "rrc", "sla", "sra", "swap", "srl", "bit", "res", "set",
+    "cpl", "and", "xor", "or",
+    "scf", "ccf", "di", "ei",
+    "jr", "jp", "call", "ret", "reti", "stop", "halt", "rst",
+    "cb",
+	"ud"
 };
 
 static inline std::string to_string(Optype op) { return optype_names[op]; }
@@ -85,30 +46,14 @@ enum AddrMode : u8 {
 };
 
 static constexpr const char* addrmode_names[] = {
-    [AM_NONE] = "none",
-    [AM_IMM8] = "imm8",
-    [AM_IMM16] = "imm16",
-    [AM_MIMM16] = "(imm16)",
-    [AM_A] = "A",
-    [AM_B] = "B",
-    [AM_C] = "C",
-    [AM_D] = "D",
-    [AM_E] = "E",
-    [AM_H] = "H",
-    [AM_L] = "L",
-    [AM_AF] = "AF",
-    [AM_BC] = "BC",
-    [AM_DE] = "DE",
-    [AM_HL] = "HL",
-    [AM_SP] = "SP",
-    [AM_MBC] = "(BC)",
-    [AM_MDE] = "(DE)",
-    [AM_MHL] = "(HL)",
-    [AM_MHLI] = "(HLI)",
-    [AM_MHLD] = "(HLD)",
-    [AM_HMIMM8] = "($FF00+imm8)",
-    [AM_HMC] = "($FF00+C)",
-    [AM_SPIMM8] = "SP+imm8"
+    "none",
+    "imm8", "imm16",
+    "(imm16)",
+	"A", "B", "C", "D", "E", "H", "L",
+	"AF", "BC", "DE", "HL", "SP",
+	"(BC)", "(DE)", "(HL)", "(HLI)", "(HLD)",
+    "($FF00+imm8)", "($FF00+C)",
+    "SP+imm8"
 };
 
 static inline std::string to_string(AddrMode am) { return addrmode_names[am]; }
@@ -120,11 +65,9 @@ enum ConditionCode : u8 {
 };
 
 static constexpr const char* cc_names[] = {
-    [CC_ALWAYS] = "",
-    [CC_NZ] = "NZ",
-    [CC_Z] = "Z",
-    [CC_NC] = "NC",
-    [CC_C] = "C",
+    "",
+    "NZ", "Z",
+    "NC", "C"
 };
 
 static inline std::string to_string(ConditionCode cc) { return cc_names[cc]; }

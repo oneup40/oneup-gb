@@ -9,8 +9,10 @@
 namespace gblr {
 
 struct MemDescriptor {
-    void *data = nullptr;
-    size_t size = 0;
+    void *data;
+    size_t size;
+
+	MemDescriptor(void *data = nullptr, size_t size = 0) : data(data), size(size) {}
 };
 
 class LRConnector {

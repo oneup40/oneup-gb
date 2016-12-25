@@ -124,7 +124,7 @@ static inline std::string to_string(const Instruction &ins) {
     return s;
 }
 
-class Machine;
+struct Machine;
 
 // Why does C++ make this so difficult?
 // The operator<</>> functions need access to the CPU class members so
@@ -148,7 +148,7 @@ class CPU {
     bool ime_, halt_;
 
     Machine *m_;
-    friend class Machine;
+    friend struct Machine;
 
     bool FetchInstruction(Instruction *ins);
     bool Decode(Instruction *ins);

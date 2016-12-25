@@ -4,6 +4,8 @@
 
 #include <sstream>
 
+#include <cstring>
+
 #include "Serializer.hpp"
 
 namespace gblr {
@@ -111,7 +113,7 @@ bool LRConnector::Serialize(void *data, size_t len) {
     if (!s || str.length() != len) { return false; }
 
     char *buf = static_cast<char*>(data);
-    std::copy(str.begin(), str.end(), buf);
+	memcpy(buf, str.data(), str.length());
 
     return true;
 }

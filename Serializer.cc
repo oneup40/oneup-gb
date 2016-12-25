@@ -37,7 +37,7 @@ Serializer& Serializer::operator<<(double val)  { return SerializeFloat(val); }
 Deserializer& Deserializer::DeserializeBool(bool *val) {
     u64 raw = 0;
     DoRead(&raw);
-    *val = letoh(raw);
+    *val = letoh(raw) != 0;
 
     return *this;
 }

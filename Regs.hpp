@@ -14,8 +14,10 @@ enum Flag : u8 {
     FLAG_C = 0x10
 };
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 struct Regs {    // TODO: endianness
     u16 pc = 0x100, sp = 0xfffe;
     union {
@@ -43,7 +45,7 @@ struct Regs {    // TODO: endianness
         };
     };
 
-    bool getf(Flag flag) const { return f & flag; }
+    bool getf(Flag flag) const { return (f & flag) != 0; }
     void setf(Flag flag) { f |= flag; }
     void clrf(Flag flag) { f &= ~flag; }
     void setfb(Flag flag, bool state) {
@@ -51,7 +53,9 @@ struct Regs {    // TODO: endianness
         else { clrf(flag); }
     }
 };
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 static inline std::string to_string(const Regs &regs) {
     std::string s;

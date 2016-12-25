@@ -40,7 +40,7 @@ u8 Machine::Read(u16 addr, bool force) {
             case 0x05:  return timer.tima_;
             case 0x06:  return timer.tma_;
             case 0x07:  return timer.tac_;
-            case 0x0F:  return cpu.if_;
+            case 0x0F:  return cpu.if_ & 0xFF;
             case 0x40:  return lcd.lcdc_;
             case 0x41:  return lcd.stat_;
             case 0x42:  return lcd.scy_;
@@ -57,7 +57,7 @@ u8 Machine::Read(u16 addr, bool force) {
         }
     }
     else if (addr < 0xFFFF) { return hram[addr & (hram.size() - 1)]; }
-    else                    { return cpu.ie_; }
+    else                    { return cpu.ie_ & 0xFF; }
 }
 
 void Machine::Write(u16 addr, u8 val, bool force) {
