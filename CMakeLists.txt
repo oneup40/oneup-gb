@@ -1,13 +1,16 @@
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
-if (MSVC)
-	set (CMAKE_CXX_FLAGS "/Wall /WX")
-elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror -march=native")
-endif (MSVC)
 
 cmake_minimum_required(VERSION 3.0.0)
 project(oneup-gb-lr)
+
+if (MSVC)
+	set (CMAKE_CXX_FLAGS "/Wall /WX")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror -march=native")
+else (MSVC)
+    message(FATAL_ERROR "Don't know warning flags for compiler ${CMAKE_CXX_COMPILER_ID}")
+endif (MSVC)
 
 execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
