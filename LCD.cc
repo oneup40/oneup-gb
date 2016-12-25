@@ -61,13 +61,15 @@ u8 LCD::RenderSpriteDot(bool wnd) {
     std::array<u8, 40> sprites;
     size_t n_sprites = 0;
 
+    u8 height = (lcdc_ & 0x04) ? 16 : 8,
+       width = 8;
+
     for (u8 i = 0; i < 40; ++i) {
         u8 addr = i * 4;
 
         int y = oam[addr] - 16;
-        u8 y_range = (lcdc_ & 0x04) ? 16 : 8;
 
-        if (y <= ly_ && ly_ < y + y_range) {
+        if (y <= ly_ && ly_ < y + height) {
             sprites[n_sprites++] = addr;
         }
     }
@@ -85,7 +87,7 @@ u8 LCD::RenderSpriteDot(bool wnd) {
     u8 i = 0;
     for (; i < n_sprites; ++i) {
         int origin_x = oam[sprites[i] + 1] - 8;
-        if (int(dot_) - 80 < origin_x || origin_x + 8 <= int(dot_) - 80) { continue; }
+        if (int(dot_) - 80 < origin_x || origin_x + width <= int(dot_) - 80) { continue; }
 
         u8 flags = oam[sprites[i] + 3];
         if (wnd && (flags & 0x80)) { continue; }
@@ -96,14 +98,14 @@ u8 LCD::RenderSpriteDot(bool wnd) {
         u8 x = (dot_ - 80) - oam[n + 1];
         u8 tilenum = oam[n + 2];
 
+        if (oam[n + 3] & 0x40) { y ^= (height - 1); }
+        if (oam[n + 3] & 0x20) { x ^= (width - 1); }
+
         if (lcdc_ & 0x04) {
             tilenum &= ~0x01;
             tilenum |= (y & 0x08) >> 3;
             y &= ~0x08;
         }
-
-        if (oam[n + 3] & 0x40) { y = 7 - y; }
-        if (oam[n + 3] & 0x20) { x = 7 - x; }
 
         auto pattern = FindPattern(tilenum, y, false);
         u8 dot = ExtractPatternDot(pattern, x);
