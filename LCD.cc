@@ -44,8 +44,7 @@ u8 LCD::PalettizeDot(u8 dot, u8 palette) {
 u8 LCD::RenderWindowDot() {
     if ((lcdc_ & 0x21) != 0x21) { return 0x80; }
     if (wy_ > ly_) { return 0x80; }
-    if (wx_ < 7) { return 0x80; }
-    if (unsigned(wx_) - 7 > dot_ - 80) { return 0x80; }
+    if (wx_ > 7 && unsigned(wx_) - 7 > dot_ - 80) { return 0x80; }
 
     u8 y = ly_ - wy_;
     u8 x = (dot_ - 80) - (wx_ - 7);
