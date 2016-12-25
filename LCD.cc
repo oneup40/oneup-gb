@@ -64,7 +64,7 @@ u8 LCD::RenderSpriteDot(bool wnd) {
     for (u8 i = 0; i < 40; ++i) {
         u8 addr = i * 4;
 
-        u8 y = oam[addr] - 16;
+        int y = oam[addr] - 16;
         u8 y_range = (lcdc_ & 0x04) ? 16 : 8;
 
         if (y <= ly_ && ly_ < y + y_range) {
@@ -84,8 +84,8 @@ u8 LCD::RenderSpriteDot(bool wnd) {
 
     u8 i = 0;
     for (; i < n_sprites; ++i) {
-        u8 origin_x = oam[sprites[i] + 1] - 8;
-        if (dot_ - 80u < origin_x || origin_x + 8u <= dot_ - 80u) { continue; }
+        int origin_x = oam[sprites[i] + 1] - 8;
+        if (int(dot_) - 80 < origin_x || origin_x + 8 <= int(dot_) - 80) { continue; }
 
         u8 flags = oam[sprites[i] + 3];
         if (wnd && (flags & 0x80)) { continue; }
