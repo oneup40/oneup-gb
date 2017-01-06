@@ -25,6 +25,8 @@ class LRConnector {
     retro_input_poll_t          input_poll_;
     retro_input_state_t         input_state_;
 
+    std::vector<int16_t> queued_samples_;
+
     static constexpr const char *name_ = "oneup-dmg",
                                 *version_ = GIT_BRANCH,
                                 *extensions_ = "gb";
@@ -33,7 +35,7 @@ class LRConnector {
                                     height_ = 144;
 
     static constexpr const double fps_ = 60.0,
-                                  sample_rate_ = 0.0;
+                                  sample_rate_ = 262144.0;
 public:
     LRConnector();
     LRConnector(const LRConnector&) = delete;
@@ -45,7 +47,7 @@ public:
     unsigned ApiVersion();    // probably best to implement this outside of the header
 
     void Init() {}
-    void DeInit() {}
+	void DeInit() { perf.perf_log(); }
 
     void Run();
 
@@ -80,6 +82,10 @@ public:
     bool ShowMessage(const char *msg, unsigned frames);
 
     Button PollInput();
+    void QueueSample(int16_t left, int16_t right);
+
+	// XXX
+	retro_perf_callback perf;
 };
 
 }    // namespace gblr

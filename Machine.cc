@@ -2,6 +2,7 @@
 
 #include "Machine.hpp"
 
+#include <chrono>
 #include <iostream>
 
 #include <cassert>
@@ -11,18 +12,51 @@
 namespace gblr {
 
 Machine::Machine(LRConnector *frontend)
-    : frontend(frontend),
-      cpu(this), lcd(this), mapper(this), joypad(this), timer(this),
-      frame_ready(false)
+	: frontend(frontend),
+	cpu(this), lcd(this), mapper(this), joypad(this), timer(this), audio(this),
+	t(0),
+	frame_ready(false)
 {
-    wram.fill(0);
+	wram.fill(0);
+	hram.fill(0);
+}
+
+static std::chrono::nanoseconds s_cpu_time, s_lcd_time, s_timer_time, s_audio_time;
+
+Machine::~Machine() {
+	std::chrono::nanoseconds elapsed(long(t / .004194304));
+
+	std::cerr << "Destroying machine" << std::endl
+		<< t << " ticks" << std::endl
+		<< elapsed.count() / 1000000000. << " s" << std::endl
+		<< "CPU emulation usage:" << double(s_cpu_time.count()) / elapsed.count() * 100 << " (" << s_cpu_time.count() / 1000000000. << " s)" << std::endl
+		<< "LCD emulation usage:" << double(s_lcd_time.count()) / elapsed.count() * 100 << " (" << s_lcd_time.count() / 1000000000. << " s)" << std::endl
+		<< "Timer emulation usage:" << double(s_timer_time.count()) / elapsed.count() * 100 << " (" << s_timer_time.count() / 1000000000. << " s)" << std::endl
+		<< "Audio emulation usage:" << double(s_audio_time.count()) / elapsed.count() * 100 << " (" << s_audio_time.count() / 1000000000. << " s)" << std::endl;
 }
 
 bool Machine::Tick() {
+	using namespace std::chrono;
+
     bool good = true;
+
+	auto t0 = system_clock::now();
     good = cpu.Tick() && good;
+	s_cpu_time += system_clock::now() - t0;
+
+	t0 = system_clock::now();
     good = lcd.Tick() && good;
+	s_lcd_time += system_clock::now() - t0;
+
+	t0 = system_clock::now();
     good = timer.Tick() && good;
+	s_timer_time += system_clock::now() - t0;
+
+	t0 = system_clock::now();
+    good = audio.Tick() && good;
+	s_audio_time += system_clock::now() - t0;
+
+    ++t;
     return good;
 }
 
@@ -41,6 +75,14 @@ u8 Machine::Read(u16 addr, bool force) {
             case 0x06:  return timer.tma_;
             case 0x07:  return timer.tac_;
             case 0x0F:  return cpu.if_ & 0xFF;
+            case 0x10:  return audio.ch1_.r0_;
+            case 0x11:  return audio.ch1_.r1_;
+            case 0x12:  return audio.ch1_.r2_;
+            case 0x13:  return audio.ch1_.r3_;
+            case 0x14:  return audio.ch1_.r4_;
+            case 0x24:  return audio.nr50_;
+            case 0x25:  return audio.nr51_;
+            case 0x26:  return audio.nr52_;
             case 0x40:  return lcd.lcdc_;
             case 0x41:  return lcd.stat_;
             case 0x42:  return lcd.scy_;
@@ -68,26 +110,29 @@ void Machine::Write(u16 addr, u8 val, bool force) {
     else if (addr < 0xFEA0) { lcd.WriteOAM(addr, val, force); }
     else if (addr < 0xFF00) { }
     else if (addr < 0xFF80) {
-        switch (addr & 0xFF) {
-            case 0x00:  joypad.WriteJoyp(val, force); break;
-            case 0x04:  timer.WriteDiv(force); break;
-            case 0x05:  timer.tima_ = val; break;
-            case 0x06:  timer.tma_ = val; break;
-            case 0x07:  timer.tac_ = val; break;
-            case 0x0F:  cpu.if_ = val & 0x1F; break;
-            case 0x40:  lcd.lcdc_ = val; break;
-            case 0x41:  lcd.stat_ = val; break;
-            case 0x42:  lcd.scy_ = val; break;
-            case 0x43:  lcd.scx_ = val; break;
-            case 0x44:  lcd.ly_ = 0; break;
-            case 0x45:  lcd.lyc_ = val; break;
-            case 0x46:  lcd.WriteDMA(val, force); break;
-            case 0x47:  lcd.bgp_ = val; break;
-            case 0x48:  lcd.obp0_ = val; break;
-            case 0x49:  lcd.obp1_ = val; break;
-            case 0x4A:  lcd.wy_ = val; break;
-            case 0x4B:  lcd.wx_ = val; break;
-            default:    break;
+        if (0xFF10 <= addr && addr < 0xFF40) { audio.Write(addr, val, force); }
+        else {
+            switch (addr & 0xFF) {
+                case 0x00:  joypad.WriteJoyp(val, force); break;
+                case 0x04:  timer.WriteDiv(force); break;
+                case 0x05:  timer.tima_ = val; break;
+                case 0x06:  timer.tma_ = val; break;
+                case 0x07:  timer.tac_ = val; break;
+                case 0x0F:  cpu.if_ = val & 0x1F; break;
+                case 0x40:  lcd.lcdc_ = val; break;
+                case 0x41:  lcd.stat_ = val; break;
+                case 0x42:  lcd.scy_ = val; break;
+                case 0x43:  lcd.scx_ = val; break;
+                case 0x44:  lcd.ly_ = 0; break;
+                case 0x45:  lcd.lyc_ = val; break;
+                case 0x46:  lcd.WriteDMA(val, force); break;
+                case 0x47:  lcd.bgp_ = val; break;
+                case 0x48:  lcd.obp0_ = val; break;
+                case 0x49:  lcd.obp1_ = val; break;
+                case 0x4A:  lcd.wy_ = val; break;
+                case 0x4B:  lcd.wx_ = val; break;
+                default:    break;
+            }
         }
     }
     else if (addr < 0xFFFF) { hram[addr & (hram.size() - 1)] = val; }
@@ -112,7 +157,7 @@ Serializer& operator<<(Serializer &s, const Machine &m) {
     std::basic_string<u8> wram(m.wram.begin(), m.wram.end()),
                           hram(m.hram.begin(), m.hram.end());
     s.Start(m.code_);
-    return s << m.cpu << m.lcd << m.mapper << m.joypad << m.timer << wram << hram << m.frame_ready;
+    return s << m.cpu << m.lcd << m.mapper << m.joypad << m.timer << m.audio << wram << hram << m.frame_ready;
 }
 
 Deserializer& operator>>(Deserializer &d, Machine &m) {
@@ -134,6 +179,9 @@ Deserializer& operator>>(Deserializer &d, Machine &m) {
 
     d >> m.timer;
     if (!d) { m.frontend->ShowMessage("Error deserializing timer", 600); return d; }
+
+    d >> m.audio;
+    if (!d) { m.frontend->ShowMessage("Error deserializing audio", 600); return d; }
 
     d >> wram;
     if (!d) { m.frontend->ShowMessage("Error deserializing WRAM", 600); return d; }

@@ -6,6 +6,7 @@
 
 #include "libretro.h"
 
+#include "Audio.hpp"
 #include "CPU.hpp"
 #include "Joypad.hpp"
 #include "LCD.hpp"
@@ -35,12 +36,15 @@ struct Machine {
     Mapper mapper;
     Joypad joypad;
     Timer timer;
+    Audio audio;
     std::array<u8, 0x2000> wram;
     std::array<u8, 0x80> hram;
 
+    u64 t;
+
     bool frame_ready;
 
-    static constexpr const u8 version_ = 0x00;
+    static constexpr const u8 version_ = 0x01;
     static constexpr const u64 code_ = eight_cc(version_,'m','a','c','h','i','n','e');
 
     Machine(LRConnector *frontend);
@@ -48,6 +52,7 @@ struct Machine {
     Machine(Machine&&) = delete;
     Machine& operator=(const Machine&) = delete;
     Machine& operator=(Machine&&) = delete;
+	~Machine();
 
     bool Tick();
     u8 Read(u16 addr, bool force = false);
