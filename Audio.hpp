@@ -78,7 +78,7 @@ class Audio {
     friend class Channel1;
 
     u8 nr50_, nr51_, nr52_;
-    unsigned div_, timer_div_, seq_step_;
+    unsigned timer_div_, seq_step_;
 
     static constexpr const u8 version_ = 0x00;
     static constexpr const u64 code_ = eight_cc(version_, 'a','u','d','i','o');

@@ -162,15 +162,10 @@ Audio::Audio(Machine *m)
     : m_(m),
       ch1_(*this),
       nr50_(0x00), nr51_(0x00), nr52_(0x7F),
-      div_(0), timer_div_(0), seq_step_(7)
+      timer_div_(0), seq_step_(7)
 {}
 
 bool Audio::Tick() {
-    ++div_;
-    // if (div_ != 4) { return true; }
-	if (div_ != 16) { return true; }
-    div_ = 0;
-
     if (!(nr52_ & 0x80)) { 
 		m_->frontend->QueueSample(0, 0);
 		return true;

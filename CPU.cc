@@ -552,11 +552,11 @@ bool CPU::Step() {
     if (ime_ && pending) {
         reg_.sp -= 2;
         write_u16(m_, reg_.sp, reg_.pc);
-        busy_ += 5;
+        busy_ += 4;
         halt_ = false;
 
         ime_ = false;
-        if (pending & 0x01)            { if_ &= ~0x01; reg_.pc = 0x0040; }
+        if (pending & 0x01)         { if_ &= ~0x01; reg_.pc = 0x0040; }
         else if (pending & 0x02)    { if_ &= ~0x02; reg_.pc = 0x0048; }
         else if (pending & 0x04)    { if_ &= ~0x04; reg_.pc = 0x0050; }
         else if (pending & 0x08)    { if_ &= ~0x08; reg_.pc = 0x0058; }
@@ -609,7 +609,7 @@ bool CPU::Tick() {
     if (!busy_) { good = Step(); }
 
     assert(!good || busy_);
-    --busy_;
+    busy_ -= 4;
 
     return good;
 }

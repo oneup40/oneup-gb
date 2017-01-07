@@ -13,17 +13,17 @@ Timer::Timer(Machine *m)
 {}
 
 u8 Timer::ReadDiv(bool) {
-    return fulldiv_ >> 8;
+    return fulldiv_ >> 5;
 }
 
 void Timer::WriteDiv(u8 val, bool force) {
-    if (force)     { fulldiv_ = val << 8; }
-    else         { fulldiv_ = 0; }
+    if (force)  { fulldiv_ = val << 5; }
+    else        { fulldiv_ = 0; }
 }
 
 bool Timer::Tick() {
-    u32 prev = fulldiv_,
-        next = fulldiv_ + 1;
+    auto prev = fulldiv_,
+         next = fulldiv_ + 1;
 
     ++fulldiv_;
 
@@ -31,10 +31,10 @@ bool Timer::Tick() {
         u32 bit = 0;
 
         switch (tac_ & 0x03) {
-            case 0: bit = 0x200; break;
-            case 1: bit = 0x008; break;
-            case 2: bit = 0x020; break;
-            case 3: bit = 0x080; break;
+            case 0: bit = 0x40; break;
+            case 1: bit = 0x01; break;
+            case 2: bit = 0x04; break;
+            case 3: bit = 0x10; break;
         }
 
         if ((next & bit) && !(prev & bit)) {    // falling edge

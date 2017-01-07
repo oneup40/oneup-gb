@@ -40,21 +40,25 @@ bool Machine::Tick() {
 
     bool good = true;
 
-	auto t0 = system_clock::now();
-    good = cpu.Tick() && good;
-	s_cpu_time += system_clock::now() - t0;
-
-	t0 = system_clock::now();
+    auto t0 = system_clock::now();
     good = lcd.Tick() && good;
-	s_lcd_time += system_clock::now() - t0;
+    s_lcd_time += system_clock::now() - t0;
 
-	t0 = system_clock::now();
-    good = timer.Tick() && good;
-	s_timer_time += system_clock::now() - t0;
+    if ((t & 0x03) == 0x00) {
+        t0 = system_clock::now();
+        good = cpu.Tick() && good;
+        s_cpu_time += system_clock::now() - t0;
 
-	t0 = system_clock::now();
-    good = audio.Tick() && good;
-	s_audio_time += system_clock::now() - t0;
+        t0 = system_clock::now();
+        good = timer.Tick() && good;
+        s_timer_time += system_clock::now() - t0;
+    }
+
+    if ((t & 0x0F) == 0x00) {
+        t0 = system_clock::now();
+        good = audio.Tick() && good;
+        s_audio_time += system_clock::now() - t0;
+    }
 
     ++t;
     return good;
