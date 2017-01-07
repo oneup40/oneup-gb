@@ -292,7 +292,8 @@ bool Audio::Tick() {
 }
 
 void Audio::Write(u16 addr, u8 val, bool force) {
-    if (0xFF10 <= addr && addr <= 0xFF14)   { ch1_.Write(addr - 0xFF10, val, force); }
+    if (0xFF10 <= addr && addr <= 0xFF14)       { ch1_.Write(addr - 0xFF10, val, force); }
+    else if (0xFF15 <= addr && addr <= 0xFF19)  { ch2_.Write(addr - 0xFF15, val, force); }
     else {
         //std::cerr << "Write $" << to_hex(addr, 4) << " $" << to_hex(val, 2) << std::endl;
         u8 dummy = 0;
