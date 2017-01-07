@@ -10,10 +10,14 @@
 namespace gblr {
 
 class Channel1;
+class Channel2;
 class Audio;
 
 static inline Serializer& operator<<(Serializer &s, const Channel1 &ch);
 static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch);
+
+static inline Serializer& operator<<(Serializer &s, const Channel2 &ch);
+static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch);
 
 static inline Serializer& operator<<(Serializer &s, const Audio &audio);
 static inline Deserializer& operator>>(Deserializer &d, Audio &audio);
@@ -69,6 +73,53 @@ static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch) {
              >> ch.vout_;
 }
 
+class Channel2 {
+    friend struct Machine;
+
+    Audio &audio;
+    friend class Audio;
+
+    u8 r0_, r1_, r2_, r3_, r4_;
+    u8 r2_shadow_;
+    unsigned ctr_, step_;
+
+    u8 vout_;
+
+    static constexpr const u8 version_ = 0x00;
+    static constexpr const u64 code_ = eight_cc(version_, 'c','h','a','n','2');
+    friend Serializer& operator<<(Serializer &s, const Channel2 &ch);
+    friend Deserializer& operator>>(Deserializer &d, Channel2 &ch);
+
+    void TickVolume();
+    void TickLength();
+    void TickOutput();
+public:
+    Channel2(Audio &audio);
+    Channel2(const Channel2&) = delete;
+    Channel2(Channel2&&) = delete;
+    Channel2& operator=(const Channel2&) = delete;
+    Channel2& operator=(Channel2&&) = delete;
+
+    void Write(unsigned n, u8 val, bool force);
+};
+
+static inline Serializer& operator<<(Serializer &s, const Channel2 &ch) {
+    s.Start(Channel2::code_);
+
+    return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
+             << ch.r2_shadow_
+             << ch.ctr_ << ch.step_
+             << ch.vout_;
+}
+
+static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch) {
+    d.Start(Channel2::code_);
+
+    return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
+             >> ch.r2_shadow_
+             >> ch.ctr_ >> ch.step_
+             >> ch.vout_;
+}
 
 class Audio {
     Machine *m_;
@@ -76,6 +127,9 @@ class Audio {
 
     Channel1 ch1_;
     friend class Channel1;
+
+    Channel2 ch2_;
+    friend class Channel2;
 
     u8 nr50_, nr51_, nr52_;
     unsigned timer_div_, seq_step_;
