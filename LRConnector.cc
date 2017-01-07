@@ -86,32 +86,19 @@ LRConnector::LRConnector()
 
 unsigned LRConnector::ApiVersion() { return RETRO_API_VERSION; }
 
-
-//static uint64_t s_samples = 0;
-
 void LRConnector::Run() {
     input_poll_();
 
     m_.ResetFrame();
-    //queued_samples_.clear();
+    queued_samples_.clear();
 
-	//auto n_ticks = 0ul;
     while (!m_.FrameReady()) {
         m_.Tick();
-		//++n_ticks;
     }
 
-//	auto n_samples = queued_samples_.size() / 2;
-//
-//	std::cerr << n_samples << " samples : " << n_ticks << " ticks (" << n_samples / (n_ticks / 4194304.) << " Hz)" << std::endl;
-//
-//	s_samples += n_samples;
-//	auto t = m_.t / 4194304.;
-//	std::cerr << s_samples << " samples at t = " << t << " (" << s_samples / t << " Hz)" << std::endl;
-//
-//    s_recorder.Record(queued_samples_.data(), queued_samples_.size() / 2);
+    //s_recorder.Record(queued_samples_.data(), queued_samples_.size() / 2);
     video_refresh_(m_.GetFrame(), 160, 144, 160*4);
-    //audio_sample_batch_(queued_samples_.data(), queued_samples_.size() / 2);
+    audio_sample_batch_(queued_samples_.data(), queued_samples_.size() / 2);
 }
 
 bool LRConnector::LoadGame(const struct retro_game_info *game) {
@@ -236,9 +223,14 @@ Button LRConnector::PollInput() {
 }
 
 void LRConnector::QueueSample(int16_t left, int16_t right) {
-    //queued_samples_.emplace_back(left);
-    //queued_samples_.emplace_back(right);
-    audio_sample_(left, right);
+    queued_samples_.emplace_back(left);
+    queued_samples_.emplace_back(right);
+
+    if (queued_samples_.size() >= 2000) {
+        // s_recorder.Record(queued_samples_.data(), queued_samples_.size() / 2);
+        audio_sample_batch_(queued_samples_.data(), queued_samples_.size() / 2);
+        queued_samples_.clear();
+    }
 }
 
 }    // namespace gblr
