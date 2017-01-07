@@ -200,54 +200,42 @@ void Audio::TickVolume() {
 }
 
 void Audio::GenerateSample() {
-    std::vector<u8> so1v, so2v;
+	double so1 = 0.0, so2 = 0.0;
+	unsigned so1_n = 0, so2_n = 0;
+	// (0, 0)
 
     if (nr52_ & 0x01) {
-        ch1_.TickOutput();
+		ch1_.TickOutput();
 
-        if (nr51_ & 0x10) { so1v.emplace_back(ch1_.vout_); }
-        if (nr51_ & 0x01) { so2v.emplace_back(ch1_.vout_); }
+		if (nr51_ & 0x10) { so1 += ch1_.vout_ / 15.0; ++so1_n; }
+		if (nr51_ & 0x01) { so2 += ch1_.vout_ / 15.0; ++so2_n; }
     }
 
     if (nr52_ & 0x02) {
-        ch1_.TickOutput();
+		ch2_.TickOutput();
 
-        if (nr51_ & 0x10) { so1v.emplace_back(ch2_.vout_); }
-        if (nr51_ & 0x01) { so2v.emplace_back(ch2_.vout_); }
+		if (nr51_ & 0x20) { so1 += ch2_.vout_ / 15.0; ++so1_n; }
+		if (nr51_ & 0x02) { so2 += ch2_.vout_ / 15.0; ++so2_n; }
     }
+	// (0, sox_n)
 
-    u8 so1 = 0x00, so2 = 0x00;
-    for (auto s : so1v) { so1 += s; }
-    for (auto s : so2v) { so2 += s; }
+	if (so1_n) { so1 /= so1_n; }
+	if (so2_n) { so2 /= so2_n; }
+	// (0, 1)
 
-    if (so1v.size() == 2) { so1 >>= 1; }
-    if (so2v.size() == 2) { so2 >>= 1; }
+    so1 *= (nr50_ & 0x07) / 7.0;
+    so2 *= ((nr50_ & 0x70) >> 4) / 7.0;
+	// (0, 1)
 
-    so1 |= (nr50_ & 0x07) << 4;
-    so2 |= (nr50_ & 0x70);
+	so1 = (so1 - 0.5) * 2;
+	so2 = (so2 - 0.5) * 2;
+	// (-1, 1)
 
-    //std::cerr << "\t a) " << to_hex(so1, 4) << " : " << to_hex(so2, 4) << std::endl;
+	i16 left = i16(so1 * std::numeric_limits<i16>::max()),
+		right = i16(so2 * std::numeric_limits<i16>::max());
+	// (-0x7FFF, 0x7FFF)
 
-    // range: 0x00 - 0x7F
-    i16 left  = (so1 << 8) | (so1 << 1),
-        right = (so2 << 8) | (so2 << 1);
-
-    //std::cerr << "\t b) " << to_hex(left, 4) << " : " << to_hex(right, 4) << std::endl;
-
-    // range: 0x0000 - 0x7FFE
-    left  -= 0x4000;
-    right -= 0x4000;
-
-    //std::cerr << "\t c) " << to_hex(left, 4) << " : " << to_hex(right, 4) << std::endl;
-
-    // range: -0x4000 - 0x3FFE
-    left  *= 2;
-    right *= 2;
-
-    //std::cerr << "\t d) " << to_hex(left, 4) << " : " << to_hex(right, 4) << std::endl;
-
-    // range: -0x8000 - 0x7FFC
-    m_->frontend->QueueSample(left, right);
+	m_->frontend->QueueSample(left, right);
 }
 
 Audio::Audio(Machine *m)
