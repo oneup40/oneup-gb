@@ -31,8 +31,9 @@ class Channel1 {
     friend class Audio;
 
     u8 r0_, r1_, r2_, r3_, r4_;
-    u8 r2_shadow_;
+	u8 vol_, vol_div_;
     unsigned ctr_, step_;
+	bool high_;
 
     u8 vout_;
 
@@ -59,7 +60,6 @@ static inline Serializer& operator<<(Serializer &s, const Channel1 &ch) {
     s.Start(Channel1::code_);
 
     return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
-             << ch.r2_shadow_
              << ch.ctr_ << ch.step_
              << ch.vout_;
 }
@@ -68,7 +68,6 @@ static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch) {
     d.Start(Channel1::code_);
 
     return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
-             >> ch.r2_shadow_
              >> ch.ctr_ >> ch.step_
              >> ch.vout_;
 }
@@ -80,10 +79,11 @@ class Channel2 {
     friend class Audio;
 
     u8 r0_, r1_, r2_, r3_, r4_;
-    u8 r2_shadow_;
+	u8 vol_, vol_div_;
     unsigned ctr_, step_;
+	bool high_;
 
-    u8 vout_;
+	u8 vout_;
 
     static constexpr const u8 version_ = 0x00;
     static constexpr const u64 code_ = eight_cc(version_, 'c','h','a','n','2');
@@ -107,7 +107,6 @@ static inline Serializer& operator<<(Serializer &s, const Channel2 &ch) {
     s.Start(Channel2::code_);
 
     return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
-             << ch.r2_shadow_
              << ch.ctr_ << ch.step_
              << ch.vout_;
 }
@@ -116,7 +115,6 @@ static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch) {
     d.Start(Channel2::code_);
 
     return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
-             >> ch.r2_shadow_
              >> ch.ctr_ >> ch.step_
              >> ch.vout_;
 }
