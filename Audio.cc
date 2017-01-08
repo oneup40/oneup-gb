@@ -10,6 +10,7 @@ namespace gblr {
 Channel1::Channel1(Audio &audio)
     : audio(audio),
       r0_(0x00), r1_(0x00), r2_(0x00), r3_(0x00), r4_(0x00),
+	  sweep_div_(0),
       vol_(0), vol_div_(0),
       ctr_(0), step_(0),
 	  high_(false),
@@ -17,7 +18,27 @@ Channel1::Channel1(Audio &audio)
 {}
 
 void Channel1::TickSweep() {
-    // TODO
+	if (!(r0_ & 0x70)) { return; }
+
+	--sweep_div_;
+	if (sweep_div_ == 0) {
+		sweep_div_ = (r0_ & 0x70) >> 4;
+
+		u16 new_ctr = ((r4_ & 0x07) << 8) | r3_;
+		u16 incr = new_ctr >> (r0_ & 0x07);
+
+		if (r0_ & 0x08) { new_ctr -= incr; }
+		else            { new_ctr += incr; }
+
+		if (new_ctr < 2048) {
+			r3_ = new_ctr & 0xFF;
+			r4_ &= ~0x07;
+			r4_ |= (new_ctr >> 8) & 0x07;
+		} else {
+			// disable channel
+			audio.nr52_ &= ~0x01;
+		}
+	}
 }
 
 void Channel1::TickVolume() {
@@ -38,7 +59,7 @@ void Channel1::TickLength() {
 
 		if (!(r1_ & 0x3F)) {
 			// disable channel
-			std::cerr << "expired, disabling ch1" << std::endl;
+			// std::cerr << "expired, disabling ch1" << std::endl;
 			audio.nr52_ &= ~0x01;
 		}
 	}
@@ -78,7 +99,8 @@ void Channel1::Write(unsigned n, u8 val, bool) {
     //std::cerr << "t = " << audio.m_->t / 4194304. << std::endl;
     switch (n) {
         case 0:
-            /*std::cerr << "NR10 write " << to_hex(val, 2) << " ( "
+			if (val != r0_)
+			std::cerr << "NR10 write " << to_hex(val, 2) << std::endl; /* " ( "
                       << "sweep freq " << 128. / ((val >> 4) & 0x07) << " Hz : "
                       << (val & 0x08 ? "-" : "+") << " : "
                       << "shift " << unsigned(val & 0x07) << " )" << std::endl;*/
@@ -106,10 +128,11 @@ void Channel1::Write(unsigned n, u8 val, bool) {
                       << "freq " << 131072 / (2048. - ctr_) << " Hz )" << std::endl;*/
             break;
         case 4:
+			if (val & 0x80) { audio.nr52_ |= 0x01; }
             r4_ = val;
             ctr_ = ((r4_ & 0x07) << 8) | r3_;
-			if (r4_ & 0x40) { std::cerr << "enable ch1 length" << std::endl; }
-			else { std::cerr << " disable ch1 length" << std::endl; }
+			// if (r4_ & 0x40) { std::cerr << "enable ch1 length" << std::endl; }
+			// else { std::cerr << " disable ch1 length" << std::endl; }
             /*std::cerr << "NR14 write " << to_hex(val, 2) << " ( "
                       << (val & 0x80 ? "T" : ".")
                       << (val & 0x40 ? "L" : ".")
@@ -158,8 +181,7 @@ void Channel2::TickLength() {
 void Channel2::TickOutput() {
     ++ctr_;
     if (ctr_ != 2048) { return; }
-    //std::cerr << "ch1: output tick" << std::endl;
-    //std::cerr << "\tctr_ " << to_hex(ctr_, 3) << std::endl;
+
     ctr_ = ((r4_ & 0x07) << 8) | r3_;
     //std::cerr << "\treload ctr_ " << to_hex(ctr_, 3) << std::endl;
 
@@ -180,9 +202,6 @@ void Channel2::TickOutput() {
 	high_ = !high_;
 	if (high_) { vout_ = vol_; }
 	else { vout_ = 0; }
-
-    //vout_ = (step_ & mask) ? 0x0F : 0x00;
-    //std::cerr << "\tvout_ now " << to_hex(vout_, 2) << " t = " << audio.m_->t / 4194304. << std::endl;
 }
 
 void Channel2::Write(unsigned n, u8 val, bool) {
@@ -203,21 +222,19 @@ void Channel2::Write(unsigned n, u8 val, bool) {
             ctr_ = ((r4_ & 0x07) << 8) | r3_;
             break;
         case 4:
+			if (val & 0x80) { audio.nr52_ |= 0x02; }
             r4_ = val;
             ctr_ = ((r4_ & 0x07) << 8) | r3_;
-			if (r4_ & 0x40) { std::cerr << "enable ch2 length" << std::endl; }
-			else { std::cerr << " disable ch1 length" << std::endl; }
             break;
         default:
             assert(0);
             break;
     }
-    //std::cerr << std::endl;
 }
 
 void Audio::TickLength() {
-    //if (nr52_ & 0x01) { ch1_.TickLength(); }
-    //if (nr52_ & 0x02) { ch2_.TickLength(); }
+    if (nr52_ & 0x01) { ch1_.TickLength(); }
+    if (nr52_ & 0x02) { ch2_.TickLength(); }
 }
 
 void Audio::TickSweep() {

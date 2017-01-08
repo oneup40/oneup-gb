@@ -31,6 +31,7 @@ class Channel1 {
     friend class Audio;
 
     u8 r0_, r1_, r2_, r3_, r4_;
+	u8 sweep_div_;
 	u8 vol_, vol_div_;
     unsigned ctr_, step_;
 	bool high_;
