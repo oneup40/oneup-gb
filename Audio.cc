@@ -12,8 +12,7 @@ Channel1::Channel1(Audio &audio)
       r0_(0x00), r1_(0x00), r2_(0x00), r3_(0x00), r4_(0x00),
 	  sweep_div_(0),
       vol_(0), vol_div_(0),
-      ctr_(0), step_(0),
-	  high_(false),
+      ctr_(0), step_(0x80),
       vout_(0x00)
 {}
 
@@ -59,7 +58,6 @@ void Channel1::TickLength() {
 
 		if (!(r1_ & 0x3F)) {
 			// disable channel
-			// std::cerr << "expired, disabling ch1" << std::endl;
 			audio.nr52_ &= ~0x01;
 		}
 	}
@@ -68,14 +66,11 @@ void Channel1::TickLength() {
 void Channel1::TickOutput() {
     ++ctr_;
     if (ctr_ != 2048) { return; }
-    //std::cerr << "ch1: output tick" << std::endl;
-    //std::cerr << "\tctr_ " << to_hex(ctr_, 3) << std::endl;
-    ctr_ = ((r4_ & 0x07) << 8) | r3_;
-    //std::cerr << "\treload ctr_ " << to_hex(ctr_, 3) << std::endl;
 
-    /*step_ >>= 1;
+    ctr_ = ((r4_ & 0x07) << 8) | r3_;
+
+    step_ >>= 1;
     if (!step_) { step_ = 0x80; }
-    //std::cerr << "\tstep_ " << to_hex(step_, 2) << std::endl;
 
     u8 mask = 0;
     switch (r1_ & 0xC0) {
@@ -84,39 +79,19 @@ void Channel1::TickOutput() {
         case 0x80:  mask = 0x87; break;
         case 0xC0:  mask = 0x7E; break;
     }
-    //std::cerr << "\tduty " << unsigned((mask & 0xC0) >> 6) << ", mask " << to_hex(mask, 2) << std::endl;
-	*/
 
-	high_ = !high_;
-	if (high_) { vout_ = vol_;  }
-	else       { vout_ = 0; }
-	
-    //vout_ = (step_ & mask) ? 0x0F : 0x00;
-    //std::cerr << "\tvout_ now " << to_hex(vout_, 2) << " t = " << audio.m_->t / 4194304. << std::endl;
+	vout_ = (step_ & mask) ? vol_ : 0;
 }
 
 void Channel1::Write(unsigned n, u8 val, bool) {
-    //std::cerr << "t = " << audio.m_->t / 4194304. << std::endl;
     switch (n) {
         case 0:
-			if (val != r0_)
-			std::cerr << "NR10 write " << to_hex(val, 2) << std::endl; /* " ( "
-                      << "sweep freq " << 128. / ((val >> 4) & 0x07) << " Hz : "
-                      << (val & 0x08 ? "-" : "+") << " : "
-                      << "shift " << unsigned(val & 0x07) << " )" << std::endl;*/
             r0_ = val;
             break;
         case 1:
-            /*std::cerr << "NR11 write " << to_hex(val, 2) << " ( "
-                      << "duty " << unsigned(val >> 6) << " : "
-                      << "length " << unsigned(val & 0x3F) << " )" << std::endl;*/
             r1_ = val;
             break;
         case 2:
-            /*std::cerr << "NR12 write " << to_hex(val, 2) << " ( "
-                      << "initial " << unsigned(val >> 4) << " : "
-                      << (val & 0x08 ? "+" : "-") << " : "
-                      << "vol freq " << 64. / (val & 0x07) << " )" << std::endl;*/
             r2_ = val;
 			vol_ = r2_ >> 4;
 			vol_div_ = r2_ & 0x07;
@@ -124,33 +99,23 @@ void Channel1::Write(unsigned n, u8 val, bool) {
         case 3:
             r3_ = val;
             ctr_ = ((r4_ & 0x07) << 8) | r3_;
-            /*std::cerr << "NR13 write " << to_hex(val, 2) << " ( "
-                      << "freq " << 131072 / (2048. - ctr_) << " Hz )" << std::endl;*/
             break;
         case 4:
 			if (val & 0x80) { audio.nr52_ |= 0x01; }
             r4_ = val;
             ctr_ = ((r4_ & 0x07) << 8) | r3_;
-			// if (r4_ & 0x40) { std::cerr << "enable ch1 length" << std::endl; }
-			// else { std::cerr << " disable ch1 length" << std::endl; }
-            /*std::cerr << "NR14 write " << to_hex(val, 2) << " ( "
-                      << (val & 0x80 ? "T" : ".")
-                      << (val & 0x40 ? "L" : ".")
-                      << " freq " << 131072 / (2048. - ctr_) << " Hz )" << std::endl;*/
             break;
         default:
             assert(0);
             break;
     }
-    //std::cerr << std::endl;
 }
 
 Channel2::Channel2(Audio &audio)
     : audio(audio),
       r0_(0x00), r1_(0x00), r2_(0x00), r3_(0x00), r4_(0x00),
 	  vol_(0), vol_div_(0),
-      ctr_(0), step_(0),
-	  high_(false),
+      ctr_(0), step_(0x80),
       vout_(0x00)
 {}
 
@@ -183,11 +148,9 @@ void Channel2::TickOutput() {
     if (ctr_ != 2048) { return; }
 
     ctr_ = ((r4_ & 0x07) << 8) | r3_;
-    //std::cerr << "\treload ctr_ " << to_hex(ctr_, 3) << std::endl;
-
-    /*step_ >>= 1;
+    
+    step_ >>= 1;
     if (!step_) { step_ = 0x80; }
-    //std::cerr << "\tstep_ " << to_hex(step_, 2) << std::endl;
 
     u8 mask = 0;
     switch (r1_ & 0xC0) {
@@ -196,12 +159,10 @@ void Channel2::TickOutput() {
         case 0x80:  mask = 0x87; break;
         case 0xC0:  mask = 0x7E; break;
     }
-    //std::cerr << "\tduty " << unsigned((mask & 0xC0) >> 6) << ", mask " << to_hex(mask, 2) << std::endl;
-    */
 
-	high_ = !high_;
-	if (high_) { vout_ = vol_; }
-	else { vout_ = 0; }
+	//mask = 0x87;
+
+	vout_ = (step_ & mask) ? vol_ : 0;
 }
 
 void Channel2::Write(unsigned n, u8 val, bool) {
@@ -307,8 +268,8 @@ bool Audio::Tick() {
     ++timer_div_;
 
     // but the internal timer is only 512 Hz
-    // 262144 Hz / 512 = 512 Hz
-    if (timer_div_ < 512) { return true; }
+    // 1048576 Hz / 2048 = 512 Hz
+    if (timer_div_ < 2048) { return true; }
     timer_div_ = 0;
 
     ++seq_step_;
@@ -330,7 +291,6 @@ void Audio::Write(u16 addr, u8 val, bool force) {
     if (0xFF10 <= addr && addr <= 0xFF14)       { ch1_.Write(addr - 0xFF10, val, force); }
     else if (0xFF15 <= addr && addr <= 0xFF19)  { ch2_.Write(addr - 0xFF15, val, force); }
     else {
-        //std::cerr << "Write $" << to_hex(addr, 4) << " $" << to_hex(val, 2) << std::endl;
         u8 dummy = 0;
         u8 *reg = &dummy;
         u8 mask = 0;

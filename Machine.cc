@@ -52,9 +52,7 @@ bool Machine::Tick() {
         t0 = system_clock::now();
         good = timer.Tick() && good;
         s_timer_time += system_clock::now() - t0;
-    }
-
-    if ((t & 0x0F) == 0x00) {
+    
         t0 = system_clock::now();
         good = audio.Tick() && good;
         s_audio_time += system_clock::now() - t0;

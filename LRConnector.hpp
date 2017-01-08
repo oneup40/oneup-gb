@@ -35,7 +35,7 @@ class LRConnector {
                                     height_ = 144;
 
     static constexpr const double fps_ = 60.0,
-                                  sample_rate_ = 262144.0;
+                                  sample_rate_ = 1048576.0;
 public:
     LRConnector();
     LRConnector(const LRConnector&) = delete;
