@@ -21,18 +21,20 @@ Machine::Machine(LRConnector *frontend)
 	hram.fill(0);
 }
 
-static std::chrono::nanoseconds s_cpu_time, s_lcd_time, s_timer_time, s_audio_time;
+//static std::chrono::nanoseconds s_cpu_time, s_lcd_time, s_timer_time, s_audio_time, s_total_time;
 
 Machine::~Machine() {
-	std::chrono::nanoseconds elapsed(long(t / .004194304));
+	std::chrono::nanoseconds elapsed((long long)(t / .004194304));
+	std::cerr << t << " ticks, " << elapsed.count() / 1000000000. << " s" << std::endl;
 
-	std::cerr << "Destroying machine" << std::endl
-		<< t << " ticks" << std::endl
-		<< elapsed.count() / 1000000000. << " s" << std::endl
-		<< "CPU emulation usage:" << double(s_cpu_time.count()) / elapsed.count() * 100 << " (" << s_cpu_time.count() / 1000000000. << " s)" << std::endl
-		<< "LCD emulation usage:" << double(s_lcd_time.count()) / elapsed.count() * 100 << " (" << s_lcd_time.count() / 1000000000. << " s)" << std::endl
-		<< "Timer emulation usage:" << double(s_timer_time.count()) / elapsed.count() * 100 << " (" << s_timer_time.count() / 1000000000. << " s)" << std::endl
-		<< "Audio emulation usage:" << double(s_audio_time.count()) / elapsed.count() * 100 << " (" << s_audio_time.count() / 1000000000. << " s)" << std::endl;
+	//std::cerr << "Destroying machine" << std::endl
+	//	<< t << " ticks" << std::endl
+	//	<< elapsed.count() / 1000000000. << " s" << std::endl
+	//	<< "CPU emulation usage: " << double(s_cpu_time.count()) / elapsed.count() * 100 << " (" << s_cpu_time.count() / 1000000000. << " s)" << std::endl
+	//	<< "LCD emulation usage: " << double(s_lcd_time.count()) / elapsed.count() * 100 << " (" << s_lcd_time.count() / 1000000000. << " s)" << std::endl
+	//	<< "Timer emulation usage: " << double(s_timer_time.count()) / elapsed.count() * 100 << " (" << s_timer_time.count() / 1000000000. << " s)" << std::endl
+	//	<< "Audio emulation usage: " << double(s_audio_time.count()) / elapsed.count() * 100 << " (" << s_audio_time.count() / 1000000000. << " s)" << std::endl
+	//	<< "Total usage:" << double(s_total_time.count()) / elapsed.count() * 100 << " (" << s_total_time.count() / 1000000000. << " s)" << std::endl;
 }
 
 bool Machine::Tick() {
@@ -40,25 +42,31 @@ bool Machine::Tick() {
 
     bool good = true;
 
-    auto t0 = system_clock::now();
+	//auto T0 = system_clock::now();
+
+    //auto t0 = system_clock::now();
     good = lcd.Tick() && good;
-    s_lcd_time += system_clock::now() - t0;
+    //s_lcd_time += system_clock::now() - t0;
 
     if ((t & 0x03) == 0x00) {
-        t0 = system_clock::now();
+        //t0 = system_clock::now();
         good = cpu.Tick() && good;
-        s_cpu_time += system_clock::now() - t0;
+        //s_cpu_time += system_clock::now() - t0;
 
-        t0 = system_clock::now();
+        //t0 = system_clock::now();
         good = timer.Tick() && good;
-        s_timer_time += system_clock::now() - t0;
-    
-        t0 = system_clock::now();
-        good = audio.Tick() && good;
-        s_audio_time += system_clock::now() - t0;
+        //s_timer_time += system_clock::now() - t0;
     }
 
+	if ((t & 0x01) == 0x00) {
+		//t0 = system_clock::now();
+		good = audio.Tick() && good;
+		//s_audio_time += system_clock::now() - t0;
+	}
+
     ++t;
+
+	//s_total_time += system_clock::now() - T0;
     return good;
 }
 
@@ -87,9 +95,30 @@ u8 Machine::Read(u16 addr, bool force) {
 			case 0x17:  return audio.ch2_.r2_;
 			case 0x18:  return audio.ch2_.r3_;
 			case 0x19:  return audio.ch2_.r4_;
+			case 0x1A:  return audio.ch3_.r0_;
+			case 0x1B:  return audio.ch3_.r1_;
+			case 0x1C:  return audio.ch3_.r2_;
+			case 0x1D:  return audio.ch3_.r3_;
+			case 0x1E:  return audio.ch3_.r4_;
             case 0x24:  return audio.nr50_;
             case 0x25:  return audio.nr51_;
             case 0x26:  return audio.nr52_;
+			case 0x30:	return audio.ch3_.wave_[0x0];
+			case 0x31:	return audio.ch3_.wave_[0x1];
+			case 0x32:	return audio.ch3_.wave_[0x2];
+			case 0x33:	return audio.ch3_.wave_[0x3];
+			case 0x34:	return audio.ch3_.wave_[0x4];
+			case 0x35:	return audio.ch3_.wave_[0x5];
+			case 0x36:	return audio.ch3_.wave_[0x6];
+			case 0x37:	return audio.ch3_.wave_[0x7];
+			case 0x38:	return audio.ch3_.wave_[0x8];
+			case 0x39:	return audio.ch3_.wave_[0x9];
+			case 0x3A:	return audio.ch3_.wave_[0xA];
+			case 0x3B:	return audio.ch3_.wave_[0xB];
+			case 0x3C:	return audio.ch3_.wave_[0xC];
+			case 0x3D:	return audio.ch3_.wave_[0xD];
+			case 0x3E:	return audio.ch3_.wave_[0xE];
+			case 0x3F:	return audio.ch3_.wave_[0xF];
             case 0x40:  return lcd.lcdc_;
             case 0x41:  return lcd.stat_;
             case 0x42:  return lcd.scy_;

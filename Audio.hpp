@@ -118,6 +118,47 @@ static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch) {
              >> ch.vout_;
 }
 
+class Channel3 {
+	friend struct Machine;
+
+	Audio &audio;
+	friend class Audio;
+
+	u8 r0_, r1_, r2_, r3_, r4_;
+	unsigned ctr_, ndx_;
+
+	u8 vout_;
+
+	std::array<u8, 16> wave_;
+
+	static constexpr const u8 version_ = 0x00;
+	static constexpr const u64 code_ = eight_cc(version_, 'c', 'h', 'a', 'n', '3');
+	friend Serializer& operator<<(Serializer &s, const Channel3 &ch);
+	friend Deserializer& operator>>(Deserializer &d, Channel3 &ch);
+
+	void TickLength();
+	void TickOutput();
+public:
+	Channel3(Audio &audio);
+	Channel3(const Channel3&) = delete;
+	Channel3(Channel3&&) = delete;
+	Channel3& operator=(const Channel3&) = delete;
+	Channel3& operator=(Channel3&&) = delete;
+
+	void Write(unsigned n, u8 val, bool force);
+	void WriteWave(unsigned n, u8 val);
+};
+
+static inline Serializer& operator<<(Serializer &s, const Channel3 &ch) {
+	// TODO
+	return s;
+}
+
+static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch) {
+	// TODO
+	return d;
+}
+
 class Audio {
     Machine *m_;
     friend struct Machine;
@@ -128,8 +169,11 @@ class Audio {
     Channel2 ch2_;
     friend class Channel2;
 
+	Channel3 ch3_;
+	friend class Channel3;
+
     u8 nr50_, nr51_, nr52_;
-    unsigned timer_div_, seq_step_;
+    unsigned sample_div_, timer_div_, seq_step_;
 
     static constexpr const u8 version_ = 0x00;
     static constexpr const u64 code_ = eight_cc(version_, 'a','u','d','i','o');
@@ -139,6 +183,7 @@ class Audio {
     void TickLength();
     void TickSweep();
     void TickVolume();
+	void TickOutput();
 
     void GenerateSample();
 public:

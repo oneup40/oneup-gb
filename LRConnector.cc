@@ -2,12 +2,12 @@
 
 #include "LRConnector.hpp"
 
+#include <chrono>
 #include <fstream>
 #include <sstream>
 
 #include <cstring>
 
-// #include "libavcodec/avcodec.h"
 
 #include "Serializer.hpp"
 
@@ -86,19 +86,42 @@ LRConnector::LRConnector()
 
 unsigned LRConnector::ApiVersion() { return RETRO_API_VERSION; }
 
+static std::chrono::nanoseconds s_run_time, s_poll_time, s_reset_time, s_tick_time, s_refresh_time, s_sample_time;
+static unsigned long long s_n_samples = 0;
 void LRConnector::Run() {
-    input_poll_();
+	auto T0 = std::chrono::system_clock::now();
 
+	auto t0 = std::chrono::system_clock::now();
+    input_poll_();
+	s_poll_time += std::chrono::system_clock::now() - t0;
+
+	t0 = std::chrono::system_clock::now();
     m_.ResetFrame();
     queued_samples_.clear();
+	s_reset_time += std::chrono::system_clock::now() - t0;
 
+	t0 = std::chrono::system_clock::now();
     while (!m_.FrameReady()) {
-        m_.Tick();
+		// clock is 4194304 Hz
+		// output is 60 Hz
+		// apx. 69905 ticks per frame
+		for (auto i=0; i < 10000; ++i) {
+			m_.Tick();
+		}
     }
+	s_tick_time += std::chrono::system_clock::now() - t0;
 
     //s_recorder.Record(queued_samples_.data(), queued_samples_.size() / 2);
+	t0 = std::chrono::system_clock::now();
     video_refresh_(m_.GetFrame(), 160, 144, 160*4);
+	s_refresh_time += std::chrono::system_clock::now() - t0;
+
+	t0 = std::chrono::system_clock::now();
     audio_sample_batch_(queued_samples_.data(), queued_samples_.size() / 2);
+	s_n_samples += queued_samples_.size() / 2;
+	s_sample_time += std::chrono::system_clock::now() - t0;
+
+	s_run_time += std::chrono::system_clock::now() - T0;
 }
 
 bool LRConnector::LoadGame(const struct retro_game_info *game) {
@@ -107,6 +130,18 @@ bool LRConnector::LoadGame(const struct retro_game_info *game) {
 }
 
 void LRConnector::UnloadGame() {
+	//static std::chrono::nanoseconds s_run_time, s_poll_time, s_reset_time, s_tick_time, s_refresh_time, s_sample_time;
+	std::cerr << "Total time in LRConnector::Run: " << s_run_time.count() / 1000000000. << " s" << std::endl;
+	std::cerr << "\tpoll: " << s_poll_time.count() / 1000000000. << " s" << std::endl;
+	std::cerr << "\treset: " << s_reset_time.count() / 1000000000. << " s" << std::endl;
+	std::cerr << "\ttick: " << s_tick_time.count() / 1000000000. << " s" << std::endl;
+	std::cerr << "\trefresh: " << s_refresh_time.count() / 1000000000. << " s" << std::endl;
+	std::cerr << "\tsample: " << s_sample_time.count() / 1000000000. << " s" << std::endl;
+	s_run_time = s_poll_time = s_reset_time = s_tick_time = s_refresh_time = std::chrono::nanoseconds(0);
+
+	std::cerr << "Audio samples generated: " << s_n_samples << std::endl;
+	s_n_samples = 0;
+
     m_.UnloadGame();
 }
 
@@ -226,10 +261,13 @@ void LRConnector::QueueSample(int16_t left, int16_t right) {
     queued_samples_.emplace_back(left);
     queued_samples_.emplace_back(right);
 
-    if (queued_samples_.size() >= 2000) {
+    if (queued_samples_.size() >= 100) {
         // s_recorder.Record(queued_samples_.data(), queued_samples_.size() / 2);
+		auto t0 = std::chrono::system_clock::now();
         audio_sample_batch_(queued_samples_.data(), queued_samples_.size() / 2);
-        queued_samples_.clear();
+		s_n_samples += queued_samples_.size() / 2;
+		s_sample_time += std::chrono::system_clock::now() - t0;
+		queued_samples_.clear();
     }
 }
 
