@@ -74,10 +74,6 @@ void Channel1::TickOutput() {
 
     unsigned mask = 0;
     switch (r1_ & 0xC0) {
-        /*case 0x00:  mask = 0x01; break;
-        case 0x40:  mask = 0x81; break;
-        case 0x80:  mask = 0x87; break;
-        case 0xC0:  mask = 0x7E; break;*/
 		case 0x00: mask = 0x0003; break;
 		case 0x40: mask = 0xC003; break;
 		case 0x80: mask = 0xC03F; break;
@@ -158,10 +154,6 @@ void Channel2::TickOutput() {
 
 	unsigned mask = 0;
 	switch (r1_ & 0xC0) {
-		/*case 0x00:  mask = 0x01; break;
-		case 0x40:  mask = 0x81; break;
-		case 0x80:  mask = 0x87; break;
-		case 0xC0:  mask = 0x7E; break;*/
 		case 0x00: mask = 0x0003; break;
 		case 0x40: mask = 0xC003; break;
 		case 0x80: mask = 0xC03F; break;
@@ -240,14 +232,9 @@ void Channel3::TickOutput() {
 void Channel3::Write(unsigned n, u8 val, bool) {
 	switch (n) {
 	case 0:
-		//if ((r0_ & 0x80) != (val & 0x80)) {
-		//	if (val & 0x80) { std::cerr << "ch3 start playback" << std::endl; }
-		//	else { std::cerr << "ch3 stop playback" << std::endl; }
-		//}
 		r0_ = val;
 		break;
 	case 1:
-		//std::cerr << "ch3 length counter = " << unsigned(val) << std::endl;
 		r1_ = val;
 		break;
 	case 2:
@@ -256,19 +243,11 @@ void Channel3::Write(unsigned n, u8 val, bool) {
 	case 3:
 		r3_ = val;
 		ctr_ = ((r4_ & 0x07) << 8) | r3_;
-		//std::cerr << "t = " << audio.m_->t / 4194304.;
-		//std::cerr << "    ch3 freq " << 65536 / (2048. - ctr_) << " Hz" << std::endl;
 		break;
 	case 4:
-		//if ((val & 0x60) != (r4_ & 0x60)) {
-			//if (val & 0x60) { std::cerr << "ch3 length counter enable" << std::endl; }
-			//else { std::cerr << "ch3 length counter disable" << std::endl; }
-		//}
 		if (val & 0x80) { audio.nr52_ |= 0x04; }
 		r4_ = val;
 		ctr_ = ((r4_ & 0x07) << 8) | r3_;
-		//std::cerr << "t = " << audio.m_->t / 4194304.;
-		//std::cerr << "    ch3 freq " << 65536 / (2048. - ctr_) << " Hz" << std::endl;
 		break;
 	default:
 		assert(0);
@@ -276,17 +255,112 @@ void Channel3::Write(unsigned n, u8 val, bool) {
 	}
 }
 
-void Channel3::WriteWave(unsigned n, u8 val) { 
-	wave_[n] = val;
-	//std::cerr << "ch3 WriteWave: ";
-	//for (auto x : wave_) { std::cerr << to_hex(x, 2); }
-	//std::cerr << std::endl;
+void Channel3::WriteWave(unsigned n, u8 val) { wave_[n] = val; }
+
+Channel4::Channel4(Audio &audio)
+	: audio(audio),
+	r0_(0x00), r1_(0x00), r2_(0x00), r3_(0x00), r4_(0x00),
+	vol_(0), vol_div_(0),
+	lsfr_(0x7FFF), lsfr_div_(1),
+	vout_(0x00)
+{}
+
+
+void Channel4::TickVolume() {
+	if (!(r2_ & 0x7)) { return; }
+
+	--vol_div_;
+	if (vol_div_ == 0) {
+		vol_div_ = r2_ & 0x7;
+
+		if (vol_ < 0xF && (r2_ & 0x08)) { ++vol_; }
+		else if (vol_ > 0 && !(r2_ & 0x08)) { --vol_; }
+	}
 }
+
+void Channel4::TickLength() {
+	if (r4_ & 0x40) {
+		r1_ = (r1_ & ~0x3F) | ((r1_ + 1) & 0x3F);
+
+		if (!(r1_ & 0x3F)) {
+			// disable channel
+			audio.nr52_ &= ~0x08;
+		}
+	}
+}
+
+void Channel4::TickOutput() {
+	if ((r3_ >> 4) >= 14) { return; }
+
+	--lsfr_div_;
+	if (lsfr_div_) { return; }
+
+	lsfr_div_ = (r3_ & 0x07) << 3;
+	if (!lsfr_div_) { lsfr_div_ = 2; }
+	// (0x02, 0x38)
+
+	lsfr_div_ <<= (r3_ >> 4);
+	// (0x02, 0x70000)
+
+	auto prev_lsfr = lsfr_;
+	u8 bit = ((lsfr_ >> 1) ^ lsfr_) & 0x1;
+	lsfr_ >>= 1;
+
+	if (r3_ & 0x08) {
+		lsfr_ &= ~0x40;
+		lsfr_ |= (bit << 6);
+	}
+
+	lsfr_ &= ~0x4000;
+	lsfr_ |= (bit << 14);
+
+	static bool warned = false;
+	if (!lsfr_ && !warned) {
+		std::cerr << "!! LSFR is 0" << std::endl;
+		std::cerr << "prev_lsfr: $" << to_hex(prev_lsfr, 4) << std::endl;
+		std::cerr << ((r3_ & 0x08) ? "7-bit mode" : "15-bit mode") << std::endl;
+		warned = true;
+	}
+
+	// output is inverted
+	vout_ = (lsfr_ & 0x01) ? 0 : vol_;
+}
+
+void Channel4::Write(unsigned n, u8 val, bool) {
+	switch (n) {
+		case 0:
+			r0_ = val;
+			break;
+		case 1:
+			r1_ = val;
+			break;
+		case 2:
+			r2_ = val;
+			vol_ = r2_ >> 4;
+			vol_div_ = r2_ & 0x07;
+			break;
+		case 3:
+			r3_ = val;
+			break;
+		case 4:
+			if (val & 0x80) {
+				audio.nr52_ |= 0x08;
+				lsfr_ = 0x7FFF;
+			}
+			r4_ = val;
+			break;
+		default:
+			assert(0);
+			break;
+	}
+}
+
 
 void Audio::TickLength() {
     if (nr52_ & 0x01) { ch1_.TickLength(); }
     if (nr52_ & 0x02) { ch2_.TickLength(); }
 	if ((nr52_ & 0x04) && (ch3_.r0_ & 0x80)) { ch3_.TickLength(); }
+	if (nr52_ & 0x08) { ch4_.TickLength(); }
 }
 
 void Audio::TickSweep() {
@@ -296,12 +370,14 @@ void Audio::TickSweep() {
 void Audio::TickVolume() {
     if (nr52_ & 0x01) { ch1_.TickVolume(); }
     if (nr52_ & 0x02) { ch2_.TickVolume(); }
+	if (nr52_ & 0x08) { ch4_.TickVolume(); }
 }
 
 void Audio::TickOutput() {
 	if (nr52_ & 0x01) { ch1_.TickOutput(); }
 	if (nr52_ & 0x02) { ch2_.TickOutput(); }
 	if (nr52_ & 0x04) { ch3_.TickOutput(); }
+	if (nr52_ & 0x08) { ch4_.TickOutput(); }
 }
 
 void Audio::GenerateSample() {
@@ -325,6 +401,11 @@ void Audio::GenerateSample() {
 			if (nr51_ & 0x40) { so1 += ch3_.vout_ / 15.0; ++so1_n; }
 			if (nr51_ & 0x04) { so2 += ch3_.vout_ / 15.0; ++so2_n; }
 		}
+
+		if (nr52_ & 0x08) {
+			if (nr51_ & 0x80) { so1 += ch4_.vout_ / 15.0; ++so1_n; }
+			if (nr51_ & 0x08) { so2 += ch4_.vout_ / 15.0; ++so2_n; }
+		}
 		// (0, sox_n)
 
 		if (so1_n) { so1 /= so1_n; }
@@ -344,16 +425,12 @@ void Audio::GenerateSample() {
 		right = i16(so2 * std::numeric_limits<i16>::max());
 	// (-0x7FFF, 0x7FFF)
 
-	//if (rand() < 10) {
-	//	std::cerr << to_hex(left, 4) << " | " << to_hex(right, 4) << std::endl;
-	//}
-
 	m_->frontend->QueueSample(left, right);
 }
 
 Audio::Audio(Machine *m)
     : m_(m),
-      ch1_(*this), ch2_(*this), ch3_(*this),
+      ch1_(*this), ch2_(*this), ch3_(*this), ch4_(*this),
       nr50_(0x00), nr51_(0x00), nr52_(0x7F),
       sample_div_(0), timer_div_(0), seq_step_(7)
 {}
@@ -392,6 +469,7 @@ void Audio::Write(u16 addr, u8 val, bool force) {
     if (0xFF10 <= addr && addr <= 0xFF14)       { ch1_.Write(addr - 0xFF10, val, force); }
     else if (0xFF15 <= addr && addr <= 0xFF19)  { ch2_.Write(addr - 0xFF15, val, force); }
 	else if (0xFF1A <= addr && addr <= 0xFF1E)	{ ch3_.Write(addr - 0xFF1A, val, force); }
+	else if (0xFF1F <= addr && addr <= 0xFF23)  { ch4_.Write(addr - 0xFF1F, val, force); }
 	else if (0xFF30 <= addr && addr <= 0xFF3F)	{ ch3_.WriteWave(addr & 0xF, val); }
     else {
         u8 dummy = 0;

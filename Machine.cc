@@ -100,6 +100,11 @@ u8 Machine::Read(u16 addr, bool force) {
 			case 0x1C:  return audio.ch3_.r2_;
 			case 0x1D:  return audio.ch3_.r3_;
 			case 0x1E:  return audio.ch3_.r4_;
+			case 0x1F:  return audio.ch4_.r0_;
+			case 0x20:  return audio.ch4_.r1_;
+			case 0x21:  return audio.ch4_.r2_;
+			case 0x22:  return audio.ch4_.r3_;
+			case 0x23:  return audio.ch4_.r4_;
             case 0x24:  return audio.nr50_;
             case 0x25:  return audio.nr51_;
             case 0x26:  return audio.nr52_;

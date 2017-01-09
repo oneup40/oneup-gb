@@ -159,6 +159,47 @@ static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch) {
 	return d;
 }
 
+class Channel4 {
+	friend struct Machine;
+
+	Audio &audio;
+	friend class Audio;
+
+	u8 r0_, r1_, r2_, r3_, r4_;
+	u8 vol_, vol_div_;
+	u16 lsfr_;
+	u32 lsfr_div_;
+
+	u8 vout_;
+
+	static constexpr const u8 version_ = 0x00;
+	static constexpr const u64 code_ = eight_cc(version_, 'c', 'h', 'a', 'n', '4');
+	friend Serializer& operator<<(Serializer &s, const Channel4 &ch);
+	friend Deserializer& operator >> (Deserializer &d, Channel4 &ch);
+
+	void TickVolume();
+	void TickLength();
+	void TickOutput();
+public:
+	Channel4(Audio &audio);
+	Channel4(const Channel4&) = delete;
+	Channel4(Channel4&&) = delete;
+	Channel4& operator=(const Channel4&) = delete;
+	Channel4& operator=(Channel4&&) = delete;
+
+	void Write(unsigned n, u8 val, bool force);
+};
+
+static inline Serializer& operator<<(Serializer &s, const Channel4 &ch) {
+	// TODO
+	return s;
+}
+
+static inline Deserializer& operator >> (Deserializer &d, Channel4 &ch) {
+	// TODO
+	return d;
+}
+
 class Audio {
     Machine *m_;
     friend struct Machine;
@@ -171,6 +212,9 @@ class Audio {
 
 	Channel3 ch3_;
 	friend class Channel3;
+
+	Channel4 ch4_;
+	friend class Channel4;
 
     u8 nr50_, nr51_, nr52_;
     unsigned sample_div_, timer_div_, seq_step_;
