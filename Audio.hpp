@@ -11,6 +11,8 @@ namespace gblr {
 
 class Channel1;
 class Channel2;
+class Channel3;
+class Channel4;
 class Audio;
 
 static inline Serializer& operator<<(Serializer &s, const Channel1 &ch);
@@ -18,6 +20,12 @@ static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch);
 
 static inline Serializer& operator<<(Serializer &s, const Channel2 &ch);
 static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch);
+
+static inline Serializer& operator<<(Serializer &s, const Channel3 &ch);
+static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch);
+
+static inline Serializer& operator<<(Serializer &s, const Channel4 &ch);
+static inline Deserializer& operator>>(Deserializer &d, Channel4 &ch);
 
 static inline Serializer& operator<<(Serializer &s, const Audio &audio);
 static inline Deserializer& operator>>(Deserializer &d, Audio &audio);
@@ -150,11 +158,13 @@ public:
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel3 &ch) {
+    (void) ch;
 	// TODO
 	return s;
 }
 
 static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch) {
+    (void) ch;
 	// TODO
 	return d;
 }
@@ -191,11 +201,13 @@ public:
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel4 &ch) {
+    (void) ch;
 	// TODO
 	return s;
 }
 
 static inline Deserializer& operator >> (Deserializer &d, Channel4 &ch) {
+    (void) ch;
 	// TODO
 	return d;
 }
