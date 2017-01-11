@@ -235,7 +235,12 @@ bool LCD::Tick() {
         ++ly_;
         if (ly_ == 154) { ly_ = 0; }
 
-        if (ly_ == lyc_ && (stat_ & 0x04)) { m_->Interrupt(0x02); }
+		if (ly_ == lyc_) {
+			stat_ |= 0x04;
+			if (stat_ & 0x40) { m_->Interrupt(0x02); }
+		} else {
+			stat_ &= ~0x04;
+		}
 
         if (ly_ < 144) {
             // mode = 2
