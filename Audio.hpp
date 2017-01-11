@@ -68,6 +68,8 @@ static inline Serializer& operator<<(Serializer &s, const Channel1 &ch) {
     s.Start(Channel1::code_);
 
     return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
+             << ch.sweep_div_
+             << ch.vol_ << ch.vol_div_
              << ch.ctr_ << ch.step_
              << ch.vout_;
 }
@@ -76,6 +78,8 @@ static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch) {
     d.Start(Channel1::code_);
 
     return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
+             >> ch.sweep_div_
+             >> ch.vol_ >> ch.vol_div_
              >> ch.ctr_ >> ch.step_
              >> ch.vout_;
 }
@@ -114,6 +118,7 @@ static inline Serializer& operator<<(Serializer &s, const Channel2 &ch) {
     s.Start(Channel2::code_);
 
     return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
+             << ch.vol_ << ch.vol_div_
              << ch.ctr_ << ch.step_
              << ch.vout_;
 }
@@ -122,6 +127,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch) {
     d.Start(Channel2::code_);
 
     return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
+             >> ch.vol_ >> ch.vol_div_
              >> ch.ctr_ >> ch.step_
              >> ch.vout_;
 }
@@ -158,15 +164,21 @@ public:
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel3 &ch) {
-    (void) ch;
-	// TODO
-	return s;
+    s.Start(Channel3::code_);
+
+    return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
+             << ch.ctr_ << ch.ndx_
+             << ch.vout_
+             << ch.wave_;
 }
 
 static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch) {
-    (void) ch;
-	// TODO
-	return d;
+    d.Start(Channel3::code_);
+
+    return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
+             >> ch.ctr_ >> ch.ndx_
+             >> ch.vout_
+             >> ch.wave_;
 }
 
 class Channel4 {
@@ -201,15 +213,21 @@ public:
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel4 &ch) {
-    (void) ch;
-	// TODO
-	return s;
+    s.Start(Channel4::code_);
+
+    return s << ch.r0_ << ch.r1_ << ch.r2_ << ch.r3_ << ch.r4_
+             << ch.vol_ << ch.vol_div_
+             << ch.lsfr_ << ch.lsfr_div_
+             << ch.vout_;
 }
 
-static inline Deserializer& operator >> (Deserializer &d, Channel4 &ch) {
-    (void) ch;
-	// TODO
-	return d;
+static inline Deserializer& operator>>(Deserializer &d, Channel4 &ch) {
+    d.Start(Channel4::code_);
+
+    return d >> ch.r0_ >> ch.r1_ >> ch.r2_ >> ch.r3_ >> ch.r4_
+             >> ch.vol_ >> ch.vol_div_
+             >> ch.lsfr_ >> ch.lsfr_div_
+             >> ch.vout_;
 }
 
 class Audio {
