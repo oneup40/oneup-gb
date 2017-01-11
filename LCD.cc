@@ -55,44 +55,33 @@ u8 LCD::RenderWindowDot() {
     return PalettizeDot(dot, bgp_);
 }
 
+void LCD::DetermineLineSprites() {
+    n_line_sprites_ = 0;
+
+    for (u8 addr = 0; addr < 0xA0 && n_line_sprites_ < 10; addr += 4) {
+        int y = oam[addr] - 16;
+
+        if (y <= ly_ && ly_ < y + ((lcdc_ & 0x04) ? 16 : 8)) {
+            line_sprites_[n_line_sprites_++] = addr;
+        }
+    }
+}
+
 u8 LCD::RenderSpriteDot(bool wnd) {
     if (!(lcdc_ & 0x02)) { return 0x80; }
-
-    std::array<u8, 40> sprites;
-    size_t n_sprites = 0;
 
     u8 height = (lcdc_ & 0x04) ? 16 : 8,
        width = 8;
 
-    for (u8 i = 0; i < 40; ++i) {
-        u8 addr = i * 4;
-
-        int y = oam[addr] - 16;
-
-        if (y <= ly_ && ly_ < y + height) {
-            sprites[n_sprites++] = addr;
-        }
-    }
-
-    std::sort(sprites.begin(),
-              sprites.begin() + n_sprites,
-              [this](u8 lhs, u8 rhs) -> bool {
-                  u8 lhs_x = oam[lhs + 1],
-                     rhs_x = oam[rhs + 1];
-                  return (lhs_x == rhs_x) ? (lhs < rhs) : (lhs_x < rhs_x);
-              });
-
-    if (n_sprites > 10) { n_sprites = 10; }
-
     u8 i = 0;
-    for (; i < n_sprites; ++i) {
-        int origin_x = oam[sprites[i] + 1] - 8;
+    for (; i < n_line_sprites_; ++i) {
+        int origin_x = oam[line_sprites_[i] + 1] - 8;
         if (int(dot_) - 80 < origin_x || origin_x + width <= int(dot_) - 80) { continue; }
 
-        u8 flags = oam[sprites[i] + 3];
+        u8 flags = oam[line_sprites_[i] + 3];
         if (wnd && (flags & 0x80)) { continue; }
 
-        u8 n = sprites[i];
+        u8 n = line_sprites_[i];
 
         u8 y = ly_ - oam[n];
         u8 x = (dot_ - 80) - oam[n + 1];
@@ -159,7 +148,8 @@ LCD::LCD(Machine *m)
       bgp_(0), obp0_(0), obp1_(0),
       wy_(0), wx_(0),
       dot_(0),
-      dma_ticks_(0)
+      dma_ticks_(0),
+      n_line_sprites_(0)
 {
     vram.fill(0);
     oam.fill(0);
@@ -211,6 +201,9 @@ bool LCD::Tick() {
 
     ++dot_;
     if (ly_ < 144) {
+        // TODO: more accurate OAM access
+        if (dot_ == 1) { DetermineLineSprites(); }
+
         // mode = 3
         if (dot_ == 80) { stat_ |= 0x03; }
 
@@ -222,9 +215,7 @@ bool LCD::Tick() {
             if (stat_ & 0x08) { m_->Interrupt(0x02); }
         }
 
-        if (dot_ < 80) {
-            // TODO: OAM access
-        } else if (dot_ < 240) {
+        if (80 < dot_ && dot_ < 240) {
             RenderDot();
         }
     }

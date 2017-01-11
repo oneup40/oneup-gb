@@ -27,7 +27,10 @@ class LCD {
 
     u8 dma_ticks_;
 
-    static constexpr const u8 version_ = 0x01;
+    std::array<u8, 10> line_sprites_;
+    u8 n_line_sprites_;
+
+    static constexpr const u8 version_ = 0x02;
     static constexpr const u64 code_ = eight_cc(version_, 'l','c','d');
     friend Serializer& operator<<(Serializer &s, const LCD &lcd);
     friend Deserializer& operator>>(Deserializer &d, LCD &lcd);
@@ -36,6 +39,7 @@ class LCD {
     std::pair<u8, u8> FindPattern(u8 tilenum, u8 y, bool alt_base);
     u8 ExtractPatternDot(std::pair<u8, u8> pattern, u8 x);
     u8 PalettizeDot(u8 dot, u8 palette);
+    void DetermineLineSprites();
 
     u8 RenderWindowDot();
     u8 RenderBackgroundDot();
@@ -94,6 +98,7 @@ static inline Serializer& operator<<(Serializer &s, const LCD &lcd) {
              << lcd.dot_
              << frame
              << lcd.dma_ticks_
+             << lcd.line_sprites_ << lcd.n_line_sprites_
              << lcd.vram
              << lcd.oam;
 }
@@ -110,6 +115,7 @@ static inline Deserializer& operator>>(Deserializer &d, LCD &lcd) {
       >> lcd.dot_
       >> frame
       >> lcd.dma_ticks_
+      >> lcd.line_sprites_ >> lcd.n_line_sprites_
       >> lcd.vram
       >> lcd.oam;
     if (!d) { return d; }
