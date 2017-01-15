@@ -119,8 +119,8 @@ u8 LCD::RenderBackgroundDot() {
 
 void LCD::RenderDot() {
     u8 wnd_dot = RenderWindowDot();
-    u8 spr_dot = RenderSpriteDot((wnd_dot & 3) != 0);
     u8 bg_dot  = RenderBackgroundDot();
+    u8 spr_dot = RenderSpriteDot((wnd_dot & 3) != 0 || (bg_dot & 3) != 0);
 
     u8 dot = spr_dot;
     if (dot == 0x80) { dot = wnd_dot; }
