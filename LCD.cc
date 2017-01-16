@@ -137,10 +137,31 @@ void LCD::RenderDot() {
 
     u32 color = 0;
     switch (dot) {
-        case 0: color = 0x00d0f8e0; break;
-        case 1: color = 0x0070c088; break;
-        case 2: color = 0x00566834; break;
-        case 3: color = 0x00201808; break;
+		/*case 0: color = 0x00a0e633; break;
+        case 1: color = 0x0089b44a; break;
+        case 2: color = 0x00334400; break;
+        case 3: color = 0x001c2400; break;*/
+
+		/*case 0: color = 0x009bbc0f; break;
+		case 1: color = 0x008bac0f; break;
+		case 2: color = 0x00306230; break;
+		case 3: color = 0x000f380f; break;*/
+
+		/*case 0: color = 0x009bb30f; break;
+		case 1: color = 0x006b860b; break;
+		case 2: color = 0x00285228; break;
+		case 3: color = 0x000f380f; break;*/
+
+		/*case 0: color = 0x008cb30d; break;
+		case 1: color = 0x006b860b; break;
+		case 2: color = 0x00285228; break;
+		case 3: color = 0x000f380f; break;*/
+
+		case 0: color = 0x00c8ec2c; break;
+		case 1: color = 0x007c9818; break;
+		case 2: color = 0x00285228; break;
+		case 3: color = 0x000f380f; break;
+
         default: break;
     }
 
