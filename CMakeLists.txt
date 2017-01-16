@@ -9,7 +9,7 @@ project(oneup-gb-lr)
 #include(FindFFmpeg REQUIRED)
 
 if (MSVC)
-	set (CMAKE_CXX_FLAGS "/W3 /WX /EHsc")
+	set (CMAKE_CXX_FLAGS "/W3 /WX /EHsc /GS- /Ot /Oy /GL")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror -march=native")
 else (MSVC)
@@ -46,4 +46,7 @@ endif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 add_library(oneup-gb-lr SHARED ${LIBGBLR_SRC})
 
+if (MSVC)
+    target_link_libraries(oneup-gb-lr -LTCG)
+endif(MSVC)
 #target_link_libraries(oneup-gb-lr ${AVCODEC_LIBRARIES} ${AVFORMAT_LIBRARIES})
