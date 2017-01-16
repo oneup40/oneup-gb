@@ -65,6 +65,14 @@ void LCD::DetermineLineSprites() {
             line_sprites_[n_line_sprites_++] = addr;
         }
     }
+
+	std::sort(line_sprites_.data(),
+              line_sprites_.data() + n_line_sprites_,
+              [this](u8 lhs, u8 rhs) -> bool {
+                  auto lx = oam[lhs + 1], rx = oam[rhs + 1];
+                  if (lx == rx) { return lhs < rhs; }
+                  else { return lx < rx; }
+              });
 }
 
 u8 LCD::RenderSpriteDot(bool wnd) {
