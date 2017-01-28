@@ -7,7 +7,7 @@
 
 #include <vector>
 
-namespace gblr {
+namespace gb1 {
 
 enum MapperNumber : u8 {
     kMapperNone = 0,
@@ -106,7 +106,7 @@ public:
     Mapper& operator=(const Mapper&) = delete;
     Mapper& operator=(Mapper&&) = delete;
 
-    void Init(MapperNumber number, const u8 *data, size_t size, size_t ram_size);
+    void Init(MapperNumber number, std::vector<u8>&& rom, size_t ram_size);
     void Unload();
 
     u8 ReadROM(u16 addr, bool debug);
@@ -141,4 +141,4 @@ static inline Deserializer& operator>>(Deserializer &d, Mapper &m) {
     return d;
 }
 
-}    // namespace gblr
+}    // namespace gb1

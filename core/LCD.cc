@@ -4,9 +4,10 @@
 
 #include <algorithm>
 
+#include "Frontend.hpp"
 #include "Machine.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 u8 LCD::FindTilenum(u8 y, u8 x, bool alt_base) {
     size_t addr = alt_base ? 0x1C00 : 0x1800;
@@ -135,37 +136,12 @@ void LCD::RenderDot() {
     if (dot == 0x80) { dot = bg_dot; }
     if (dot == 0x80) { dot = bgp_ & 3; }
 
-    u32 color = 0;
-    switch (dot) {
-		/*case 0: color = 0x00a0e633; break;
-        case 1: color = 0x0089b44a; break;
-        case 2: color = 0x00334400; break;
-        case 3: color = 0x001c2400; break;*/
+    unsigned col = dot_ - 80;
+    dot <<= (col & 0x03) * 2;
 
-		/*case 0: color = 0x009bbc0f; break;
-		case 1: color = 0x008bac0f; break;
-		case 2: color = 0x00306230; break;
-		case 3: color = 0x000f380f; break;*/
+    unsigned ndx = col >> 2;
 
-		/*case 0: color = 0x009bb30f; break;
-		case 1: color = 0x006b860b; break;
-		case 2: color = 0x00285228; break;
-		case 3: color = 0x000f380f; break;*/
-
-		/*case 0: color = 0x008cb30d; break;
-		case 1: color = 0x006b860b; break;
-		case 2: color = 0x00285228; break;
-		case 3: color = 0x000f380f; break;*/
-
-		case 0: color = 0x00c8ec2c; break;
-		case 1: color = 0x007c9818; break;
-		case 2: color = 0x00285228; break;
-		case 3: color = 0x000f380f; break;
-
-        default: break;
-    }
-
-    frame_[ly_][dot_ - 80] = color;
+    frame_[ly_][ndx] |= dot;
 }
 
 LCD::LCD(Machine *m)
@@ -270,7 +246,8 @@ bool LCD::Tick() {
             // interrupt?
             if (stat_ & 0x20) { m_->Interrupt(0x02); }
         } else if (ly_ == 144) {
-            m_->frame_ready = true;
+            m_->frontend.OutputVideoFrame(std::move(frame_));
+            for (auto row : frame_ ) { row.fill(0); }
 
             // mode = 1
             stat_ &= ~0x02;
@@ -285,4 +262,4 @@ bool LCD::Tick() {
     return true;
 }
 
-}
+}   // namespace gb1

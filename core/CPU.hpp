@@ -9,7 +9,7 @@
 #include "Regs.hpp"
 #include "Serializer.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 struct Instruction {
     u32 src, dst;
@@ -186,4 +186,4 @@ static inline Deserializer& operator>>(Deserializer &d, CPU &cpu) {
     return d >> cpu.busy_ >> cpu.reg_ >> cpu.if_ >> cpu.ie_ >> cpu.ime_ >> cpu.halt_;
 }
 
-} // namespace gblr
+} // namespace gb1

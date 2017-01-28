@@ -4,7 +4,7 @@
 
 #include "Base.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 enum Optype : u8 {
     OP_NOP,
@@ -629,4 +629,4 @@ const Opcode op_cb_table[] = {
 };
 static_assert(sizeof(op_cb_table) == 256 * sizeof(op_cb_table[0]), "op_cb_table does not contain 256 elements");
 
-}    // namespace gblr
+}    // namespace gb1

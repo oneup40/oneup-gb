@@ -7,7 +7,7 @@
 #include "Base.hpp"
 #include "Serializer.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 class Channel1;
 class Channel2;
@@ -287,4 +287,4 @@ static inline Deserializer& operator>>(Deserializer &d, Audio &audio) {
              >> audio.timer_div_ >> audio.seq_step_;
 }
 
-}   // namespace gblr
+}   // namespace gb1

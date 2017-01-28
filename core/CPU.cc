@@ -3,7 +3,7 @@
 #include "CPU.hpp"
 #include "Machine.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 bool CPU::FetchInstruction(Instruction *ins) {
     ins->pc = reg_.pc++;
@@ -619,4 +619,4 @@ void CPU::Interrupt(u8 num) {
     if_ |= num;
 }
 
-}    // namespace gblr
+}    // namespace gb1

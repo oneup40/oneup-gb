@@ -2,7 +2,7 @@
 
 #include "Serializer.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 Serializer& Serializer::SerializeBool(bool val) {
     u64 raw = htole<u64>(val);
@@ -72,4 +72,4 @@ Deserializer& Deserializer::operator>>(i64 &val)    { return DeserializeInt(&val
 Deserializer& Deserializer::operator>>(float &val)  { return DeserializeFloat(&val); }
 Deserializer& Deserializer::operator>>(double &val) { return DeserializeFloat(&val); }
 
-}     // namespace gblr
+}     // namespace gb1

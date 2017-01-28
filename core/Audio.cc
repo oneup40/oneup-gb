@@ -2,10 +2,10 @@
 
 #include "Audio.hpp"
 
-#include "LRConnector.hpp"
+#include "Frontend.hpp"
 #include "Machine.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 Channel1::Channel1(Audio &audio)
     : audio(audio),
@@ -425,7 +425,7 @@ void Audio::GenerateSample() {
 		right = i16(so2 * std::numeric_limits<i16>::max());
 	// (-0x7FFF, 0x7FFF)
 
-	m_->frontend->QueueSample(left, right);
+	m_->frontend.OutputAudioFrame(left, right);
 }
 
 Audio::Audio(Machine *m)
@@ -486,4 +486,4 @@ void Audio::Write(u16 addr, u8 val, bool force) {
     }
 }
 
-} // namespace gblr
+} // namespace gb1

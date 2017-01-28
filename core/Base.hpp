@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-namespace gblr {
+namespace gb1 {
 
 using u8 = uint8_t;
 using u16 = uint16_t;
@@ -117,4 +117,4 @@ constexpr static inline u64 eight_cc(u8 a=0, u8 b=0, u8 c=0, u8 d=0, u8 e=0, u8 
 		| (u64(u8(h)) << 56);
 }
 
-}    // namespace gblr
+}    // namespace gb1

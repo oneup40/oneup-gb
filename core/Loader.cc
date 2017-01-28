@@ -10,12 +10,10 @@
 #include "Machine.hpp"
 #include "Mapper.hpp"
 
-namespace gblr {
+namespace gb1 {
 
-bool Loader::Load(const struct retro_game_info *game, Machine *machine) {
-    const u8 *data = static_cast<const u8*>(game->data);
-
-    if (game->size < 2 * kRomBankSize) {
+bool Loader::Load(std::vector<u8>&& data, Machine *machine) {
+    if (data.size() < 2 * kRomBankSize) {
         machine->Log("Expected at least two 16KiB banks");
         return false;
     }
@@ -45,7 +43,7 @@ bool Loader::Load(const struct retro_game_info *game, Machine *machine) {
             return false;
     }
 
-    if (game->size != expected) {
+    if (data.size() != expected) {
         machine->Log("ROM size didn't match ROM size indicator");
         return false;
     }
@@ -95,8 +93,8 @@ bool Loader::Load(const struct retro_game_info *game, Machine *machine) {
             return false;
     }
 
-    machine->mapper.Init(mapper, data, game->size, ram_size);
+    machine->mapper.Init(mapper, std::move(data), ram_size);
     return true;
 }
 
-}    // namespace gblr
+}    // namespace gb1

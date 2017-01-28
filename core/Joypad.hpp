@@ -5,7 +5,7 @@
 #include "Base.hpp"
 #include "Serializer.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 struct Machine;
 
@@ -44,4 +44,4 @@ static inline Deserializer& operator>>(Deserializer &d, Joypad &joypad) {
     return d >> joypad.joyp_;
 }
 
-}    // namespace gblr
+}    // namespace gb1

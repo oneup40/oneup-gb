@@ -6,7 +6,7 @@
 
 #include "Machine.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 static constexpr const size_t kInvalidIndex = 0xFFFFFFFF;
 
@@ -150,17 +150,17 @@ Mapper::Mapper(Machine *m)
       rom_bank_(0), ram_bank_(0)
 {}
 
-void Mapper::Init(MapperNumber number, const u8 *data, size_t size, size_t ram_size) {
+void Mapper::Init(MapperNumber number, std::vector<u8>&& rom, size_t ram_size) {
     if (number == kMapperMBC2) { ram_size = 512; }
 
-    number_ = number;
-    ram_enable_ = false;
-    extra_rom_bits_ = false;
-    rom_bank_ = 0x01;
-    assert(size >= kRomBankSize * 2);
-    ram_bank_ = 0;
-    rom = std::vector<u8>(data, data + size);
-    ram = std::vector<u8>(ram_size, 0);
+    this->number_ = number;
+    this->ram_enable_ = false;
+    this->extra_rom_bits_ = false;
+    this->rom_bank_ = 0x01;
+    assert(rom.size() >= kRomBankSize * 2);
+    this->ram_bank_ = 0;
+    this->rom = std::move(rom);
+    this->ram = std::vector<u8>(ram_size, 0);
 }
 
 void Mapper::Unload() {
@@ -226,4 +226,4 @@ void Mapper::WriteRAM(u16 addr, u8 val, bool force) {
     ram[index] = val;
 }
 
-}
+}   // namespace gb1

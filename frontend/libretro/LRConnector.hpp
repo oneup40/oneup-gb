@@ -2,11 +2,12 @@
 
 // Copyright 2016 oneup
 
-#include "Machine.hpp"
-
 #include "libretro.h"
 
-namespace gblr {
+#include "core/Frontend.hpp"
+
+namespace gb1 {
+namespace lr {
 
 struct MemDescriptor {
     void *data;
@@ -15,7 +16,7 @@ struct MemDescriptor {
 	MemDescriptor(void *data = nullptr, size_t size = 0) : data(data), size(size) {}
 };
 
-class LRConnector {
+class LRConnector : public Frontend {
     Machine m_;
 
     retro_environment_t         environment_;
@@ -26,6 +27,7 @@ class LRConnector {
     retro_input_state_t         input_state_;
 
     std::vector<int16_t> queued_samples_;
+    bool frame_ready_;
 
     static constexpr const char *name_ = "oneup-dmg",
                                 *version_ = GIT_BRANCH,
@@ -82,11 +84,13 @@ public:
     bool SetPixelFormat(enum retro_pixel_format fmt);
     bool ShowMessage(const char *msg, unsigned frames);
 
-    Button PollInput();
-    void QueueSample(int16_t left, int16_t right);
+    Button InputJoypad() override;
+    void OutputAudioFrame(int16_t left, int16_t right) override;
+    void OutputVideoFrame(std::array<std::array<u8, 40>, 144>&& frame) override;
 
 	// XXX
 	retro_perf_callback perf;
 };
 
-}    // namespace gblr
+}   // namespace lr
+}   // namespace gb1

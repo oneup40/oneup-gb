@@ -2,15 +2,15 @@
 
 #include "libretro.h"
 
+#include "LRConnector.hpp"
+
 #include <iostream>
 #include <memory>
-
-#include <LRConnector.hpp>
 
 static constexpr const char* LIBNAME = "oneup-gb-lr";
 #define LOG_CALL do { std::cout << LIBNAME << " " << __func__ << std::endl; } while (0)
 
-gblr::LRConnector g_core;
+gb1::lr::LRConnector g_core;
 
 RETRO_API unsigned retro_api_version(void) {
     return g_core.ApiVersion();

@@ -29,7 +29,7 @@
 //
 // There is also no support yet for including any sort of protocol version.
 
-namespace gblr {
+namespace gb1 {
 
 class Serializer {
     std::ostream *os_;
@@ -312,5 +312,4 @@ Deserializer& Deserializer::operator>>(std::array<T, N> &val)    {
     return DeserializeArray(&val);
 }
 
-
-}    // namespace gblr
+}    // namespace gb1

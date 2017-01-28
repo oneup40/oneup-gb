@@ -5,7 +5,7 @@
 #include "Base.hpp"
 #include "Serializer.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 enum Flag : u8 {
     FLAG_Z = 0x80,
@@ -116,4 +116,4 @@ static inline Deserializer& operator>>(Deserializer &d, Regs &reg) {
     return d >> reg.pc >> reg.sp >> reg.bc >> reg.de >> reg.hl >> reg.af;
 }
 
-}    // namespace gblr
+}    // namespace gb1

@@ -4,7 +4,7 @@
 
 #include "Machine.hpp"
 
-namespace gblr {
+namespace gb1 {
 
 Timer::Timer(Machine *m)
     : m_(m),
@@ -50,4 +50,4 @@ bool Timer::Tick() {
     return true;
 }
 
-}    // namespace gblr
+}    // namespace gb1
