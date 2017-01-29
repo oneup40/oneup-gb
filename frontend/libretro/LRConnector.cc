@@ -182,14 +182,14 @@ void LRConnector::OutputVideoFrame(std::array<std::array<u8, 40>, 144>&& frame) 
     for (auto &row : frame) {
         lr_col = 0;
 
-        for (auto &cols : row) {
+        for (auto cols : row) {
             for (unsigned i=0; i < 4; ++i) {
                 u32 color = 0;
                 switch (cols & 3) {
-                    case 0: color = 0x00c8ec2c; break;
-                    case 1: color = 0x007c9818; break;
-                    case 2: color = 0x00285228; break;
-                    case 3: color = 0x000f380f; break;
+                    case 0: color = 0x00aae618; break;
+                    case 1: color = 0x0080ad12; break;
+                    case 2: color = 0x0054710c; break;
+                    case 3: color = 0x00334507; break;
 
                     default: break;
                 }
