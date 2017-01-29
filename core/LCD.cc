@@ -247,7 +247,7 @@ bool LCD::Tick() {
             if (stat_ & 0x20) { m_->Interrupt(0x02); }
         } else if (ly_ == 144) {
             m_->frontend.OutputVideoFrame(std::move(frame_));
-            for (auto row : frame_ ) { row.fill(0); }
+            for (auto &row : frame_ ) { row.fill(0); }
 
             // mode = 1
             stat_ &= ~0x02;
