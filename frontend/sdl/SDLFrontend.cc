@@ -36,10 +36,10 @@ void SDLFrontend::PollInput() {
                     case SDLK_LEFT:     btn_ |= BTN_LEFT; break;
                     case SDLK_UP:       btn_ |= BTN_UP; break;
                     case SDLK_DOWN:     btn_ |= BTN_DOWN; break;
-                    case SDLK_z:        btn_ |= BTN_A; break;
-                    case SDLK_x:        btn_ |= BTN_B; break;
-                    case SDLK_RETURN:   btn_ |= BTN_SELECT; break;
-                    case SDLK_RSHIFT:   btn_ |= BTN_START; break;
+                    case SDLK_z:        btn_ |= BTN_B; break;
+                    case SDLK_x:        btn_ |= BTN_A; break;
+                    case SDLK_RETURN:   btn_ |= BTN_START; break;
+                    case SDLK_RSHIFT:   btn_ |= BTN_SELECT; break;
                     case SDLK_ESCAPE:   quit_ = true; break;
                 }
                 break;
@@ -50,10 +50,10 @@ void SDLFrontend::PollInput() {
                     case SDLK_LEFT:     btn_ &= ~BTN_LEFT; break;
                     case SDLK_UP:       btn_ &= ~BTN_UP; break;
                     case SDLK_DOWN:     btn_ &= ~BTN_DOWN; break;
-                    case SDLK_z:        btn_ &= ~BTN_A; break;
-                    case SDLK_x:        btn_ &= ~BTN_B; break;
-                    case SDLK_RETURN:   btn_ &= ~BTN_SELECT; break;
-                    case SDLK_RSHIFT:   btn_ &= ~BTN_START; break;
+                    case SDLK_z:        btn_ &= ~BTN_B; break;
+                    case SDLK_x:        btn_ &= ~BTN_A; break;
+                    case SDLK_RETURN:   btn_ &= ~BTN_START; break;
+                    case SDLK_RSHIFT:   btn_ &= ~BTN_SELECT; break;
                 }
                 break;
         }
