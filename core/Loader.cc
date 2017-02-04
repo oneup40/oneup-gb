@@ -18,14 +18,14 @@ bool Loader::Load(std::vector<u8>&& data, Machine *machine) {
         return false;
     }
 
-    assert(0x143 < game->size);
+    assert(0x143 < data.size());
     if ((data[0x143] & 0xC0) == 0xC0) {
         machine->Log("CGB-only cartridges not supported");
         return false;
     }
 
     size_t expected = 0;
-    assert(0x148 < game->size);
+    assert(0x148 < data.size());
     switch (data[0x148]) {
         case 0x00: expected = 2 * kRomBankSize; break;
         case 0x01: expected = 4 * kRomBankSize; break;
@@ -48,7 +48,7 @@ bool Loader::Load(std::vector<u8>&& data, Machine *machine) {
         return false;
     }
 
-    assert(0x147 < game->size);
+    assert(0x147 < data.size());
     u8 cart = data[0x147];
 
     MapperNumber mapper = kMapperNone;
