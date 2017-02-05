@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 cmake_minimum_required(VERSION 3.0.0)
 project(oneup-gb-lr)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 if (MSVC)
 	set (CMAKE_CXX_FLAGS "/W3 /WX /EHsc /GS- /Ot /Oy /GL")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

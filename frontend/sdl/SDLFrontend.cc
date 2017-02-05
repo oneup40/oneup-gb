@@ -91,7 +91,7 @@ SDLFrontend::SDLFrontend()
                             0);
     wndsurf_ = SDL_GetWindowSurface(wnd_);
 
-    surf_ = SDL_CreateRGBSurfaceWithFormat(0, 160, 144, 8, SDL_PIXELFORMAT_INDEX8);
+    surf_ = SDL_CreateRGBSurface(0, 160, 144, 8, 0, 0, 0, 0);
 
     surf_->format->palette->colors[0].r = 0xC8;
     surf_->format->palette->colors[0].g = 0xEC;
