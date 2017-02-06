@@ -143,9 +143,8 @@ void Mapper::WriteMBC5Register(u16 addr, u8 data) {
     }
 }
 
-Mapper::Mapper(Machine *m)
-    : m_(m),
-      number_(kMapperNone),
+Mapper::Mapper()
+    : number_(kMapperNone),
       ram_enable_(false), extra_rom_bits_(false),
       rom_bank_(0), ram_bank_(0)
 {}
