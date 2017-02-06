@@ -1,0 +1,13 @@
+language: generic
+sudo: required
+services:
+  - docker
+env:
+  - DOCKER_TAG=archlinux-x64 CXX=clang++
+  - DOCKER_TAG=archlinux-x64 CXX=g++
+
+before_install:
+  - docker pull oneup40/oneup-gb-build:${DOCKER_TAG}
+
+script:
+  - docker run -e CXX=${CXX} -v $(pwd):/project oneup40/oneup-gb-build:archlinux-x64 /bin/sh -c "cmake /project -DCMAKE_BUILD_TYPE=Release -GNinja && cmake --build ."
