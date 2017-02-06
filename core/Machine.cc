@@ -13,7 +13,7 @@ namespace gb1 {
 
 Machine::Machine(Frontend& frontend)
     : frontend(frontend),
-      cpu(this), lcd(this), mapper(this), joypad(this), timer(this), audio(this),
+      cpu(this), lcd(this), mapper(), joypad(this), timer(this), audio(this),
       t(0)
 {
     wram.fill(0);

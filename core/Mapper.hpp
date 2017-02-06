@@ -79,8 +79,6 @@ static inline Deserializer& operator>>(Deserializer &d, Mapper &m);
 //  If we break the RTC into its own component, then we only need the first 3.
 
 class Mapper {
-    Machine *m_;
-
     MapperNumber number_;
     bool ram_enable_, extra_rom_bits_;
     size_t rom_bank_, ram_bank_;
@@ -100,7 +98,7 @@ class Mapper {
 public:
     std::vector<u8> rom, ram;
 
-    Mapper(Machine *m);
+    Mapper();
     Mapper(const Mapper&) = delete;
     Mapper(Mapper&&) = delete;
     Mapper& operator=(const Mapper&) = delete;
