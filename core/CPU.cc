@@ -589,7 +589,7 @@ bool CPU::Step() {
     good = Store(&ins);
     if (!good) { return false; }
 
-#ifdef DEBUG
+#ifdef DEBUG_CPU
     std::string log = to_string(ins);
     while (log.length() < 60) { log += " "; }
     log += to_string(reg_);
