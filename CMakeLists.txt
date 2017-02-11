@@ -44,3 +44,4 @@ add_subdirectory(frontend/sdl)
 
 enable_testing()
 add_subdirectory(test/blargg)
+add_subdirectory(test/gbppunit)
