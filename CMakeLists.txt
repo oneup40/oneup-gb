@@ -25,7 +25,7 @@ add_definitions("-DGIT_BRANCH=\"${GIT_BRANCH}\"")
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
     message(STATUS "CMAKE_BUILD_TYPE not defined, defaulting to Release")
-endif(NOT CMAKE_BUILD_TYPE) 
+endif(NOT CMAKE_BUILD_TYPE)
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Release")

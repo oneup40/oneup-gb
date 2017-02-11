@@ -148,7 +148,7 @@ void Channel2::TickOutput() {
     if (ctr_ != 2048) { return; }
 
     ctr_ = ((r4_ & 0x07) << 8) | r3_;
-    
+
 	step_ >>= 1;
 	if (!step_) { step_ = 0x8000; }
 
