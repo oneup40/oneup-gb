@@ -82,16 +82,16 @@ static bool ParseArgs(int argc, char **argv, Args &args) {
 
 static bool LoadExpectedOutput(
     const std::string &path,
-    std::array<std::array<gb1::u8, 40>, 144> &expected
-) {
+    std::array<std::array<gb1::u8, 40>, 144> &expected)
+{
     std::ifstream fin(path);
     for (auto &line : expected) {
         line.fill(0);
 
         std::array<char, 320> data;
         if (!fin.read(data.data(), data.size())) {
-            std::cerr << "Xxx" << std::endl;
-            return false; }
+            return false;
+        }
 
         auto j=0, shift=0;
         for (auto i=0u; i < data.size(); i += 2) {
@@ -101,7 +101,7 @@ static bool LoadExpectedOutput(
                 case '.': dot = 0x01; break;
                 case ':': dot = 0x02; break;
                 case 'O': dot = 0x03; break;
-                default: { std::cerr << "y" << std::endl; return false;}
+                default: return false;
             }
 
             line[j] |= (dot << shift);
@@ -115,9 +115,8 @@ static bool LoadExpectedOutput(
 
         char newline = 0;
         if (!fin.read(&newline, 1) || newline != '\n') {
-            std::cerr <<" z" << std::endl;
-            std::cerr << bool(fin) << ' ' << unsigned(newline) << std::endl;
-            return false; }
+            return false;
+        }
     }
 
     return true;
@@ -145,8 +144,9 @@ int main(int argc, char **argv) {
         m.Tick();
     }
 
-    /*std::array<char, 4> palette{{' ','.',':','O'}};
-    for (const auto &line : expected) {
+    /*
+    std::array<char, 4> palette{{' ','.',':','O'}};
+    for (const auto &line : frontend.GetLastFrame()) {
         for (auto dot : line) {
             for (auto i = 0u; i < 4; ++i) {
                 std::cout << palette[dot & 0x03];
@@ -155,7 +155,9 @@ int main(int argc, char **argv) {
             }
         }
         std::cout << std::endl;
-    }*/
+    }
+    return 0;
+    */
 
     if (frontend.GetLastFrame() == expected) { return 0; }
     else {

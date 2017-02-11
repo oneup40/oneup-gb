@@ -131,7 +131,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    /*std::array<char, 4> palette{{' ','.',':','O'}};
+    /*
+    std::array<char, 4> palette{{' ','.',':','O'}};
     for (const auto &line : frontend.GetLastFrame()) {
         for (auto dot : line) {
             for (auto i = 0u; i < 4; ++i) {
@@ -142,7 +143,8 @@ int main(int argc, char **argv) {
         }
         std::cout << std::endl;
     }
-    return 0;*/
+    return 0;
+    */
 
     if (frontend.GetLastFrame() == expected) { return 0; }
     else {
