@@ -1,13 +1,13 @@
 #pragma once
 
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
 #include <iostream>
 #include <limits>
 #include <string>
 #include <vector>
 
-#include "Base.hpp"
+#include "core/Base.hpp"
 
 // Assumptions:
 //   1) Serialization is not a frequent occurrence (< 1 time per second)

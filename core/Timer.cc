@@ -1,8 +1,8 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Timer.hpp"
+#include "core/Timer.hpp"
 
-#include "Machine.hpp"
+#include "core/Machine.hpp"
 
 namespace gb1 {
 

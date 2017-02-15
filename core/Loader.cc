@@ -1,14 +1,14 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Loader.hpp"
+#include "core/Loader.hpp"
 
 #include <string>
 
 #include <cassert>
 
-#include "Base.hpp"
-#include "Machine.hpp"
-#include "Mapper.hpp"
+#include "core/Base.hpp"
+#include "core/Machine.hpp"
+#include "core/Mapper.hpp"
 
 namespace gb1 {
 

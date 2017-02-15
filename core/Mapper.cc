@@ -1,10 +1,10 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Mapper.hpp"
+#include "core/Mapper.hpp"
 
 #include <cassert>
 
-#include "Machine.hpp"
+#include "core/Machine.hpp"
 
 namespace gb1 {
 

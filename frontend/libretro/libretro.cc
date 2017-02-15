@@ -1,8 +1,8 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "libretro.h"
+#include "frontend/libretro/libretro.h"
 
-#include "LRConnector.hpp"
+#include "frontend/libretro/LRConnector.hpp"
 
 #include <iostream>
 #include <memory>

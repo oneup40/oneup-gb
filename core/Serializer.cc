@@ -1,6 +1,6 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Serializer.hpp"
+#include "core/Serializer.hpp"
 
 namespace gb1 {
 

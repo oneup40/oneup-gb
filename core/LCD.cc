@@ -1,11 +1,11 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "LCD.hpp"
+#include "core/LCD.hpp"
 
 #include <algorithm>
 
-#include "Frontend.hpp"
-#include "Machine.hpp"
+#include "core/Frontend.hpp"
+#include "core/Machine.hpp"
 
 namespace gb1 {
 

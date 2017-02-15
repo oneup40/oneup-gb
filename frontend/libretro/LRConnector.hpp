@@ -1,8 +1,8 @@
 #pragma once
 
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "libretro.h"
+#include "frontend/libretro/libretro.h"
 
 #include "core/Frontend.hpp"
 

@@ -1,9 +1,9 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Joypad.hpp"
+#include "core/Joypad.hpp"
 
-#include "Frontend.hpp"
-#include "Machine.hpp"
+#include "core/Frontend.hpp"
+#include "core/Machine.hpp"
 
 namespace gb1 {
 

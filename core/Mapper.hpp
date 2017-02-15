@@ -1,9 +1,9 @@
 #pragma once
 
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Base.hpp"
-#include "Serializer.hpp"
+#include "core/Base.hpp"
+#include "core/Serializer.hpp"
 
 #include <vector>
 
