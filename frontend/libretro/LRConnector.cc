@@ -1,6 +1,6 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "LRConnector.hpp"
+#include "frontend/libretro/LRConnector.hpp"
 
 #include <chrono>
 #include <fstream>

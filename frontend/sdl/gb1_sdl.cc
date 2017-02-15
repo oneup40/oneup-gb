@@ -1,6 +1,6 @@
 // Copyright 2017 oneup
 
-#include "SDLFrontend.hpp"
+#include "frontend/sdl/SDLFrontend.hpp"
 
 #include <iostream>
 

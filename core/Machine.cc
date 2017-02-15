@@ -1,13 +1,13 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Machine.hpp"
+#include "core/Machine.hpp"
 
 #include <chrono>
 #include <iostream>
 
 #include <cassert>
 
-#include "Frontend.hpp"
+#include "core/Frontend.hpp"
 
 namespace gb1 {
 

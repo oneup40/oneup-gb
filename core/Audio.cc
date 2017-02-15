@@ -1,9 +1,9 @@
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Audio.hpp"
+#include "core/Audio.hpp"
 
-#include "Frontend.hpp"
-#include "Machine.hpp"
+#include "core/Frontend.hpp"
+#include "core/Machine.hpp"
 
 namespace gb1 {
 
