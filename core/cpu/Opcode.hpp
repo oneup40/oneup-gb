@@ -1,8 +1,8 @@
 #pragma once
 
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
-#include "Base.hpp"
+#include "core/Base.hpp"
 
 namespace gb1 {
 

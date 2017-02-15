@@ -1,13 +1,13 @@
 #pragma once
 
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
 #include <cassert>
 
-#include "Base.hpp"
-#include "Opcode.hpp"
-#include "Regs.hpp"
-#include "Serializer.hpp"
+#include "core/Base.hpp"
+#include "core/cpu/Opcode.hpp"
+#include "core/cpu/Regs.hpp"
+#include "core/Serializer.hpp"
 
 namespace gb1 {
 

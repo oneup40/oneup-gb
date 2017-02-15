@@ -1,17 +1,17 @@
 #pragma once
 
-// Copyright 2016 oneup
+// Copyright 2016-2017 oneup
 
 #include <functional>
 #include <memory>
 
-#include "Audio.hpp"
-#include "CPU.hpp"
-#include "Joypad.hpp"
-#include "LCD.hpp"
-#include "Loader.hpp"
-#include "Mapper.hpp"
-#include "Timer.hpp"
+#include "core/Audio.hpp"
+#include "core/cpu/CPU.hpp"
+#include "core/Joypad.hpp"
+#include "core/LCD.hpp"
+#include "core/Loader.hpp"
+#include "core/Mapper.hpp"
+#include "core/Timer.hpp"
 
 namespace gb1 {
 
