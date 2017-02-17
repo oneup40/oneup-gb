@@ -5,36 +5,12 @@
 #include <cassert>
 
 #include "core/Base.hpp"
+#include "core/cpu/Instruction.hpp"
 #include "core/cpu/Opcode.hpp"
 #include "core/cpu/Regs.hpp"
 #include "core/Serializer.hpp"
 
 namespace gb1 {
-
-struct Instruction {
-    u32 src, dst;
-    u16 pc, src_ea, dst_ea;
-
-    u8 bytes[3];
-    u8 nbytes;
-    Optype op;
-
-    AddrMode dst_am;
-    AddrMode src_am;
-
-    ConditionCode cc;
-    u8 cycles, extra;
-    bool taken;
-
-    Instruction()
-        : src(0), dst(0), pc(0), src_ea(0), dst_ea(0),
-          bytes{0,0,0}, nbytes(0), op(OP_NOP),
-          dst_am(AM_NONE), src_am(AM_NONE),
-          cc(CC_ALWAYS), cycles(0), extra(0), taken(false)
-    {}
-
-    u8 *byte_ptr() { return &bytes[nbytes]; }
-};
 
 namespace {
 
@@ -95,35 +71,6 @@ static inline std::string operand_to_string(AddrMode am, u16 ea, u32 val) {
 }
 
 }    // namespace (anonymous)
-
-static inline std::string to_string(const Instruction &ins) {
-    std::string s;
-    s += to_hex(ins.pc, 4);
-    s += "  ";
-
-    for (auto i=0ul; i < ins.nbytes; ++i) {
-        s += to_hex(ins.bytes[i], 2);
-        s += " ";
-    }
-    while (s.length() < 16) { s += " "; }
-
-    s += to_string(ins.op);
-    while (s.length() < 22) { s += " "; }
-
-    if (ins.cc != CC_ALWAYS) {
-        s += to_string(ins.cc);
-        s += ", ";
-    }
-
-    s += operand_to_string(ins.dst_am, ins.dst_ea, ins.dst);
-    if (ins.dst_am != AM_NONE && ins.src_am != AM_NONE) {
-        s += ", ";
-    }
-
-    s += operand_to_string(ins.src_am, ins.src_ea, ins.src);
-    return s;
-}
-
 struct Machine;
 
 // Why does C++ make this so difficult?

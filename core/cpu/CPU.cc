@@ -469,7 +469,7 @@ bool CPU::Execute(Instruction *ins) {
             halt_ = true;
             break;
         default:
-            m_->Log(std::string("CPU::Execute: Op ") + optype_names[ins->op] + " not implemented");
+            m_->Log(std::string("CPU::Execute: Op ") + to_string(ins->op) + " not implemented");
             return false;
     }
 
