@@ -3,74 +3,11 @@
 // Copyright 2016-2017 oneup
 
 #include "core/Base.hpp"
+#include "core/cpu/AddrMode.hpp"
+#include "core/cpu/ConditionCode.hpp"
+#include "core/cpu/Optype.hpp"
 
 namespace gb1 {
-
-enum Optype : u8 {
-    OP_NOP,
-    OP_LD, OP_PUSH, OP_POP,
-    OP_INC8, OP_INC16, OP_DEC8, OP_DEC16, OP_ADD8, OP_ADD16, OP_ADDSP, OP_ADC, OP_SUB, OP_SBC, OP_CP, OP_DAA,
-    OP_RLA, OP_RLCA, OP_RRA, OP_RRCA,
-    OP_RL, OP_RLC, OP_RR, OP_RRC, OP_SLA, OP_SRA, OP_SWAP, OP_SRL, OP_BIT, OP_RES, OP_SET,
-    OP_CPL, OP_AND, OP_XOR, OP_OR,
-    OP_SCF, OP_CCF, OP_DI, OP_EI,
-    OP_JR, OP_JP, OP_CALL, OP_RET, OP_RETI, OP_STOP, OP_HALT, OP_RST,
-    OP_CB,
-    OP_UD
-};
-
-static constexpr const char* optype_names[] = {
-    "nop",
-    "ld", "push", "pop",
-    "inc", "inc", "dec", "dec", "add", "add", "ld", "adc", "sub", "sbc", "cp", "daa",
-    "rla", "rlca", "rra", "rrca",
-    "rl", "rlc", "rr", "rrc", "sla", "sra", "swap", "srl", "bit", "res", "set",
-    "cpl", "and", "xor", "or",
-    "scf", "ccf", "di", "ei",
-    "jr", "jp", "call", "ret", "reti", "stop", "halt", "rst",
-    "cb",
-	"ud"
-};
-
-static inline std::string to_string(Optype op) { return optype_names[op]; }
-
-enum AddrMode : u8 {
-    AM_NONE,
-    AM_IMM8, AM_IMM16,
-    AM_MIMM16,
-    AM_A, AM_B, AM_C, AM_D, AM_E, AM_H, AM_L,
-    AM_AF, AM_BC, AM_DE, AM_HL, AM_SP,
-    AM_MBC, AM_MDE, AM_MHL, AM_MHLI, AM_MHLD,
-    AM_HMIMM8, AM_HMC,
-    AM_SPIMM8
-};
-
-static constexpr const char* addrmode_names[] = {
-    "none",
-    "imm8", "imm16",
-    "(imm16)",
-	"A", "B", "C", "D", "E", "H", "L",
-	"AF", "BC", "DE", "HL", "SP",
-	"(BC)", "(DE)", "(HL)", "(HLI)", "(HLD)",
-    "($FF00+imm8)", "($FF00+C)",
-    "SP+imm8"
-};
-
-static inline std::string to_string(AddrMode am) { return addrmode_names[am]; }
-
-enum ConditionCode : u8 {
-    CC_ALWAYS,
-    CC_NZ, CC_Z,
-    CC_NC, CC_C
-};
-
-static constexpr const char* cc_names[] = {
-    "",
-    "NZ", "Z",
-    "NC", "C"
-};
-
-static inline std::string to_string(ConditionCode cc) { return cc_names[cc]; }
 
 struct Opcode {
     Optype op;
