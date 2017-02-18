@@ -4,29 +4,28 @@
 
 #include "core/cpu/AddrMode.hpp"
 #include "core/cpu/ConditionCode.hpp"
+#include "core/cpu/Operand.hpp"
 #include "core/cpu/Optype.hpp"
 
 namespace gb1 {
 
 struct Instruction {
-    u32 src, dst;
-    u16 pc, src_ea, dst_ea;
+    u16 pc;
 
     u8 bytes[3];
     u8 nbytes;
-    Optype op;
 
-    AddrMode dst_am;
-    AddrMode src_am;
+    Optype op;
+    Operand src, dst;
 
     ConditionCode cc;
     u8 cycles, extra;
     bool taken;
 
     Instruction()
-            : src(0), dst(0), pc(0), src_ea(0), dst_ea(0),
-              bytes{0,0,0}, nbytes(0), op(OP_NOP),
-              dst_am(AM_NONE), src_am(AM_NONE),
+            : pc(0),
+			  bytes{0,0,0}, nbytes(0),
+			  op(OP_NOP), src(), dst(),
               cc(CC_ALWAYS), cycles(0), extra(0), taken(false)
     {}
 
