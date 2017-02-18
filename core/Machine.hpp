@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 
-#include "core/Audio.hpp"
+#include "core/audio/Audio.hpp"
 #include "core/cpu/CPU.hpp"
 #include "core/cpu/CPUObserver.hpp"
 #include "core/Joypad.hpp"
