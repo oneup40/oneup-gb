@@ -1,6 +1,6 @@
 // Copyright 2016-2017 oneup
 
-#include "core/Joypad.hpp"
+#include "core/joypad/Joypad.hpp"
 
 #include "core/Frontend.hpp"
 #include "core/Machine.hpp"
