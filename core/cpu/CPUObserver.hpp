@@ -3,6 +3,7 @@
 // Copyright 2017 oneup
 
 #include "core/Base.hpp"
+#include "core/cpu/Instruction.hpp"
 #include "core/cpu/Opcode.hpp"
 #include "core/cpu/Operand.hpp"
 #include "core/cpu/Optype.hpp"
@@ -18,8 +19,8 @@ public:
     virtual void Decode(const CPU& /* cpu */, const Opcode& /* op */) {}
     virtual void FetchSourceOperand(const CPU& /* cpu */, const Operand& /* op */) {}
     virtual void FetchDestinationOperand(const CPU& /* cpu */, const Operand& /* op */) {}
-    virtual void BeforeExecute(const CPU& /* cpu */, Optype /* op */, const Operand& /* src */, const Operand& /* dst */) {}
-    virtual void AfterExecute(const CPU& /* cpu */, Optype /* op */, const Operand& /* src */, const Operand& /* dst */) {}
+    virtual void BeforeExecute(const CPU& /* cpu */, const Instruction& /* ins */) {}
+    virtual void AfterExecute(const CPU& /* cpu */, const Instruction& /* ins */) {}
     virtual void Store(const CPU& /* cpu */, const Operand& /* dst */) {}
 
     virtual void RaiseInterrupt(const CPU& /* cpu */, u8 /* num */) {}
