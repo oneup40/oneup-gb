@@ -1,4 +1,4 @@
-set(LIBGB1_SRC audio/Audio.cc cpu/CPU.cc joypad/Joypad.cc LCD.cc Loader.cc
+set(LIBGB1_SRC audio/Audio.cc cpu/CPU.cc joypad/Joypad.cc lcd/LCD.cc Loader.cc
                Machine.cc Mapper.cc Serializer.cc Timer.cc)
 
 if (MSVC)
