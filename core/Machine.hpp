@@ -7,6 +7,7 @@
 
 #include "core/Audio.hpp"
 #include "core/cpu/CPU.hpp"
+#include "core/cpu/CPUObserver.hpp"
 #include "core/Joypad.hpp"
 #include "core/LCD.hpp"
 #include "core/Loader.hpp"
@@ -44,7 +45,7 @@ struct Machine {
     static constexpr const u8 version_ = 0x01;
     static constexpr const u64 code_ = eight_cc(version_,'m','a','c','h','i','n','e');
 
-    explicit Machine(Frontend& frontend);
+    explicit Machine(Frontend& frontend, CPUObserver *observer = nullptr);
     Machine(const Machine&) = delete;
     Machine(Machine&&) = delete;
     Machine& operator=(const Machine&) = delete;

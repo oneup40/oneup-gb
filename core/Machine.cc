@@ -11,9 +11,9 @@
 
 namespace gb1 {
 
-Machine::Machine(Frontend& frontend)
+Machine::Machine(Frontend& frontend, CPUObserver *observer)
     : frontend(frontend),
-      cpu(this), lcd(this), mapper(), joypad(this), timer(this), audio(this),
+      cpu(this, observer), lcd(this), mapper(), joypad(this), timer(this), audio(this),
       t(0)
 {
     wram.fill(0);

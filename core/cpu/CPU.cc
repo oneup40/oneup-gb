@@ -160,7 +160,7 @@ static inline void write_u16(Machine *m, u16 addr, u16 val) {
 }
 
 bool CPU::Execute(Instruction *ins) {
-    if (obs_) { obs_->BeforeExecute(*this, ins->op, ins->src, ins->dst); }
+    if (obs_) { obs_->BeforeExecute(*this, *ins); }
 
     busy_ += ins->cycles;
 
@@ -482,7 +482,7 @@ bool CPU::Execute(Instruction *ins) {
             return false;
     }
 
-    if (obs_) { obs_->AfterExecute(*this, ins->op, ins->src, ins->dst); }
+    if (obs_) { obs_->AfterExecute(*this, *ins); }
     return true;
 }
 
@@ -604,14 +604,6 @@ bool CPU::Step() {
 
     good = Store(&ins);
     if (!good) { return false; }
-
-#ifdef DEBUG_CPU
-    std::string log = to_string(ins);
-    while (log.length() < 60) { log += " "; }
-    log += to_string(reg_);
-
-    m_->Log(log);
-#endif
 
     return true;
 }
