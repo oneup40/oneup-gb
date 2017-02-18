@@ -1,6 +1,6 @@
 // Copyright 2016-2017 oneup
 
-#include "core/Timer.hpp"
+#include "core/timer/Timer.hpp"
 
 #include "core/Machine.hpp"
 
