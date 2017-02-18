@@ -13,6 +13,7 @@ bool CPU::FetchInstruction(Instruction *ins) {
         ins->bytes[ins->nbytes++] = m_->Read(reg_.pc++);
     }
 
+    if (obs_) { obs_->FetchInstruction(*this, ins->pc, ins->bytes, ins->nbytes); }
     return true;
 }
 
@@ -31,6 +32,7 @@ bool CPU::Decode(Instruction *ins) {
     ins->cycles = op->cycles;
     ins->extra = op->extra;
 
+    if (obs_) { obs_->Decode(*this, *op); }
     return true;
 }
 
@@ -136,8 +138,10 @@ bool CPU::FetchOperand(Instruction *ins, Operand *op) {
 bool CPU::FetchOperands(Instruction *ins) {
     bool good = FetchOperand(ins, &ins->src);
     if (!good) { return false; }
+    if (obs_) { obs_->FetchSourceOperand(*this, ins->src); }
 
     good = FetchOperand(ins, &ins->dst);
+    if (good && obs_) { obs_->FetchDestinationOperand(*this, ins->dst); }
 
     return good;
 }
@@ -156,6 +160,8 @@ static inline void write_u16(Machine *m, u16 addr, u16 val) {
 }
 
 bool CPU::Execute(Instruction *ins) {
+    if (obs_) { obs_->BeforeExecute(*this, ins->op, ins->src, ins->dst); }
+
     busy_ += ins->cycles;
 
     u8 tmp8 = 0;
@@ -173,11 +179,11 @@ bool CPU::Execute(Instruction *ins) {
         case OP_PUSH:
             reg_.sp -= 2;
             write_u16(m_, reg_.sp, src);
-            return true;
+            break;
         case OP_POP:
             dst = read_u16(m_, reg_.sp);
             reg_.sp += 2;
-            return true;
+            break;
         case OP_INC8:
             tmp32 = dst;
             ++dst;
@@ -476,13 +482,14 @@ bool CPU::Execute(Instruction *ins) {
             return false;
     }
 
+    if (obs_) { obs_->AfterExecute(*this, ins->op, ins->src, ins->dst); }
     return true;
 }
 
 bool CPU::Store(Instruction *ins) {
     switch (ins->dst.am) {
         case AM_NONE:
-            return true;
+            break;
         case AM_IMM8:
         case AM_IMM16:
         case AM_SPIMM8:
@@ -493,7 +500,7 @@ bool CPU::Store(Instruction *ins) {
             // requires a 2-byte write
             if (ins->src.am == AM_SP) {
                 write_u16(m_, ins->dst.ea, ins->dst.val);
-                return true;
+                break;
             }
             /* no break */
         case AM_MBC:
@@ -504,7 +511,7 @@ bool CPU::Store(Instruction *ins) {
         case AM_HMIMM8:
         case AM_HMC:
             m_->Write(ins->dst.ea, ins->dst.val);
-            return true;
+            break;
         case AM_A:
             reg_.a = ins->dst.val;
             break;
@@ -546,6 +553,7 @@ bool CPU::Store(Instruction *ins) {
             return false;
     }
 
+    if (obs_) { obs_->Store(*this, ins->dst); }
     return true;
 }
 
@@ -559,13 +567,18 @@ bool CPU::Step() {
         halt_ = false;
 
         ime_ = false;
-        if (pending & 0x01)         { if_ &= ~0x01; reg_.pc = 0x0040; }
-        else if (pending & 0x02)    { if_ &= ~0x02; reg_.pc = 0x0048; }
-        else if (pending & 0x04)    { if_ &= ~0x04; reg_.pc = 0x0050; }
-        else if (pending & 0x08)    { if_ &= ~0x08; reg_.pc = 0x0058; }
-        else if (pending & 0x10)    { if_ &= ~0x10; reg_.pc = 0x0060; }
+        u8 num = 0;
+
+        if (pending & 0x01)         { num = 0x01; reg_.pc = 0x0040; }
+        else if (pending & 0x02)    { num = 0x02; reg_.pc = 0x0048; }
+        else if (pending & 0x04)    { num = 0x04; reg_.pc = 0x0050; }
+        else if (pending & 0x08)    { num = 0x08; reg_.pc = 0x0058; }
+        else if (pending & 0x10)    { num = 0x10; reg_.pc = 0x0060; }
         else                        { assert(0); }
 
+        if_ &= ~num;
+
+        if (obs_) { obs_->ServiceInterrupt(*this, num); }
         return true;
     }
 
@@ -603,11 +616,15 @@ bool CPU::Step() {
     return true;
 }
 
-CPU::CPU(Machine *machine)
-    : busy_(0), if_(0), ie_(0), ime_(false), halt_(false), m_(machine)
+CPU::CPU(Machine *machine, CPUObserver *observer)
+    : busy_(0), if_(0), ie_(0), ime_(false), halt_(false),
+      obs_(observer),
+      m_(machine)
 {}
 
 bool CPU::Tick() {
+    if (obs_) { obs_->StartTick(*this); }
+
     bool good = true;
     if (!busy_) { good = Step(); }
 
@@ -620,6 +637,7 @@ bool CPU::Tick() {
 void CPU::Interrupt(u8 num) {
     assert(!(num & ~0x1F));
     if_ |= num;
+    if (obs_) { obs_->RaiseInterrupt(*this, num); }
 }
 
 }    // namespace gb1

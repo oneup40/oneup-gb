@@ -5,6 +5,7 @@
 #include <cassert>
 
 #include "core/Base.hpp"
+#include "core/cpu/CPUObserver.hpp"
 #include "core/cpu/Instruction.hpp"
 #include "core/cpu/Opcode.hpp"
 #include "core/cpu/Regs.hpp"
@@ -35,6 +36,8 @@ class CPU {
     u16 if_, ie_;
     bool ime_, halt_;
 
+    CPUObserver *obs_;
+
     Machine *m_;
     friend struct Machine;
 
@@ -52,7 +55,7 @@ class CPU {
     friend Serializer& operator<<(Serializer &s, const CPU &cpu);
     friend Deserializer& operator>>(Deserializer &d, CPU &cpu);
 public:
-    CPU(Machine *machine);
+    explicit CPU(Machine *machine, CPUObserver *observer = nullptr);
     CPU(const CPU&) = delete;
     CPU(CPU&&) = delete;
     CPU& operator=(const CPU&) = delete;
