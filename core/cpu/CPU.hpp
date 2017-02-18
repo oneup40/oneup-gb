@@ -12,65 +12,6 @@
 
 namespace gb1 {
 
-namespace {
-
-static inline std::string operand_to_string(AddrMode am, u16 ea, u32 val) {
-    switch (am) {
-        case AM_NONE:
-            return "";
-        case AM_IMM8:
-            return "$" + to_hex(val, 2);
-        case AM_IMM16:
-            return "$" + to_hex(val, 4);
-        case AM_MIMM16:
-            return "($" + to_hex(ea, 4) + ") = $" + to_hex(val, 2);
-        case AM_A:
-            return "A";
-        case AM_B:
-            return "B";
-        case AM_C:
-            return "C";
-        case AM_D:
-            return "D";
-        case AM_E:
-            return "E";
-        case AM_H:
-            return "H";
-        case AM_L:
-            return "L";
-        case AM_AF:
-            return "AF";
-        case AM_BC:
-            return "BC";
-        case AM_DE:
-            return "DE";
-        case AM_HL:
-            return "HL";
-        case AM_SP:
-            return "SP";
-        case AM_MBC:
-            return "(BC) = $" + to_hex(val, 2);
-        case AM_MDE:
-            return "(DE) = $" + to_hex(val, 2);
-        case AM_MHL:
-            return "(HL) = $" + to_hex(val, 2);
-        case AM_MHLI:
-            return "(HL+) = $" + to_hex(val, 2);
-        case AM_MHLD:
-            return "(HL-) = $" + to_hex(val, 2);
-        case AM_HMIMM8:
-            return "($FF00+$" + to_hex(ea & 0xff, 2) + ") = $" + to_hex(val, 2);
-        case AM_HMC:
-            return "($FF00+C) = $" + to_hex(val, 2);
-        case AM_SPIMM8:
-            return "SP+$" + to_hex(val & 0xff, 2);
-        default:
-            assert(0);
-            return "XXX";
-    }
-}
-
-}    // namespace (anonymous)
 struct Machine;
 
 // Why does C++ make this so difficult?
@@ -99,7 +40,7 @@ class CPU {
 
     bool FetchInstruction(Instruction *ins);
     bool Decode(Instruction *ins);
-    bool FetchOperand(Instruction *ins, AddrMode am, u16 *ea, u32 *val);
+    bool FetchOperand(Instruction *ins, Operand *op);
     bool FetchOperands(Instruction *ins);
     bool Execute(Instruction *ins);
     bool Store(Instruction *ins);
