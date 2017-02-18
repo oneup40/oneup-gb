@@ -12,7 +12,7 @@
 #include "core/lcd/LCD.hpp"
 #include "core/Loader.hpp"
 #include "core/Mapper.hpp"
-#include "core/Timer.hpp"
+#include "core/timer/Timer.hpp"
 
 namespace gb1 {
 
