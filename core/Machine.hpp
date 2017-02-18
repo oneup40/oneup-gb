@@ -9,7 +9,7 @@
 #include "core/cpu/CPU.hpp"
 #include "core/cpu/CPUObserver.hpp"
 #include "core/joypad/Joypad.hpp"
-#include "core/LCD.hpp"
+#include "core/lcd/LCD.hpp"
 #include "core/Loader.hpp"
 #include "core/Mapper.hpp"
 #include "core/Timer.hpp"

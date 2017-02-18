@@ -1,6 +1,6 @@
 // Copyright 2016-2017 oneup
 
-#include "core/LCD.hpp"
+#include "core/lcd/LCD.hpp"
 
 #include <algorithm>
 
