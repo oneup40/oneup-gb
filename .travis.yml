@@ -12,4 +12,5 @@ before_install:
   - docker pull oneup40/oneup-gb-build:${DOCKER_TAG}
 
 script:
-  - docker run -e CXX=${CXX} -v $(pwd):/project oneup40/oneup-gb-build:archlinux-x64 /bin/sh -c "cmake /project -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -GNinja && cmake --build . && ninja test"
+  - echo "using $(nproc) cores"
+  - docker run -e CXX=${CXX} -v $(pwd):/project oneup40/oneup-gb-build:archlinux-x64 /bin/sh -c "cmake /project -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -GNinja && cmake --build . && ctest -j $(nproc)"
