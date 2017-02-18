@@ -1,6 +1,6 @@
 // Copyright 2016-2017 oneup
 
-#include "core/Audio.hpp"
+#include "core/audio/Audio.hpp"
 
 #include "core/Frontend.hpp"
 #include "core/Machine.hpp"
