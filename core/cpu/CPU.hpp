@@ -31,16 +31,13 @@ static inline Serializer& operator<<(Serializer &s, const CPU &cpu);
 static inline Deserializer& operator>>(Deserializer &d, CPU &cpu);
 
 class CPU {
-    friend class IO;
-
     size_t busy_;
     Regs reg_;
     u16 if_, ie_;
     bool ime_, halt_;
 
-    CPUObserver *obs_;
-
     Machine *m_;
+    CPUObserver *obs_;
 
     bool FetchInstruction(Instruction *ins);
     bool Decode(Instruction *ins);
@@ -64,6 +61,12 @@ public:
 
     bool Tick();
     void Interrupt(u8 num);
+
+    u8 ReadIF(bool /* force */ = false) const { return if_ & 0xFF; }
+    void WriteIF(u8 val, bool force = false) { if_ = val & (force ? 0xFF : 0x1F); }
+
+    u8 ReadIE(bool /* force */ = false) const { return ie_ & 0xFF; }
+    void WriteIE(u8 val, bool force = false) { ie_ = val & (force ? 0xFF : 0x1F); }
 
     const Regs& GetRegs() const { return reg_; }
 };

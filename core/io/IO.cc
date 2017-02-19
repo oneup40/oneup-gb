@@ -17,68 +17,68 @@ u8 IO::Read(u16 addr, bool force) {
     else if (addr < 0xFF00) { result = 0; }
     else if (addr < 0xFF80) {
         switch (addr & 0xFF) {
-            case 0x00:  result = m_->joypad.ReadJoyp(force); break;
-            case 0x04:  result = m_->timer.ReadDiv(force); break;
-            case 0x05:  result = m_->timer.tima_; break;
-            case 0x06:  result = m_->timer.tma_; break;
-            case 0x07:  result = m_->timer.tac_; break;
-            case 0x0F:  result = m_->cpu.if_ & 0xFF; break;
-            case 0x10:  result = m_->audio.ch1_.r0_; break;
-            case 0x11:  result = m_->audio.ch1_.r1_; break;
-            case 0x12:  result = m_->audio.ch1_.r2_; break;
-            case 0x13:  result = m_->audio.ch1_.r3_; break;
-            case 0x14:  result = m_->audio.ch1_.r4_; break;
-            case 0x15:  result = m_->audio.ch2_.r0_; break;
-            case 0x16:  result = m_->audio.ch2_.r1_; break;
-            case 0x17:  result = m_->audio.ch2_.r2_; break;
-            case 0x18:  result = m_->audio.ch2_.r3_; break;
-            case 0x19:  result = m_->audio.ch2_.r4_; break;
-            case 0x1A:  result = m_->audio.ch3_.r0_; break;
-            case 0x1B:  result = m_->audio.ch3_.r1_; break;
-            case 0x1C:  result = m_->audio.ch3_.r2_; break;
-            case 0x1D:  result = m_->audio.ch3_.r3_; break;
-            case 0x1E:  result = m_->audio.ch3_.r4_; break;
-            case 0x1F:  result = m_->audio.ch4_.r0_; break;
-            case 0x20:  result = m_->audio.ch4_.r1_; break;
-            case 0x21:  result = m_->audio.ch4_.r2_; break;
-            case 0x22:  result = m_->audio.ch4_.r3_; break;
-            case 0x23:  result = m_->audio.ch4_.r4_; break;
-            case 0x24:  result = m_->audio.nr50_; break;
-            case 0x25:  result = m_->audio.nr51_; break;
-            case 0x26:  result = m_->audio.nr52_; break;
-            case 0x30:  result = m_->audio.ch3_.wave_[0x0]; break;
-            case 0x31:  result = m_->audio.ch3_.wave_[0x1]; break;
-            case 0x32:  result = m_->audio.ch3_.wave_[0x2]; break;
-            case 0x33:  result = m_->audio.ch3_.wave_[0x3]; break;
-            case 0x34:  result = m_->audio.ch3_.wave_[0x4]; break;
-            case 0x35:  result = m_->audio.ch3_.wave_[0x5]; break;
-            case 0x36:  result = m_->audio.ch3_.wave_[0x6]; break;
-            case 0x37:  result = m_->audio.ch3_.wave_[0x7]; break;
-            case 0x38:  result = m_->audio.ch3_.wave_[0x8]; break;
-            case 0x39:  result = m_->audio.ch3_.wave_[0x9]; break;
-            case 0x3A:  result = m_->audio.ch3_.wave_[0xA]; break;
-            case 0x3B:  result = m_->audio.ch3_.wave_[0xB]; break;
-            case 0x3C:  result = m_->audio.ch3_.wave_[0xC]; break;
-            case 0x3D:  result = m_->audio.ch3_.wave_[0xD]; break;
-            case 0x3E:  result = m_->audio.ch3_.wave_[0xE]; break;
-            case 0x3F:  result = m_->audio.ch3_.wave_[0xF]; break;
-            case 0x40:  result = m_->lcd.lcdc_; break;
-            case 0x41:  result = m_->lcd.stat_; break;
-            case 0x42:  result = m_->lcd.scy_; break;
-            case 0x43:  result = m_->lcd.scx_; break;
-            case 0x44:  result = m_->lcd.ly_; break;
-            case 0x45:  result = m_->lcd.lyc_; break;
+            case 0x00:  result = m_->joypad.ReadJOYP(force); break;
+            case 0x04:  result = m_->timer.ReadDIV(force); break;
+            case 0x05:  result = m_->timer.ReadTIMA(force); break;
+            case 0x06:  result = m_->timer.ReadTMA(force); break;
+            case 0x07:  result = m_->timer.ReadTAC(force); break;
+            case 0x0F:  result = m_->cpu.ReadIF(force); break;
+            case 0x10:  result = m_->audio.ReadNR10(force); break;
+            case 0x11:  result = m_->audio.ReadNR11(force); break;
+            case 0x12:  result = m_->audio.ReadNR12(force); break;
+            case 0x13:  result = m_->audio.ReadNR13(force); break;
+            case 0x14:  result = m_->audio.ReadNR14(force); break;
+            case 0x15:  result = m_->audio.ReadNR20(force); break;
+            case 0x16:  result = m_->audio.ReadNR21(force); break;
+            case 0x17:  result = m_->audio.ReadNR22(force); break;
+            case 0x18:  result = m_->audio.ReadNR23(force); break;
+            case 0x19:  result = m_->audio.ReadNR24(force); break;
+            case 0x1A:  result = m_->audio.ReadNR30(force); break;
+            case 0x1B:  result = m_->audio.ReadNR31(force); break;
+            case 0x1C:  result = m_->audio.ReadNR32(force); break;
+            case 0x1D:  result = m_->audio.ReadNR33(force); break;
+            case 0x1E:  result = m_->audio.ReadNR34(force); break;
+            case 0x1F:  result = m_->audio.ReadNR40(force); break;
+            case 0x20:  result = m_->audio.ReadNR41(force); break;
+            case 0x21:  result = m_->audio.ReadNR42(force); break;
+            case 0x22:  result = m_->audio.ReadNR43(force); break;
+            case 0x23:  result = m_->audio.ReadNR44(force); break;
+            case 0x24:  result = m_->audio.ReadNR50(force); break;
+            case 0x25:  result = m_->audio.ReadNR51(force); break;
+            case 0x26:  result = m_->audio.ReadNR52(force); break;
+            case 0x30:  result = m_->audio.ReadWAV(0x0, force); break;
+            case 0x31:  result = m_->audio.ReadWAV(0x1, force); break;
+            case 0x32:  result = m_->audio.ReadWAV(0x2, force); break;
+            case 0x33:  result = m_->audio.ReadWAV(0x3, force); break;
+            case 0x34:  result = m_->audio.ReadWAV(0x4, force); break;
+            case 0x35:  result = m_->audio.ReadWAV(0x5, force); break;
+            case 0x36:  result = m_->audio.ReadWAV(0x6, force); break;
+            case 0x37:  result = m_->audio.ReadWAV(0x7, force); break;
+            case 0x38:  result = m_->audio.ReadWAV(0x8, force); break;
+            case 0x39:  result = m_->audio.ReadWAV(0x9, force); break;
+            case 0x3A:  result = m_->audio.ReadWAV(0xA, force); break;
+            case 0x3B:  result = m_->audio.ReadWAV(0xB, force); break;
+            case 0x3C:  result = m_->audio.ReadWAV(0xC, force); break;
+            case 0x3D:  result = m_->audio.ReadWAV(0xD, force); break;
+            case 0x3E:  result = m_->audio.ReadWAV(0xE, force); break;
+            case 0x3F:  result = m_->audio.ReadWAV(0xF, force); break;
+            case 0x40:  result = m_->lcd.ReadLCDC(force); break;
+            case 0x41:  result = m_->lcd.ReadSTAT(force); break;
+            case 0x42:  result = m_->lcd.ReadSCY(force); break;
+            case 0x43:  result = m_->lcd.ReadSCX(force); break;
+            case 0x44:  result = m_->lcd.ReadLY(force); break;
+            case 0x45:  result = m_->lcd.ReadLYC(force); break;
             case 0x46:  result = m_->lcd.ReadDMA(force); break;
-            case 0x47:  result = m_->lcd.bgp_; break;
-            case 0x48:  result = m_->lcd.obp0_; break;
-            case 0x49:  result = m_->lcd.obp1_; break;
-            case 0x4A:  result = m_->lcd.wy_; break;
-            case 0x4B:  result = m_->lcd.wx_; break;
+            case 0x47:  result = m_->lcd.ReadBGP(force); break;
+            case 0x48:  result = m_->lcd.ReadOBP0(force); break;
+            case 0x49:  result = m_->lcd.ReadOBP1(force); break;
+            case 0x4A:  result = m_->lcd.ReadWY(force); break;
+            case 0x4B:  result = m_->lcd.ReadWX(force); break;
             default:    result = 0; break;
         }
     }
     else if (addr < 0xFFFF) { result = m_->hram[addr & (m_->hram.size() - 1)]; }
-    else                    { result = m_->cpu.ie_ & 0xFF; }
+    else                    { result = m_->cpu.ReadIE(force); }
 
     if (obs_) { obs_->Read(*this, addr, result, force); }
     return result;
@@ -92,33 +92,69 @@ void IO::Write(u16 addr, u8 val, bool force) {
     else if (addr < 0xFEA0) { m_->lcd.WriteOAM(addr, val, force); }
     else if (addr < 0xFF00) { }
     else if (addr < 0xFF80) {
-        if (0xFF10 <= addr && addr < 0xFF40) { m_->audio.Write(addr, val, force); }
-        else {
-            switch (addr & 0xFF) {
-                case 0x00:  m_->joypad.WriteJoyp(val, force); break;
-                case 0x04:  m_->timer.WriteDiv(force); break;
-                case 0x05:  m_->timer.tima_ = val; break;
-                case 0x06:  m_->timer.tma_ = val; break;
-                case 0x07:  m_->timer.tac_ = val; break;
-                case 0x0F:  m_->cpu.if_ = val & 0x1F; break;
-                case 0x40:  m_->lcd.lcdc_ = val; break;
-                case 0x41:  m_->lcd.stat_ = val; break;
-                case 0x42:  m_->lcd.scy_ = val; break;
-                case 0x43:  m_->lcd.scx_ = val; break;
-                case 0x44:  m_->lcd.ly_ = 0; break;
-                case 0x45:  m_->lcd.lyc_ = val; break;
-                case 0x46:  m_->lcd.WriteDMA(val, force); break;
-                case 0x47:  m_->lcd.bgp_ = val; break;
-                case 0x48:  m_->lcd.obp0_ = val; break;
-                case 0x49:  m_->lcd.obp1_ = val; break;
-                case 0x4A:  m_->lcd.wy_ = val; break;
-                case 0x4B:  m_->lcd.wx_ = val; break;
-                default:    break;
-            }
+        switch (addr & 0xFF) {
+            case 0x00:  m_->joypad.WriteJOYP(val, force); break;
+            case 0x04:  m_->timer.WriteDIV(val, force); break;
+            case 0x05:  m_->timer.WriteTIMA(val, force); break;
+            case 0x06:  m_->timer.WriteTMA(val, force); break;
+            case 0x07:  m_->timer.WriteTAC(val, force); break;
+            case 0x0F:  m_->cpu.WriteIF(val, force); break;
+            case 0x10:  m_->audio.WriteNR10(val, force); break;
+            case 0x11:  m_->audio.WriteNR11(val, force); break;
+            case 0x12:  m_->audio.WriteNR12(val, force); break;
+            case 0x13:  m_->audio.WriteNR13(val, force); break;
+            case 0x14:  m_->audio.WriteNR14(val, force); break;
+            case 0x15:  m_->audio.WriteNR20(val, force); break;
+            case 0x16:  m_->audio.WriteNR21(val, force); break;
+            case 0x17:  m_->audio.WriteNR22(val, force); break;
+            case 0x18:  m_->audio.WriteNR23(val, force); break;
+            case 0x19:  m_->audio.WriteNR24(val, force); break;
+            case 0x1A:  m_->audio.WriteNR30(val, force); break;
+            case 0x1B:  m_->audio.WriteNR31(val, force); break;
+            case 0x1C:  m_->audio.WriteNR32(val, force); break;
+            case 0x1D:  m_->audio.WriteNR33(val, force); break;
+            case 0x1E:  m_->audio.WriteNR34(val, force); break;
+            case 0x1F:  m_->audio.WriteNR40(val, force); break;
+            case 0x20:  m_->audio.WriteNR41(val, force); break;
+            case 0x21:  m_->audio.WriteNR42(val, force); break;
+            case 0x22:  m_->audio.WriteNR43(val, force); break;
+            case 0x23:  m_->audio.WriteNR44(val, force); break;
+            case 0x24:  m_->audio.WriteNR50(val, force); break;
+            case 0x25:  m_->audio.WriteNR51(val, force); break;
+            case 0x26:  m_->audio.WriteNR52(val, force); break;
+            case 0x30:  m_->audio.WriteWAV(0x0, val, force); break;
+            case 0x31:  m_->audio.WriteWAV(0x1, val, force); break;
+            case 0x32:  m_->audio.WriteWAV(0x2, val, force); break;
+            case 0x33:  m_->audio.WriteWAV(0x3, val, force); break;
+            case 0x34:  m_->audio.WriteWAV(0x4, val, force); break;
+            case 0x35:  m_->audio.WriteWAV(0x5, val, force); break;
+            case 0x36:  m_->audio.WriteWAV(0x6, val, force); break;
+            case 0x37:  m_->audio.WriteWAV(0x7, val, force); break;
+            case 0x38:  m_->audio.WriteWAV(0x8, val, force); break;
+            case 0x39:  m_->audio.WriteWAV(0x9, val, force); break;
+            case 0x3A:  m_->audio.WriteWAV(0xA, val, force); break;
+            case 0x3B:  m_->audio.WriteWAV(0xB, val, force); break;
+            case 0x3C:  m_->audio.WriteWAV(0xC, val, force); break;
+            case 0x3D:  m_->audio.WriteWAV(0xD, val, force); break;
+            case 0x3E:  m_->audio.WriteWAV(0xE, val, force); break;
+            case 0x3F:  m_->audio.WriteWAV(0xF, val, force); break;
+            case 0x40:  m_->lcd.WriteLCDC(val, force); break;
+            case 0x41:  m_->lcd.WriteSTAT(val, force); break;
+            case 0x42:  m_->lcd.WriteSCY(val, force); break;
+            case 0x43:  m_->lcd.WriteSCX(val, force); break;
+            case 0x44:  m_->lcd.WriteLY(val, force); break;
+            case 0x45:  m_->lcd.WriteLYC(val, force); break;
+            case 0x46:  m_->lcd.WriteDMA(val, force); break;
+            case 0x47:  m_->lcd.WriteBGP(val, force); break;
+            case 0x48:  m_->lcd.WriteOBP0(val, force); break;
+            case 0x49:  m_->lcd.WriteOBP1(val, force); break;
+            case 0x4A:  m_->lcd.WriteWY(val, force); break;
+            case 0x4B:  m_->lcd.WriteWX(val, force); break;
+            default:    break;
         }
     }
     else if (addr < 0xFFFF) { m_->hram[addr & (m_->hram.size() - 1)] = val; }
-    else                    { m_->cpu.ie_ = val & 0x1F; }
+    else                    { m_->cpu.WriteIE(val, force); }
 
     if (obs_) { obs_->Write(*this, addr, val, force); }
 }

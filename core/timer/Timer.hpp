@@ -15,8 +15,6 @@ static inline Serializer& operator<<(Serializer &s, const Timer &timer);
 static inline Deserializer& operator>>(Deserializer &d, Timer &timer);
 
 class Timer {
-    friend class IO;
-
     Machine *m_;
 
     u8 tima_, tma_, tac_;
@@ -34,8 +32,20 @@ public:
     Timer& operator=(const Timer&) = delete;
     Timer& operator=(Timer&&) = delete;
 
-    u8 ReadDiv(bool force = false);
-    void WriteDiv(u8 val, bool force = false);
+    u8 ReadTIMA(bool /* force */ = false) const { return tima_; }
+    void WriteTIMA(u8 val, bool /* force */ = false) { tima_ = val; }
+
+    u8 ReadTMA(bool /* force */ = false) const { return tma_; }
+    void WriteTMA(u8 val, bool /* force */ = false) { tma_ = val; }
+
+    u8 ReadTAC(bool /* force */ = false) const { return tac_; }
+    void WriteTAC(u8 val, bool /* force */ = false) { tac_ = val; }
+
+    u8 ReadDIV(bool /* force */ = false) const { return fulldiv_ >> 5; }
+    void WriteDIV(u8 val, bool force = false) {
+        if (force)  { fulldiv_ = val << 5; }
+        else        { fulldiv_ = 0; }
+    }
 
     bool Tick();
 };

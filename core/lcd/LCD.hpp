@@ -17,8 +17,6 @@ static inline Serializer& operator<<(Serializer &s, const LCD &lcd);
 static inline Deserializer& operator>>(Deserializer &d, LCD &lcd);
 
 class LCD {
-    friend class IO;
-
     Machine *m_;
 
     u8 lcdc_, stat_, scy_, scx_, ly_, lyc_, dma_, bgp_, obp0_, obp1_, wy_, wx_;
@@ -56,14 +54,39 @@ public:
     std::array<u8, 0x2000> vram;
     std::array<u8, 0xA0> oam;
 
-    u8 ReadVRAM(u16 addr, bool force = false);
+    u8 ReadVRAM(u16 addr, bool force = false) const;
     void WriteVRAM(u16 addr, u8 val, bool force = false);
 
-    u8 ReadOAM(u16 addr, bool force = false);
+    u8 ReadOAM(u16 addr, bool force = false) const;
     void WriteOAM(u16 addr, u8 val, bool force = false);
 
-    u8 ReadDMA(bool force = false);
-    void WriteDMA(u8 val, bool force = false);
+    u8 ReadLCDC(bool /* force */ = false) const { return lcdc_; }
+    void WriteLCDC(u8 val, bool /* force */ = false) { lcdc_ = val; }
+    u8 ReadSTAT(bool /* force */ = false) const { return stat_; }
+    void WriteSTAT(u8 val, bool /* force */ = false) { stat_ = val; }
+    u8 ReadSCY(bool /* force */ = false) const { return scy_; }
+    void WriteSCY(u8 val, bool /* force */ = false) { scy_ = val; }
+    u8 ReadSCX(bool /* force */ = false) const { return scx_; }
+    void WriteSCX(u8 val, bool /* force */ = false) { scx_ = val; }
+    u8 ReadLY(bool /* force */ = false) const { return ly_; }
+    void WriteLY(u8 /* val */, bool /* force */ = false) { ly_ = 0; }
+    u8 ReadLYC(bool /* force */ = false) const { return lyc_; }
+    void WriteLYC(u8 val, bool /* force */ = false) { lyc_ = val; }
+    u8 ReadDMA(bool /* force */ = false) const { return dma_; }
+    void WriteDMA(u8 val, bool /* force */ = false) {
+        dma_ = val;
+        dma_ticks_ = 0xA0;
+    }
+    u8 ReadBGP(bool /* force */ = false) const { return bgp_; }
+    void WriteBGP(u8 val, bool /* force */ = false) { bgp_ = val; }
+    u8 ReadOBP0(bool /* force */ = false) const { return obp0_; }
+    void WriteOBP0(u8 val, bool /* force */ = false) { obp0_ = val; }
+    u8 ReadOBP1(bool /* force */ = false) const { return obp1_; }
+    void WriteOBP1(u8 val, bool /* force */ = false) { obp1_ = val; }
+    u8 ReadWY(bool /* force */ = false) const { return wy_; }
+    void WriteWY(u8 val, bool /* force */ = false) { wy_ = val; }
+    u8 ReadWX(bool /* force */ = false) const { return wx_; }
+    void WriteWX(u8 val, bool /* force */ = false) { wx_ = val; }
 
     bool Tick();
 };

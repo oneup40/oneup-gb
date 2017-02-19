@@ -610,8 +610,8 @@ bool CPU::Step() {
 
 CPU::CPU(Machine *machine, CPUObserver *observer)
     : busy_(0), if_(0), ie_(0), ime_(false), halt_(false),
-      obs_(observer),
-      m_(machine)
+      m_(machine),
+      obs_(observer)
 {}
 
 bool CPU::Tick() {

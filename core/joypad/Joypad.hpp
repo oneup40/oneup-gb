@@ -30,8 +30,8 @@ public:
     Joypad& operator=(const Joypad&) = delete;
     Joypad& operator=(Joypad&&) = delete;
 
-    u8 ReadJoyp(bool force);
-    void WriteJoyp(u8 val, bool force);
+    u8 ReadJOYP(bool force);
+    void WriteJOYP(u8 val, bool force);
 };
 
 static inline Serializer& operator<<(Serializer &s, const Joypad &joypad) {
