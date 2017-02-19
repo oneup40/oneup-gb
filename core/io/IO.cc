@@ -159,4 +159,78 @@ void IO::Write(u16 addr, u8 val, bool force) {
     if (obs_) { obs_->Write(*this, addr, val, force); }
 }
 
+std::string IO::AddrName(u16 addr) {
+    if (addr < 0x8000)      { return "ROM"; }
+    else if (addr < 0xA000) { return "VRAM"; }
+    else if (addr < 0xC000) { return "SRAM"; }
+    else if (addr < 0xFE00) { return "WRAM"; }
+    else if (addr < 0xFEA0) { return "OAM"; }
+    else if (addr < 0xFF00) { return "HOLE"; }
+    else if (addr < 0xFF80) {
+        switch (addr & 0xFF) {
+            case 0x00:  return "JOYP";
+            case 0x04:  return "DIV";
+            case 0x05:  return "TIMA";
+            case 0x06:  return "TMA";
+            case 0x07:  return "TAC";
+            case 0x0F:  return "IF";
+            case 0x10:  return "NR10";
+            case 0x11:  return "NR11";
+            case 0x12:  return "NR12";
+            case 0x13:  return "NR13";
+            case 0x14:  return "NR14";
+            case 0x15:  return "NR20";
+            case 0x16:  return "NR21";
+            case 0x17:  return "NR22";
+            case 0x18:  return "NR23";
+            case 0x19:  return "NR24";
+            case 0x1A:  return "NR30";
+            case 0x1B:  return "NR31";
+            case 0x1C:  return "NR32";
+            case 0x1D:  return "NR33";
+            case 0x1E:  return "NR34";
+            case 0x1F:  return "NR40";
+            case 0x20:  return "NR41";
+            case 0x21:  return "NR42";
+            case 0x22:  return "NR43";
+            case 0x23:  return "NR44";
+            case 0x24:  return "NR50";
+            case 0x25:  return "NR51";
+            case 0x26:  return "NR52";
+            case 0x30:
+            case 0x31:
+            case 0x32:
+            case 0x33:
+            case 0x34:
+            case 0x35:
+            case 0x36:
+            case 0x37:
+            case 0x38:
+            case 0x39:
+            case 0x3A:
+            case 0x3B:
+            case 0x3C:
+            case 0x3D:
+            case 0x3E:
+            case 0x3F:
+                return "WAV";
+            case 0x40:  return "LCDC";
+            case 0x41:  return "STAT";
+            case 0x42:  return "SCY";
+            case 0x43:  return "SCX";
+            case 0x44:  return "LY";
+            case 0x45:  return "LYC";
+            case 0x46:  return "DMA";
+            case 0x47:  return "BGP";
+            case 0x48:  return "OBP0";
+            case 0x49:  return "OBP1";
+            case 0x4A:  return "WY";
+            case 0x4B:  return "WX";
+            default:    return "HOLE";
+        }
+    }
+    else if (addr < 0xFFFF) { return "HRAM"; }
+    else                    { return "IE"; }
+}
+
 }
