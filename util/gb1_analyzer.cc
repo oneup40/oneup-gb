@@ -10,7 +10,7 @@
 #include "core/Base.hpp"
 #include "core/cpu/CPUObserver.hpp"
 #include "core/Frontend.hpp"
-#include "core/IOObserver.hpp"
+#include "core/io/IOObserver.hpp"
 
 #include "frontend/sdl/SDLFrontend.hpp"
 
@@ -78,13 +78,13 @@ public:
         }
     }
 
-    void Read(const gb1::Machine&, gb1::u16 addr, gb1::u8, bool) override {
+    void Read(const gb1::IO&, gb1::u16 addr, gb1::u8, bool) override {
         if ((addr & 0xFF00) == 0xFF00) {
             GetBlock().info->read_addrs.insert(addr);
         }
     }
 
-    void Write(const gb1::Machine&, gb1::u16 addr, gb1::u8, bool) override {
+    void Write(const gb1::IO&, gb1::u16 addr, gb1::u8, bool) override {
         if ((addr & 0xFF00) == 0xFF00) {
             GetBlock().info->write_addrs.insert(addr);
         }
