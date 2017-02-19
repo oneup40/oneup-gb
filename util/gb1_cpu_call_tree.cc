@@ -8,6 +8,9 @@
 #include "core/Base.hpp"
 #include "core/cpu/CPUObserver.hpp"
 #include "core/Frontend.hpp"
+#include "core/IOObserver.hpp"
+
+#include "frontend/sdl/SDLFrontend.hpp"
 
 class DummyFrontend : public gb1::Frontend {
 public:
@@ -16,7 +19,7 @@ public:
     void OutputVideoFrame(std::array<std::array<gb1::u8, 40>, 144>&&) override {}
 };
 
-class CallTreeObserver : public gb1::CPUObserver {
+class CallTreeObserver : public gb1::CPUObserver, public gb1::IOObserver {
     int indent_ = 0;
 
     void PrintIndent() {
@@ -32,6 +35,20 @@ public:
             --indent_;
         }
     }
+
+    void Read(const gb1::Machine&, gb1::u16 addr, gb1::u8 val, bool) {
+        if ((addr & 0xFF00) == 0xFF00) {
+            PrintIndent();
+            std::cerr << "Read $(" << gb1::to_hex(addr, 4) << ") -> $" << gb1::to_hex(val, 2) << std::endl;
+        }
+    }
+
+    void Write(const gb1::Machine&, gb1::u16 addr, gb1::u8 val, bool) {
+        if ((addr & 0xFF00) == 0xFF00) {
+            PrintIndent();
+            std::cerr << "Write $(" << gb1::to_hex(addr, 4) << ") = $" << gb1::to_hex(val, 2) << std::endl;
+        }
+    }
 };
 
 int main(int argc, char **argv) {
@@ -40,26 +57,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    DummyFrontend frontend;
     CallTreeObserver observer;
-    gb1::Machine m(frontend, &observer);
+    gb1::MachineObserver m_observer;
+    m_observer.cpu = &observer;
+    m_observer.io = &observer;
+    gb1::sdl::SDLFrontend frontend(m_observer);
 
-    std::ifstream is(argv[1], std::ios::binary | std::ios::in);
-    if (!is) { return false; }
+    if (!frontend.LoadGame(argv[1])) { return 1; }
 
-    is.seekg(0, std::ios::end);
-    auto size = is.tellg();
-    is.seekg(0);
-
-    std::vector<gb1::u8> data(size);
-    is.read(reinterpret_cast<char*>(data.data()), data.size());
-    if (!is) { return false; }
-
-    if (!m.LoadGame(std::move(data))) {
-        std::cerr << "error loading ROM" << std::endl;
-        return 1;
-    }
-
-    while (true) { m.Tick(); }
-    return 0;
+    return frontend.Run();
 }

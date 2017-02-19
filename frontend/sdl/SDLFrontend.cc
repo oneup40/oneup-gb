@@ -77,8 +77,8 @@ void SDLFrontend::SyncTime() {
     }
 }
 
-SDLFrontend::SDLFrontend()
-    : m_(*this),
+SDLFrontend::SDLFrontend(const MachineObserver &observer)
+    : m_(*this, observer),
       frame_ready_(false), quit_(false),
       btn_(0),
       frames_(0)
