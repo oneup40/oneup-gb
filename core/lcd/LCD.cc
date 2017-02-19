@@ -163,7 +163,7 @@ LCD::LCD(Machine *m)
     }
 }
 
-u8 LCD::ReadVRAM(u16 addr, bool) {
+u8 LCD::ReadVRAM(u16 addr, bool) const {
     // TODO: check if vram is accessible
     return vram[addr & (vram.size() - 1)];
 }
@@ -173,7 +173,7 @@ void LCD::WriteVRAM(u16 addr, u8 val, bool) {
     vram[addr & (vram.size() - 1)] = val;
 }
 
-u8 LCD::ReadOAM(u16 addr, bool) {
+u8 LCD::ReadOAM(u16 addr, bool) const {
     // TODO: check if oam is accessible
     assert((addr & 0xFF) < oam.size());
     return oam[addr & 0xFF];
@@ -183,15 +183,6 @@ void LCD::WriteOAM(u16 addr, u8 val, bool) {
     // TODO: check if oam is accessible
     assert((addr & 0xFF) < oam.size());
     oam[addr & 0xFF] = val;
-}
-
-u8 LCD::ReadDMA(bool) {
-    return dma_;
-}
-
-void LCD::WriteDMA(u8 val, bool) {
-    dma_ = val;
-    dma_ticks_ = 0xA0;
 }
 
 bool LCD::Tick() {

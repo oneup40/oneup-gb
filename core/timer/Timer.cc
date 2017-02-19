@@ -12,15 +12,6 @@ Timer::Timer(Machine *m)
       fulldiv_(0)
 {}
 
-u8 Timer::ReadDiv(bool) {
-    return fulldiv_ >> 5;
-}
-
-void Timer::WriteDiv(u8 val, bool force) {
-    if (force)  { fulldiv_ = val << 5; }
-    else        { fulldiv_ = 0; }
-}
-
 bool Timer::Tick() {
     auto prev = fulldiv_,
          next = fulldiv_ + 1;

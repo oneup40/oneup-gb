@@ -33,10 +33,7 @@ static inline Deserializer& operator>>(Deserializer &d, Audio &audio);
 struct Machine;
 
 class Channel1 {
-    friend class IO;
-
     Audio &audio;
-    friend class Audio;
 
     u8 r0_, r1_, r2_, r3_, r4_;
 	u8 sweep_div_;
@@ -49,11 +46,6 @@ class Channel1 {
     static constexpr const u64 code_ = eight_cc(version_, 'c','h','a','n','1');
     friend Serializer& operator<<(Serializer &s, const Channel1 &ch);
     friend Deserializer& operator>>(Deserializer &d, Channel1 &ch);
-
-    void TickSweep();
-    void TickVolume();
-    void TickLength();
-    void TickOutput();
 public:
     Channel1(Audio &audio);
     Channel1(const Channel1&) = delete;
@@ -61,7 +53,30 @@ public:
     Channel1& operator=(const Channel1&) = delete;
     Channel1& operator=(Channel1&&) = delete;
 
-    void Write(unsigned n, u8 val, bool force);
+    void TickSweep();
+    void TickVolume();
+    void TickLength();
+    void TickOutput();
+
+    u8 ReadNR10(bool /* force */ = false) const { return r0_; }
+    void WriteNR10(u8 val, bool /* force */ = false) { r0_ = val; }
+    u8 ReadNR11(bool /* force */ = false) const { return r1_; }
+    void WriteNR11(u8 val, bool /* force */ = false) { r1_ = val; }
+    u8 ReadNR12(bool /* force */ = false) const { return r2_; }
+    void WriteNR12(u8 val, bool /* force */ = false) {
+        r2_ = val;
+        vol_ = r2_ >> 4;
+        vol_div_ = r2_ & 0x07;
+    }
+    u8 ReadNR13(bool /* force */ = false) const { return r3_; }
+    void WriteNR13(u8 val, bool /* force */ = false) {
+        r3_ = val;
+        ctr_ = ((r4_ & 0x07) << 8) | r3_;
+    }
+    u8 ReadNR14(bool /* force */ = false) const { return r4_; }
+    void WriteNR14(u8 val, bool /* force */ = false);
+
+    u8 Vout() const { return vout_; }
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel1 &ch) {
@@ -85,10 +100,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch) {
 }
 
 class Channel2 {
-    friend class IO;
-
     Audio &audio;
-    friend class Audio;
 
     u8 r0_, r1_, r2_, r3_, r4_;
 	u8 vol_, vol_div_;
@@ -100,10 +112,6 @@ class Channel2 {
     static constexpr const u64 code_ = eight_cc(version_, 'c','h','a','n','2');
     friend Serializer& operator<<(Serializer &s, const Channel2 &ch);
     friend Deserializer& operator>>(Deserializer &d, Channel2 &ch);
-
-    void TickVolume();
-    void TickLength();
-    void TickOutput();
 public:
     Channel2(Audio &audio);
     Channel2(const Channel2&) = delete;
@@ -111,7 +119,29 @@ public:
     Channel2& operator=(const Channel2&) = delete;
     Channel2& operator=(Channel2&&) = delete;
 
-    void Write(unsigned n, u8 val, bool force);
+    void TickVolume();
+    void TickLength();
+    void TickOutput();
+
+    u8 ReadNR20(bool /* force */ = false) const { return r0_; }
+    void WriteNR20(u8 val, bool /* force */ = false) { r0_ = val; }
+    u8 ReadNR21(bool /* force */ = false) const { return r1_; }
+    void WriteNR21(u8 val, bool /* force */ = false) { r1_ = val; }
+    u8 ReadNR22(bool /* force */ = false) const { return r2_; }
+    void WriteNR22(u8 val, bool /* force */ = false) {
+        r2_ = val;
+        vol_ = r2_ >> 4;
+        vol_div_ = r2_ & 0x07;
+    }
+    u8 ReadNR23(bool /* force */ = false) const { return r3_; }
+    void WriteNR23(u8 val, bool /* force */ = false) {
+        r3_ = val;
+        ctr_ = ((r4_ & 0x07) << 8) | r3_;
+    }
+    u8 ReadNR24(bool /* force */ = false) const { return r4_; }
+    void WriteNR24(u8 val, bool /* force */ = false);
+
+    u8 Vout() const { return vout_; }
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel2 &ch) {
@@ -133,10 +163,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch) {
 }
 
 class Channel3 {
-	friend class IO;
-
 	Audio &audio;
-	friend class Audio;
 
 	u8 r0_, r1_, r2_, r3_, r4_;
 	unsigned ctr_, ndx_;
@@ -149,9 +176,6 @@ class Channel3 {
 	static constexpr const u64 code_ = eight_cc(version_, 'c', 'h', 'a', 'n', '3');
 	friend Serializer& operator<<(Serializer &s, const Channel3 &ch);
 	friend Deserializer& operator>>(Deserializer &d, Channel3 &ch);
-
-	void TickLength();
-	void TickOutput();
 public:
 	Channel3(Audio &audio);
 	Channel3(const Channel3&) = delete;
@@ -159,8 +183,29 @@ public:
 	Channel3& operator=(const Channel3&) = delete;
 	Channel3& operator=(Channel3&&) = delete;
 
-	void Write(unsigned n, u8 val, bool force);
-	void WriteWave(unsigned n, u8 val);
+    void TickLength();
+    void TickOutput();
+
+    u8 ReadNR30(bool /* force */ = false) const { return r0_; }
+    void WriteNR30(u8 val, bool /* force */ = false) { r0_ = val; }
+    u8 ReadNR31(bool /* force */ = false) const { return r1_; }
+    void WriteNR31(u8 val, bool /* force */ = false) { r1_ = val; }
+    u8 ReadNR32(bool /* force */ = false) const { return r2_; }
+    void WriteNR32(u8 val, bool /* force */ = false) { r2_ = val; }
+    u8 ReadNR33(bool /* force */ = false) const { return r3_; }
+    void WriteNR33(u8 val, bool /* force */ = false) {
+        r3_ = val;
+        ctr_ = ((r4_ & 0x07) << 8) | r3_;
+    }
+    u8 ReadNR34(bool /* force */ = false) const { return r4_; }
+    void WriteNR34(u8 val, bool /* force */ = false);
+
+    u8 ReadWAV(unsigned n, bool /* force */ = false) const { return wave_[n & (wave_.size() - 1)]; }
+	void WriteWAV(unsigned n, u8 val, bool /* force */ = false) { wave_[n & (wave_.size() - 1)] = val; }
+
+    u8 Vout() const { return vout_; }
+
+    bool Playing() const { return r0_ & 0x80; }
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel3 &ch) {
@@ -182,10 +227,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch) {
 }
 
 class Channel4 {
-	friend class IO;
-
 	Audio &audio;
-	friend class Audio;
 
 	u8 r0_, r1_, r2_, r3_, r4_;
 	u8 vol_, vol_div_;
@@ -198,10 +240,6 @@ class Channel4 {
 	static constexpr const u64 code_ = eight_cc(version_, 'c', 'h', 'a', 'n', '4');
 	friend Serializer& operator<<(Serializer &s, const Channel4 &ch);
 	friend Deserializer& operator >> (Deserializer &d, Channel4 &ch);
-
-	void TickVolume();
-	void TickLength();
-	void TickOutput();
 public:
 	Channel4(Audio &audio);
 	Channel4(const Channel4&) = delete;
@@ -209,7 +247,26 @@ public:
 	Channel4& operator=(const Channel4&) = delete;
 	Channel4& operator=(Channel4&&) = delete;
 
-	void Write(unsigned n, u8 val, bool force);
+    void TickVolume();
+    void TickLength();
+    void TickOutput();
+
+    u8 ReadNR40(bool /* force */ = false) const { return r0_; }
+    void WriteNR40(u8 val, bool /* force */ = false) { r0_ = val; }
+    u8 ReadNR41(bool /* force */ = false) const { return r1_; }
+    void WriteNR41(u8 val, bool /* force */ = false) { r1_ = val; }
+    u8 ReadNR42(bool /* force */ = false) const { return r2_; }
+    void WriteNR42(u8 val, bool /* force */ = false) {
+        r2_ = val;
+        vol_ = r2_ >> 4;
+        vol_div_ = r2_ & 0x07;
+    }
+    u8 ReadNR43(bool /* force */ = false) const { return r3_; }
+    void WriteNR43(u8 val, bool /* force */ = false) { r3_ = val; }
+    u8 ReadNR44(bool /* force */ = false) const { return r4_; }
+    void WriteNR44(u8 val, bool /* force */ = false);
+
+    u8 Vout() const { return vout_; }
 };
 
 static inline Serializer& operator<<(Serializer &s, const Channel4 &ch) {
@@ -231,8 +288,6 @@ static inline Deserializer& operator>>(Deserializer &d, Channel4 &ch) {
 }
 
 class Audio {
-    friend class IO;
-
     Machine *m_;
 
     Channel1 ch1_;
@@ -248,7 +303,7 @@ class Audio {
 	friend class Channel4;
 
     u8 nr50_, nr51_, nr52_;
-    unsigned sample_div_, timer_div_, seq_step_;
+    unsigned timer_div_, seq_step_;
 
     static constexpr const u8 version_ = 0x00;
     static constexpr const u64 code_ = eight_cc(version_, 'a','u','d','i','o');
@@ -268,8 +323,65 @@ public:
     Audio& operator=(const Audio&) = delete;
     Audio& operator=(Audio&&) = delete;
 
+    u8 ReadNR10(bool force = false) const { return ch1_.ReadNR10(force); }
+    void WriteNR10(u8 val, bool force = false) { ch1_.WriteNR10(val, force); }
+    u8 ReadNR11(bool force = false) const { return ch1_.ReadNR11(force); }
+    void WriteNR11(u8 val, bool force = false) { ch1_.WriteNR11(val, force); }
+    u8 ReadNR12(bool force = false) const { return ch1_.ReadNR12(force); }
+    void WriteNR12(u8 val, bool force = false) { ch1_.WriteNR12(val, force); }
+    u8 ReadNR13(bool force = false) const { return ch1_.ReadNR13(force); }
+    void WriteNR13(u8 val, bool force = false) { ch1_.WriteNR13(val, force); }
+    u8 ReadNR14(bool force = false) const { return ch1_.ReadNR14(force); }
+    void WriteNR14(u8 val, bool force = false) { ch1_.WriteNR14(val, force); }
+
+    u8 ReadNR20(bool force = false) const { return ch2_.ReadNR20(force); }
+    void WriteNR20(u8 val, bool force = false) { ch2_.WriteNR20(val, force); }
+    u8 ReadNR21(bool force = false) const { return ch2_.ReadNR21(force); }
+    void WriteNR21(u8 val, bool force = false) { ch2_.WriteNR21(val, force); }
+    u8 ReadNR22(bool force = false) const { return ch2_.ReadNR22(force); }
+    void WriteNR22(u8 val, bool force = false) { ch2_.WriteNR22(val, force); }
+    u8 ReadNR23(bool force = false) const { return ch2_.ReadNR23(force); }
+    void WriteNR23(u8 val, bool force = false) { ch2_.WriteNR23(val, force); }
+    u8 ReadNR24(bool force = false) const { return ch2_.ReadNR24(force); }
+    void WriteNR24(u8 val, bool force = false) { ch2_.WriteNR24(val, force); }
+
+    u8 ReadNR30(bool force = false) const { return ch3_.ReadNR30(force); }
+    void WriteNR30(u8 val, bool force = false) { ch3_.WriteNR30(val, force); }
+    u8 ReadNR31(bool force = false) const { return ch3_.ReadNR31(force); }
+    void WriteNR31(u8 val, bool force = false) { ch3_.WriteNR31(val, force); }
+    u8 ReadNR32(bool force = false) const { return ch3_.ReadNR32(force); }
+    void WriteNR32(u8 val, bool force = false) { ch3_.WriteNR32(val, force); }
+    u8 ReadNR33(bool force = false) const { return ch3_.ReadNR33(force); }
+    void WriteNR33(u8 val, bool force = false) { ch3_.WriteNR33(val, force); }
+    u8 ReadNR34(bool force = false) const { return ch3_.ReadNR34(force); }
+    void WriteNR34(u8 val, bool force = false) { ch3_.WriteNR34(val, force); }
+
+    u8 ReadNR40(bool force = false) const { return ch4_.ReadNR40(force); }
+    void WriteNR40(u8 val, bool force = false) { ch4_.WriteNR40(val, force); }
+    u8 ReadNR41(bool force = false) const { return ch4_.ReadNR41(force); }
+    void WriteNR41(u8 val, bool force = false) { ch4_.WriteNR41(val, force); }
+    u8 ReadNR42(bool force = false) const { return ch4_.ReadNR42(force); }
+    void WriteNR42(u8 val, bool force = false) { ch4_.WriteNR42(val, force); }
+    u8 ReadNR43(bool force = false) const { return ch4_.ReadNR43(force); }
+    void WriteNR43(u8 val, bool force = false) { ch4_.WriteNR43(val, force); }
+    u8 ReadNR44(bool force = false) const { return ch4_.ReadNR44(force); }
+    void WriteNR44(u8 val, bool force = false) { ch4_.WriteNR44(val, force); }
+
+    u8 ReadNR50(bool /* force */ = false) const { return nr50_; }
+    void WriteNR50(u8 val, bool /* force */ = false) { nr50_ = val; }
+    u8 ReadNR51(bool /* force */ = false) const { return nr51_; }
+    void WriteNR51(u8 val, bool /* force */ = false) { nr51_ = val; }
+    u8 ReadNR52(bool /* force */ = false) const { return nr52_; }
+    void WriteNR52(u8 val, bool force = false) {
+        u8 mask = force ? 0xFF : 0x80;
+        nr52_ &= ~mask;
+        nr52_ |= (val & mask);
+    }
+
+    u8 ReadWAV(u8 ndx, bool force = false) const { return ch3_.ReadWAV(ndx, force); }
+    void WriteWAV(u8 ndx, u8 val, bool force = false) { ch3_.WriteWAV(ndx, val, force); }
+
     bool Tick();
-    void Write(u16 addr, u8 val, bool force);
 };
 
 static inline Serializer& operator<<(Serializer &s, const Audio &audio) {

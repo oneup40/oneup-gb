@@ -9,7 +9,7 @@ namespace gb1 {
 
 Joypad::Joypad(Machine *m) : m_(m), joyp_(0) {}
 
-u8 Joypad::ReadJoyp(bool) {
+u8 Joypad::ReadJOYP(bool) {
     // This is all active low logic!
     joyp_ |= 0x0F;
 
@@ -32,7 +32,7 @@ u8 Joypad::ReadJoyp(bool) {
     return joyp_;
 }
 
-void Joypad::WriteJoyp(u8 val, bool force) {
+void Joypad::WriteJOYP(u8 val, bool force) {
     if (force)  { joyp_ = val; }
     else        { joyp_ = (joyp_ & ~0x30) | (val & 0x30); }
 }

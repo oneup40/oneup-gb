@@ -83,32 +83,10 @@ void Channel1::TickOutput() {
 	vout_ = (step_ & mask) ? vol_ : 0;
 }
 
-void Channel1::Write(unsigned n, u8 val, bool) {
-    switch (n) {
-        case 0:
-            r0_ = val;
-            break;
-        case 1:
-            r1_ = val;
-            break;
-        case 2:
-            r2_ = val;
-			vol_ = r2_ >> 4;
-			vol_div_ = r2_ & 0x07;
-            break;
-        case 3:
-            r3_ = val;
-            ctr_ = ((r4_ & 0x07) << 8) | r3_;
-            break;
-        case 4:
-			if (val & 0x80) { audio.nr52_ |= 0x01; }
-            r4_ = val;
-            ctr_ = ((r4_ & 0x07) << 8) | r3_;
-            break;
-        default:
-            assert(0);
-            break;
-    }
+void Channel1::WriteNR14(u8 val, bool /* force */) {
+    if (val & 0x80) { audio.nr52_ |= 0x01; }
+    r4_ = val;
+    ctr_ = ((r4_ & 0x07) << 8) | r3_;
 }
 
 Channel2::Channel2(Audio &audio)
@@ -163,32 +141,10 @@ void Channel2::TickOutput() {
 	vout_ = (step_ & mask) ? vol_ : 0;
 }
 
-void Channel2::Write(unsigned n, u8 val, bool) {
-    switch (n) {
-        case 0:
-            r0_ = val;
-            break;
-        case 1:
-            r1_ = val;
-            break;
-        case 2:
-            r2_ = val;
-			vol_ = r2_ >> 4;
-			vol_div_ = r2_ & 0x07;
-            break;
-        case 3:
-            r3_ = val;
-            ctr_ = ((r4_ & 0x07) << 8) | r3_;
-            break;
-        case 4:
-			if (val & 0x80) { audio.nr52_ |= 0x02; }
-            r4_ = val;
-            ctr_ = ((r4_ & 0x07) << 8) | r3_;
-            break;
-        default:
-            assert(0);
-            break;
-    }
+void Channel2::WriteNR24(u8 val, bool /* force */) {
+    if (val & 0x80) { audio.nr52_ |= 0x02; }
+    r4_ = val;
+    ctr_ = ((r4_ & 0x07) << 8) | r3_;
 }
 
 Channel3::Channel3(Audio &audio)
@@ -202,6 +158,8 @@ Channel3::Channel3(Audio &audio)
 
 
 void Channel3::TickLength() {
+    if (!(r0_ & 0x80)) { return; }
+
 	if (r4_ & 0x40) {
 		++r1_;
 
@@ -218,6 +176,8 @@ void Channel3::TickOutput() {
 
 	ctr_ = ((r4_ & 0x07) << 8) | r3_;
 
+	if (!(r0_ & 0x80)) { vout_ = 0; return; }
+
 	u8 sample = wave_[ndx_ >> 1];
 	if (ndx_ & 0x01)	{ sample &= 0x0F; }
 	else				{ sample >>= 4; }
@@ -229,33 +189,11 @@ void Channel3::TickOutput() {
 	else				{ vout_ = sample >> ((r2_ & 0x60) >> 5); }
 }
 
-void Channel3::Write(unsigned n, u8 val, bool) {
-	switch (n) {
-	case 0:
-		r0_ = val;
-		break;
-	case 1:
-		r1_ = val;
-		break;
-	case 2:
-		r2_ = val;
-		break;
-	case 3:
-		r3_ = val;
-		ctr_ = ((r4_ & 0x07) << 8) | r3_;
-		break;
-	case 4:
-		if (val & 0x80) { audio.nr52_ |= 0x04; }
-		r4_ = val;
-		ctr_ = ((r4_ & 0x07) << 8) | r3_;
-		break;
-	default:
-		assert(0);
-		break;
-	}
+void Channel3::WriteNR34(u8 val, bool /* force */) {
+    if (val & 0x80) { audio.nr52_ |= 0x04; }
+    r4_ = val;
+    ctr_ = ((r4_ & 0x07) << 8) | r3_;
 }
-
-void Channel3::WriteWave(unsigned n, u8 val) { wave_[n] = val; }
 
 Channel4::Channel4(Audio &audio)
 	: audio(audio),
@@ -326,40 +264,18 @@ void Channel4::TickOutput() {
 	vout_ = (lsfr_ & 0x01) ? 0 : vol_;
 }
 
-void Channel4::Write(unsigned n, u8 val, bool) {
-	switch (n) {
-		case 0:
-			r0_ = val;
-			break;
-		case 1:
-			r1_ = val;
-			break;
-		case 2:
-			r2_ = val;
-			vol_ = r2_ >> 4;
-			vol_div_ = r2_ & 0x07;
-			break;
-		case 3:
-			r3_ = val;
-			break;
-		case 4:
-			if (val & 0x80) {
-				audio.nr52_ |= 0x08;
-				lsfr_ = 0x7FFF;
-			}
-			r4_ = val;
-			break;
-		default:
-			assert(0);
-			break;
-	}
+void Channel4::WriteNR44(u8 val, bool /* force */) {
+    if (val & 0x80) {
+        audio.nr52_ |= 0x08;
+        lsfr_ = 0x7FFF;
+    }
+    r4_ = val;
 }
-
 
 void Audio::TickLength() {
     if (nr52_ & 0x01) { ch1_.TickLength(); }
     if (nr52_ & 0x02) { ch2_.TickLength(); }
-	if ((nr52_ & 0x04) && (ch3_.r0_ & 0x80)) { ch3_.TickLength(); }
+	if (nr52_ & 0x04) { ch3_.TickLength(); }
 	if (nr52_ & 0x08) { ch4_.TickLength(); }
 }
 
@@ -388,23 +304,23 @@ void Audio::GenerateSample() {
 		// (0, 0)
 
 		if (nr52_ & 0x01) {
-			if (nr51_ & 0x10) { so1 += ch1_.vout_ / 15.0; ++so1_n; }
-			if (nr51_ & 0x01) { so2 += ch1_.vout_ / 15.0; ++so2_n; }
+			if (nr51_ & 0x10) { so1 += ch1_.Vout() / 15.0; ++so1_n; }
+			if (nr51_ & 0x01) { so2 += ch1_.Vout() / 15.0; ++so2_n; }
 		}
 
 		if (nr52_ & 0x02) {
-			if (nr51_ & 0x20) { so1 += ch2_.vout_ / 15.0; ++so1_n; }
-			if (nr51_ & 0x02) { so2 += ch2_.vout_ / 15.0; ++so2_n; }
+			if (nr51_ & 0x20) { so1 += ch2_.Vout() / 15.0; ++so1_n; }
+			if (nr51_ & 0x02) { so2 += ch2_.Vout() / 15.0; ++so2_n; }
 		}
 
-		if ((nr52_ & 0x04) && (ch3_.r0_ & 0x80)) {
-			if (nr51_ & 0x40) { so1 += ch3_.vout_ / 15.0; ++so1_n; }
-			if (nr51_ & 0x04) { so2 += ch3_.vout_ / 15.0; ++so2_n; }
+		if (nr52_ & 0x04) {
+			if (nr51_ & 0x40) { so1 += ch3_.Vout() / 15.0; ++so1_n; }
+			if (nr51_ & 0x04) { so2 += ch3_.Vout() / 15.0; ++so2_n; }
 		}
 
 		if (nr52_ & 0x08) {
-			if (nr51_ & 0x80) { so1 += ch4_.vout_ / 15.0; ++so1_n; }
-			if (nr51_ & 0x08) { so2 += ch4_.vout_ / 15.0; ++so2_n; }
+			if (nr51_ & 0x80) { so1 += ch4_.Vout() / 15.0; ++so1_n; }
+			if (nr51_ & 0x08) { so2 += ch4_.Vout() / 15.0; ++so2_n; }
 		}
 		// (0, sox_n)
 
@@ -432,7 +348,7 @@ Audio::Audio(Machine *m)
     : m_(m),
       ch1_(*this), ch2_(*this), ch3_(*this), ch4_(*this),
       nr50_(0x00), nr51_(0x00), nr52_(0x7F),
-      sample_div_(0), timer_div_(0), seq_step_(7)
+      timer_div_(0), seq_step_(7)
 {}
 
 bool Audio::Tick() {
@@ -463,27 +379,6 @@ bool Audio::Tick() {
 	GenerateSample();
 
     return true;
-}
-
-void Audio::Write(u16 addr, u8 val, bool force) {
-    if (0xFF10 <= addr && addr <= 0xFF14)       { ch1_.Write(addr - 0xFF10, val, force); }
-    else if (0xFF15 <= addr && addr <= 0xFF19)  { ch2_.Write(addr - 0xFF15, val, force); }
-	else if (0xFF1A <= addr && addr <= 0xFF1E)	{ ch3_.Write(addr - 0xFF1A, val, force); }
-	else if (0xFF1F <= addr && addr <= 0xFF23)  { ch4_.Write(addr - 0xFF1F, val, force); }
-	else if (0xFF30 <= addr && addr <= 0xFF3F)	{ ch3_.WriteWave(addr & 0xF, val); }
-    else {
-        u8 dummy = 0;
-        u8 *reg = &dummy;
-        u8 mask = 0;
-
-        if (addr == 0xFF24)                { reg = &nr50_; mask = 0xFF; }
-        else if (addr == 0xFF25)           { reg = &nr51_; mask = 0xFF; }
-        else if (addr == 0xFF26)           { reg = &nr52_; mask = 0x80; }
-
-        if (force) { mask = 0xFF; }
-        *reg &= ~mask;
-        *reg |= val & mask;
-    }
 }
 
 } // namespace gb1
