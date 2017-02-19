@@ -11,10 +11,11 @@
 
 namespace gb1 {
 
-Machine::Machine(Frontend& frontend, CPUObserver *observer)
+Machine::Machine(Frontend& frontend, const MachineObserver &observer)
     : frontend(frontend),
-      cpu(this, observer), lcd(this), mapper(), joypad(this), timer(this), audio(this),
-      t(0)
+      cpu(this, observer.cpu), lcd(this), mapper(), joypad(this), timer(this), audio(this),
+      t(0),
+      obs(observer.io)
 {
     wram.fill(0);
     hram.fill(0);
@@ -56,76 +57,81 @@ bool Machine::Tick() {
 }
 
 u8 Machine::Read(u16 addr, bool force) {
-    if (addr < 0x8000)      { return mapper.ReadROM(addr, force); }
-    else if (addr < 0xA000) { return lcd.ReadVRAM(addr, force); }
-    else if (addr < 0xC000) { return mapper.ReadRAM(addr, force); }
-    else if (addr < 0xFE00) { return wram[addr & (wram.size() - 1)]; }
-    else if (addr < 0xFEA0) { return lcd.ReadOAM(addr, force); }
-    else if (addr < 0xFF00) { return 0; }
+    u8 result = 0;
+
+    if (addr < 0x8000)      { result = mapper.ReadROM(addr, force); }
+    else if (addr < 0xA000) { result = lcd.ReadVRAM(addr, force); }
+    else if (addr < 0xC000) { result = mapper.ReadRAM(addr, force); }
+    else if (addr < 0xFE00) { result = wram[addr & (wram.size() - 1)]; }
+    else if (addr < 0xFEA0) { result = lcd.ReadOAM(addr, force); }
+    else if (addr < 0xFF00) { result = 0; }
     else if (addr < 0xFF80) {
         switch (addr & 0xFF) {
-            case 0x00:  return joypad.ReadJoyp(force);
-            case 0x04:  return timer.ReadDiv(force);
-            case 0x05:  return timer.tima_;
-            case 0x06:  return timer.tma_;
-            case 0x07:  return timer.tac_;
-            case 0x0F:  return cpu.if_ & 0xFF;
-            case 0x10:  return audio.ch1_.r0_;
-            case 0x11:  return audio.ch1_.r1_;
-            case 0x12:  return audio.ch1_.r2_;
-            case 0x13:  return audio.ch1_.r3_;
-            case 0x14:  return audio.ch1_.r4_;
-			case 0x15:  return audio.ch2_.r0_;
-			case 0x16:  return audio.ch2_.r1_;
-			case 0x17:  return audio.ch2_.r2_;
-			case 0x18:  return audio.ch2_.r3_;
-			case 0x19:  return audio.ch2_.r4_;
-			case 0x1A:  return audio.ch3_.r0_;
-			case 0x1B:  return audio.ch3_.r1_;
-			case 0x1C:  return audio.ch3_.r2_;
-			case 0x1D:  return audio.ch3_.r3_;
-			case 0x1E:  return audio.ch3_.r4_;
-			case 0x1F:  return audio.ch4_.r0_;
-			case 0x20:  return audio.ch4_.r1_;
-			case 0x21:  return audio.ch4_.r2_;
-			case 0x22:  return audio.ch4_.r3_;
-			case 0x23:  return audio.ch4_.r4_;
-            case 0x24:  return audio.nr50_;
-            case 0x25:  return audio.nr51_;
-            case 0x26:  return audio.nr52_;
-			case 0x30:	return audio.ch3_.wave_[0x0];
-			case 0x31:	return audio.ch3_.wave_[0x1];
-			case 0x32:	return audio.ch3_.wave_[0x2];
-			case 0x33:	return audio.ch3_.wave_[0x3];
-			case 0x34:	return audio.ch3_.wave_[0x4];
-			case 0x35:	return audio.ch3_.wave_[0x5];
-			case 0x36:	return audio.ch3_.wave_[0x6];
-			case 0x37:	return audio.ch3_.wave_[0x7];
-			case 0x38:	return audio.ch3_.wave_[0x8];
-			case 0x39:	return audio.ch3_.wave_[0x9];
-			case 0x3A:	return audio.ch3_.wave_[0xA];
-			case 0x3B:	return audio.ch3_.wave_[0xB];
-			case 0x3C:	return audio.ch3_.wave_[0xC];
-			case 0x3D:	return audio.ch3_.wave_[0xD];
-			case 0x3E:	return audio.ch3_.wave_[0xE];
-			case 0x3F:	return audio.ch3_.wave_[0xF];
-            case 0x40:  return lcd.lcdc_;
-            case 0x41:  return lcd.stat_;
-            case 0x42:  return lcd.scy_;
-            case 0x43:  return lcd.scx_;
-            case 0x44:  return lcd.ly_;
-            case 0x45:  return lcd.lyc_;
-            case 0x46:  return lcd.ReadDMA(force);
-            case 0x47:  return lcd.bgp_;
-            case 0x48:  return lcd.obp0_;
-            case 0x49:  return lcd.obp1_;
-            case 0x4A:  return lcd.wy_;
-            case 0x4B:  return lcd.wx_;
-            default:    return 0;
+            case 0x00:  result = joypad.ReadJoyp(force); break;
+            case 0x04:  result = timer.ReadDiv(force); break;
+            case 0x05:  result = timer.tima_; break;
+            case 0x06:  result = timer.tma_; break;
+            case 0x07:  result = timer.tac_; break;
+            case 0x0F:  result = cpu.if_ & 0xFF; break;
+            case 0x10:  result = audio.ch1_.r0_; break;
+            case 0x11:  result = audio.ch1_.r1_; break;
+            case 0x12:  result = audio.ch1_.r2_; break;
+            case 0x13:  result = audio.ch1_.r3_; break;
+            case 0x14:  result = audio.ch1_.r4_; break;
+			case 0x15:  result = audio.ch2_.r0_; break;
+			case 0x16:  result = audio.ch2_.r1_; break;
+			case 0x17:  result = audio.ch2_.r2_; break;
+			case 0x18:  result = audio.ch2_.r3_; break;
+			case 0x19:  result = audio.ch2_.r4_; break;
+			case 0x1A:  result = audio.ch3_.r0_; break;
+			case 0x1B:  result = audio.ch3_.r1_; break;
+			case 0x1C:  result = audio.ch3_.r2_; break;
+			case 0x1D:  result = audio.ch3_.r3_; break;
+			case 0x1E:  result = audio.ch3_.r4_; break;
+			case 0x1F:  result = audio.ch4_.r0_; break;
+			case 0x20:  result = audio.ch4_.r1_; break;
+			case 0x21:  result = audio.ch4_.r2_; break;
+			case 0x22:  result = audio.ch4_.r3_; break;
+			case 0x23:  result = audio.ch4_.r4_; break;
+            case 0x24:  result = audio.nr50_; break;
+            case 0x25:  result = audio.nr51_; break;
+            case 0x26:  result = audio.nr52_; break;
+			case 0x30:	result = audio.ch3_.wave_[0x0]; break;
+			case 0x31:	result = audio.ch3_.wave_[0x1]; break;
+			case 0x32:	result = audio.ch3_.wave_[0x2]; break;
+			case 0x33:	result = audio.ch3_.wave_[0x3]; break;
+			case 0x34:	result = audio.ch3_.wave_[0x4]; break;
+			case 0x35:	result = audio.ch3_.wave_[0x5]; break;
+			case 0x36:	result = audio.ch3_.wave_[0x6]; break;
+			case 0x37:	result = audio.ch3_.wave_[0x7]; break;
+			case 0x38:	result = audio.ch3_.wave_[0x8]; break;
+			case 0x39:	result = audio.ch3_.wave_[0x9]; break;
+			case 0x3A:	result = audio.ch3_.wave_[0xA]; break;
+			case 0x3B:	result = audio.ch3_.wave_[0xB]; break;
+			case 0x3C:	result = audio.ch3_.wave_[0xC]; break;
+			case 0x3D:	result = audio.ch3_.wave_[0xD]; break;
+			case 0x3E:	result = audio.ch3_.wave_[0xE]; break;
+			case 0x3F:	result = audio.ch3_.wave_[0xF]; break;
+            case 0x40:  result = lcd.lcdc_; break;
+            case 0x41:  result = lcd.stat_; break;
+            case 0x42:  result = lcd.scy_; break;
+            case 0x43:  result = lcd.scx_; break;
+            case 0x44:  result = lcd.ly_; break;
+            case 0x45:  result = lcd.lyc_; break;
+            case 0x46:  result = lcd.ReadDMA(force); break;
+            case 0x47:  result = lcd.bgp_; break;
+            case 0x48:  result = lcd.obp0_; break;
+            case 0x49:  result = lcd.obp1_; break;
+            case 0x4A:  result = lcd.wy_; break;
+            case 0x4B:  result = lcd.wx_; break;
+            default:    result = 0; break;
         }
     }
-    else if (addr < 0xFFFF) { return hram[addr & (hram.size() - 1)]; }
-    else                    { return cpu.ie_ & 0xFF; }
+    else if (addr < 0xFFFF) { result = hram[addr & (hram.size() - 1)]; }
+    else                    { result = cpu.ie_ & 0xFF; }
+
+    if (obs) { obs->Read(*this, addr, result, force); }
+    return result;
 }
 
 void Machine::Write(u16 addr, u8 val, bool force) {
@@ -163,6 +169,8 @@ void Machine::Write(u16 addr, u8 val, bool force) {
     }
     else if (addr < 0xFFFF) { hram[addr & (hram.size() - 1)] = val; }
     else                    { cpu.ie_ = val & 0x1F; }
+
+    if (obs) { obs->Write(*this, addr, val, force); }
 }
 
 void Machine::Interrupt(u8 num) { cpu.Interrupt(num); }

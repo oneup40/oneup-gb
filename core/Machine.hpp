@@ -8,9 +8,11 @@
 #include "core/audio/Audio.hpp"
 #include "core/cpu/CPU.hpp"
 #include "core/cpu/CPUObserver.hpp"
+#include "core/IOObserver.hpp"
 #include "core/joypad/Joypad.hpp"
 #include "core/lcd/LCD.hpp"
 #include "core/Loader.hpp"
+#include "core/MachineObserver.hpp"
 #include "core/Mapper.hpp"
 #include "core/timer/Timer.hpp"
 
@@ -42,10 +44,12 @@ struct Machine {
 
     u64 t;
 
+    IOObserver *obs;
+
     static constexpr const u8 version_ = 0x01;
     static constexpr const u64 code_ = eight_cc(version_,'m','a','c','h','i','n','e');
 
-    explicit Machine(Frontend& frontend, CPUObserver *observer = nullptr);
+    explicit Machine(Frontend& frontend, const MachineObserver &observer = MachineObserver());
     Machine(const Machine&) = delete;
     Machine(Machine&&) = delete;
     Machine& operator=(const Machine&) = delete;

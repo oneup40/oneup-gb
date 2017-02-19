@@ -4,6 +4,7 @@
 
 #include "core/Frontend.hpp"
 #include "core/Machine.hpp"
+#include "core/MachineObserver.hpp"
 
 #include <SDL.h>
 
@@ -25,7 +26,7 @@ class SDLFrontend : public Frontend {
     void PollInput();
     void SyncTime();
 public:
-    SDLFrontend();
+    explicit SDLFrontend(const MachineObserver &observer = MachineObserver());
     SDLFrontend(const SDLFrontend&) = delete;
     SDLFrontend(SDLFrontend&&) = delete;
     SDLFrontend& operator=(const SDLFrontend&) = delete;
