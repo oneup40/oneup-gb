@@ -15,8 +15,9 @@ static inline Serializer& operator<<(Serializer &s, const Timer &timer);
 static inline Deserializer& operator>>(Deserializer &d, Timer &timer);
 
 class Timer {
+    friend class IO;
+
     Machine *m_;
-    friend struct Machine;
 
     u8 tima_, tma_, tac_;
 

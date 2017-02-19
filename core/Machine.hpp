@@ -8,7 +8,8 @@
 #include "core/audio/Audio.hpp"
 #include "core/cpu/CPU.hpp"
 #include "core/cpu/CPUObserver.hpp"
-#include "core/IOObserver.hpp"
+#include "core/io/IO.hpp"
+#include "core/io/IOObserver.hpp"
 #include "core/joypad/Joypad.hpp"
 #include "core/lcd/LCD.hpp"
 #include "core/Loader.hpp"
@@ -39,12 +40,11 @@ struct Machine {
     Joypad joypad;
     Timer timer;
     Audio audio;
+    IO io;
     std::array<u8, 0x2000> wram;
     std::array<u8, 0x80> hram;
 
     u64 t;
-
-    IOObserver *obs;
 
     static constexpr const u8 version_ = 0x01;
     static constexpr const u64 code_ = eight_cc(version_,'m','a','c','h','i','n','e');

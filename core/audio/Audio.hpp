@@ -33,7 +33,7 @@ static inline Deserializer& operator>>(Deserializer &d, Audio &audio);
 struct Machine;
 
 class Channel1 {
-    friend struct Machine;
+    friend class IO;
 
     Audio &audio;
     friend class Audio;
@@ -85,7 +85,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel1 &ch) {
 }
 
 class Channel2 {
-    friend struct Machine;
+    friend class IO;
 
     Audio &audio;
     friend class Audio;
@@ -133,7 +133,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel2 &ch) {
 }
 
 class Channel3 {
-	friend struct Machine;
+	friend class IO;
 
 	Audio &audio;
 	friend class Audio;
@@ -182,7 +182,7 @@ static inline Deserializer& operator>>(Deserializer &d, Channel3 &ch) {
 }
 
 class Channel4 {
-	friend struct Machine;
+	friend class IO;
 
 	Audio &audio;
 	friend class Audio;
@@ -231,8 +231,9 @@ static inline Deserializer& operator>>(Deserializer &d, Channel4 &ch) {
 }
 
 class Audio {
+    friend class IO;
+
     Machine *m_;
-    friend struct Machine;
 
     Channel1 ch1_;
     friend class Channel1;

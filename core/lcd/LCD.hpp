@@ -17,8 +17,9 @@ static inline Serializer& operator<<(Serializer &s, const LCD &lcd);
 static inline Deserializer& operator>>(Deserializer &d, LCD &lcd);
 
 class LCD {
+    friend class IO;
+
     Machine *m_;
-    friend struct Machine;
 
     u8 lcdc_, stat_, scy_, scx_, ly_, lyc_, dma_, bgp_, obp0_, obp1_, wy_, wx_;
     unsigned dot_;

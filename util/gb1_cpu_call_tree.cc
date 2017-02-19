@@ -8,7 +8,7 @@
 #include "core/Base.hpp"
 #include "core/cpu/CPUObserver.hpp"
 #include "core/Frontend.hpp"
-#include "core/IOObserver.hpp"
+#include "core/io/IOObserver.hpp"
 
 #include "frontend/sdl/SDLFrontend.hpp"
 
@@ -26,7 +26,7 @@ class CallTreeObserver : public gb1::CPUObserver, public gb1::IOObserver {
         for (auto i=0; i < indent_; ++i) { std::cerr << "  "; }
     }
 public:
-    void AfterExecute(const gb1::CPU &cpu, const gb1::Instruction &ins) {
+    void AfterExecute(const gb1::CPU &cpu, const gb1::Instruction &ins) override {
         if (ins.op == gb1::OP_CALL && ins.taken) {
             PrintIndent();
             std::cerr << gb1::to_hex(cpu.GetRegs().pc, 4) << std::endl;
@@ -36,14 +36,14 @@ public:
         }
     }
 
-    void Read(const gb1::Machine&, gb1::u16 addr, gb1::u8 val, bool) {
+    void Read(const gb1::IO&, gb1::u16 addr, gb1::u8 val, bool) override {
         if ((addr & 0xFF00) == 0xFF00) {
             PrintIndent();
             std::cerr << "Read $(" << gb1::to_hex(addr, 4) << ") -> $" << gb1::to_hex(val, 2) << std::endl;
         }
     }
 
-    void Write(const gb1::Machine&, gb1::u16 addr, gb1::u8 val, bool) {
+    void Write(const gb1::IO&, gb1::u16 addr, gb1::u8 val, bool) override {
         if ((addr & 0xFF00) == 0xFF00) {
             PrintIndent();
             std::cerr << "Write $(" << gb1::to_hex(addr, 4) << ") = $" << gb1::to_hex(val, 2) << std::endl;

@@ -31,6 +31,8 @@ static inline Serializer& operator<<(Serializer &s, const CPU &cpu);
 static inline Deserializer& operator>>(Deserializer &d, CPU &cpu);
 
 class CPU {
+    friend class IO;
+
     size_t busy_;
     Regs reg_;
     u16 if_, ie_;
@@ -39,7 +41,6 @@ class CPU {
     CPUObserver *obs_;
 
     Machine *m_;
-    friend struct Machine;
 
     bool FetchInstruction(Instruction *ins);
     bool Decode(Instruction *ins);
