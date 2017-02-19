@@ -16,7 +16,7 @@
 
 struct BlockInfo {
     gb1::u16 end_addr;
-    std::set<gb1::u16> read_addrs, write_addrs;
+    std::set<std::string> read_addrs, write_addrs;
     std::map<gb1::u16, int> exit_counts;
 
     BlockInfo() : end_addr(0) {}
@@ -80,13 +80,13 @@ public:
 
     void Read(const gb1::IO&, gb1::u16 addr, gb1::u8, bool) override {
         if ((addr & 0xFF00) == 0xFF00) {
-            GetBlock().info->read_addrs.insert(addr);
+            GetBlock().info->read_addrs.insert(gb1::IO::AddrName(addr));
         }
     }
 
     void Write(const gb1::IO&, gb1::u16 addr, gb1::u8, bool) override {
         if ((addr & 0xFF00) == 0xFF00) {
-            GetBlock().info->write_addrs.insert(addr);
+            GetBlock().info->write_addrs.insert(gb1::IO::AddrName(addr));
         }
     }
 
@@ -114,14 +114,10 @@ int main(int argc, char **argv) {
     for (const auto &block : observer) {
         std::string label = "\"";
         for (auto read_addr : block.info->read_addrs) {
-            label += "R";
-            label += gb1::to_hex(read_addr, 4);
-            label += ", ";
+            label += "R" + read_addr + ", ";
         }
-        for (auto read_addr : block.info->read_addrs) {
-            label += "W";
-            label += gb1::to_hex(read_addr, 4);
-            label += ", ";
+        for (auto write_addr : block.info->write_addrs) {
+            label += "W" + write_addr + ", ";
         }
         if (label.size() > 2) {
             label.pop_back();
