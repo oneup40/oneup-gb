@@ -13,13 +13,14 @@ namespace gb1 {
 
 Machine::Machine(Frontend& frontend, const MachineObserver &observer)
     : frontend(frontend),
+      io(this, observer.io),
+      audio(this),
       cpu(this, observer.cpu),
+      joypad(this),
       lcd(this),
       mapper(),
-      joypad(this),
+      serial(this),
       timer(this),
-      audio(this),
-      io(this, observer.io),
       t(0)
 {
     wram.fill(0);
@@ -27,6 +28,8 @@ Machine::Machine(Frontend& frontend, const MachineObserver &observer)
 }
 
 bool Machine::Tick() {
+    // This is the main 4 MHz system clock
+
 	using namespace std::chrono;
 
     bool good = true;
@@ -36,6 +39,10 @@ bool Machine::Tick() {
     //auto t0 = system_clock::now();
     good = lcd.Tick() && good;
     //s_lcd_time += system_clock::now() - t0;
+
+    if ((t & 0x200) == 0x00) {
+        good = serial.Tick() && good;
+    }
 
     if ((t & 0x07) == 0x00) {
         //t0 = system_clock::now();
@@ -76,7 +83,7 @@ Serializer& operator<<(Serializer &s, const Machine &m) {
     std::basic_string<u8> wram(m.wram.begin(), m.wram.end()),
                           hram(m.hram.begin(), m.hram.end());
     s.Start(m.code_);
-    return s << m.cpu << m.lcd << m.mapper << m.joypad << m.timer << m.audio << wram << hram;
+    return s << m.cpu << m.lcd << m.mapper << m.joypad << m.timer << m.audio << m.serial << wram << hram;
 }
 
 Deserializer& operator>>(Deserializer &d, Machine &m) {
@@ -101,6 +108,9 @@ Deserializer& operator>>(Deserializer &d, Machine &m) {
 
     d >> m.audio;
     if (!d) { m.Log("Error deserializing audio"); return d; }
+
+    d >> m.serial;
+    if (!d) { m.Log("Error deserializing serial"); return d; }
 
     d >> wram;
     if (!d) { m.Log("Error deserializing WRAM"); return d; }

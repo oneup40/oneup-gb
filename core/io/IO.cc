@@ -18,6 +18,8 @@ u8 IO::Read(u16 addr, bool force) {
     else if (addr < 0xFF80) {
         switch (addr & 0xFF) {
             case 0x00:  result = m_->joypad.ReadJOYP(force); break;
+            case 0x01:  result = m_->serial.ReadSB(force); break;
+            case 0x02:  result = m_->serial.ReadSC(force); break;
             case 0x04:  result = m_->timer.ReadDIV(force); break;
             case 0x05:  result = m_->timer.ReadTIMA(force); break;
             case 0x06:  result = m_->timer.ReadTMA(force); break;
@@ -94,6 +96,8 @@ void IO::Write(u16 addr, u8 val, bool force) {
     else if (addr < 0xFF80) {
         switch (addr & 0xFF) {
             case 0x00:  m_->joypad.WriteJOYP(val, force); break;
+            case 0x01:  m_->serial.WriteSB(val, force); break;
+            case 0x02:  m_->serial.WriteSC(val, force); break;
             case 0x04:  m_->timer.WriteDIV(val, force); break;
             case 0x05:  m_->timer.WriteTIMA(val, force); break;
             case 0x06:  m_->timer.WriteTMA(val, force); break;
@@ -169,6 +173,8 @@ std::string IO::AddrName(u16 addr) {
     else if (addr < 0xFF80) {
         switch (addr & 0xFF) {
             case 0x00:  return "JOYP";
+            case 0x01:  return "SB";
+            case 0x02:  return "SC";
             case 0x04:  return "DIV";
             case 0x05:  return "TIMA";
             case 0x06:  return "TMA";

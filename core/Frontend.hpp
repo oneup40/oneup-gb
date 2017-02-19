@@ -12,6 +12,9 @@ struct Frontend {
     virtual void OutputAudioFrame(i16 left, i16 right) = 0;
     virtual void OutputVideoFrame(std::array<std::array<u8, 40>, 144>&& frame) = 0;
 
+    virtual bool InputSerial() = 0;
+    virtual void OutputSerial(bool bit) = 0;
+
     virtual ~Frontend() {}
 };
 

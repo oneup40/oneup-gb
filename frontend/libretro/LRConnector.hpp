@@ -88,6 +88,9 @@ public:
     void OutputAudioFrame(int16_t left, int16_t right) override;
     void OutputVideoFrame(std::array<std::array<u8, 40>, 144>&& frame) override;
 
+    bool InputSerial() override { return false; }   // TODO
+    void OutputSerial(bool) override {}             // TODO
+
 	// XXX
 	retro_perf_callback perf;
 };

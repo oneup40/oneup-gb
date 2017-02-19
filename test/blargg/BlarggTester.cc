@@ -30,6 +30,9 @@ public:
         ++nframes_;
     }
 
+    bool InputSerial() override { return false; }
+    void OutputSerial(bool) override {}
+
     const std::array<std::array<gb1::u8, 40>, 144>& GetLastFrame() const {
         return last_frame_;
     }

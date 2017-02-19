@@ -15,6 +15,7 @@
 #include "core/Loader.hpp"
 #include "core/MachineObserver.hpp"
 #include "core/Mapper.hpp"
+#include "core/serial/Serial.hpp"
 #include "core/timer/Timer.hpp"
 
 namespace gb1 {
@@ -34,19 +35,22 @@ struct Frontend;
 
 struct Machine {
     Frontend& frontend;
+    IO io;
+
+    Audio audio;
     CPU cpu;
+    Joypad joypad;
     LCD lcd;
     Mapper mapper;
-    Joypad joypad;
+    Serial serial;
     Timer timer;
-    Audio audio;
-    IO io;
+
     std::array<u8, 0x2000> wram;
     std::array<u8, 0x80> hram;
 
     u64 t;
 
-    static constexpr const u8 version_ = 0x01;
+    static constexpr const u8 version_ = 0x02;
     static constexpr const u64 code_ = eight_cc(version_,'m','a','c','h','i','n','e');
 
     explicit Machine(Frontend& frontend, const MachineObserver &observer = MachineObserver());
