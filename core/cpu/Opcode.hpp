@@ -68,7 +68,7 @@ const Opcode op_table[] = {
     {OP_LD, AM_L, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_CPL, AM_NONE, AM_NONE, CC_ALWAYS, 4, 0},
 
-    {OP_JR, AM_NONE, AM_IMM8, CC_NC, 12, 8},                // 30
+    {OP_JR, AM_NONE, AM_IMM8, CC_NC, 8, 4},                 // 30
     {OP_LD, AM_SP, AM_IMM16, CC_ALWAYS, 12, 0},
     {OP_LD, AM_MHLD, AM_A, CC_ALWAYS, 8, 0},
     {OP_INC16, AM_SP, AM_NONE, CC_ALWAYS, 8, 0},
@@ -234,7 +234,7 @@ const Opcode op_table[] = {
     {OP_JP, AM_NONE, AM_IMM16, CC_Z, 16, 12},
     {OP_CB, AM_NONE, AM_NONE, CC_ALWAYS, 0, 0},
     {OP_CALL, AM_NONE, AM_IMM16, CC_Z, 24, 12},
-    {OP_CALL, AM_NONE, AM_IMM16, CC_ALWAYS, 16, 0},
+    {OP_CALL, AM_NONE, AM_IMM16, CC_ALWAYS, 24, 0},
     {OP_ADC, AM_A, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RST, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
 
