@@ -20,7 +20,7 @@ Machine::Machine(Frontend& frontend, const MachineObserver &observer)
       lcd(this),
       mapper(),
       serial(this),
-      timer(this),
+      timer(this, observer.timer),
       t(0)
 {
     wram.fill(0);

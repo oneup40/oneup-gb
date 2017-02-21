@@ -6,8 +6,8 @@
 
 namespace gb1 {
 
-Timer::Timer(Machine *m)
-    : m_(m),
+Timer::Timer(Machine *m, TimerObserver *observer)
+    : m_(m), obs_(observer),
       tima_(0), tma_(0), tac_(0),
       fulldiv_(0)
 {}
@@ -17,6 +17,7 @@ bool Timer::Tick() {
          next = fulldiv_ + 1;
 
     ++fulldiv_;
+    if (obs_) { obs_->FulldivUpdate(*this, fulldiv_); }
 
     if (tac_ & 0x04) {
         u32 bit = 0;
@@ -30,9 +31,12 @@ bool Timer::Tick() {
 
         if ((next & bit) && !(prev & bit)) {    // falling edge
             ++tima_;
+            if (obs_) { obs_->TimaUpdate(*this, tima_); }
 
             if (!tima_) {
                 tima_ = tma_;
+                if (obs_) { obs_->TimaUpdate(*this, tima_); }
+
                 m_->Interrupt(0x04);
             }
         }

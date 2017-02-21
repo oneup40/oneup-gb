@@ -6,12 +6,14 @@ namespace gb1 {
 
 class CPUObserver;
 class IOObserver;
+class TimerObserver;
 
 struct MachineObserver {
-    CPUObserver *cpu;
-    IOObserver *io;
+    CPUObserver *cpu = nullptr;
+    IOObserver *io = nullptr;
+    TimerObserver *timer = nullptr;
 
-    MachineObserver() : cpu(nullptr), io(nullptr) {}
+    MachineObserver() {}
     MachineObserver(const MachineObserver&) = delete;
     MachineObserver(MachineObserver&&) = delete;
     MachineObserver& operator=(const MachineObserver&) = delete;
