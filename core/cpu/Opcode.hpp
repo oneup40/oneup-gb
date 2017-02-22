@@ -74,7 +74,7 @@ const Opcode op_table[] = {
     {OP_INC16, AM_SP, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_INC8, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_DEC8, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
-    {OP_LD, AM_MHL, AM_IMM8, CC_ALWAYS, 8, 0},
+    {OP_LD, AM_MHL, AM_IMM8, CC_ALWAYS, 12, 0},
     {OP_SCF, AM_NONE, AM_NONE, CC_ALWAYS, 4, 0},
     {OP_JR, AM_NONE, AM_IMM8, CC_C, 8, 4},                  // 38
     {OP_ADD16, AM_HL, AM_SP, CC_ALWAYS, 8, 0},
@@ -247,7 +247,7 @@ const Opcode op_table[] = {
     {OP_SUB, AM_NONE, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RST, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RET, AM_NONE, AM_NONE, CC_C, 8, 12},                // D8
-    {OP_RETI, AM_NONE, AM_NONE, CC_ALWAYS, 12, 0},
+    {OP_RETI, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_JP, AM_NONE, AM_IMM16, CC_C, 12, 4},
     {OP_UD, AM_NONE, AM_NONE, CC_ALWAYS, 0, 0},
     {OP_CALL, AM_NONE, AM_IMM16, CC_C, 12, 12},
@@ -298,7 +298,7 @@ const Opcode op_cb_table[] = {
     {OP_RLC, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RLC, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RLC, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RLC, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RLC, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RLC, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RRC, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 08
     {OP_RRC, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -306,7 +306,7 @@ const Opcode op_cb_table[] = {
     {OP_RRC, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RRC, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RRC, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RRC, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RRC, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RRC, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_RL, AM_B, AM_NONE, CC_ALWAYS, 8, 0},                // 10
@@ -315,7 +315,7 @@ const Opcode op_cb_table[] = {
     {OP_RL, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RL, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RL, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RL, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RL, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RL, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RR, AM_B, AM_NONE, CC_ALWAYS, 8, 0},                // 18
     {OP_RR, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -323,7 +323,7 @@ const Opcode op_cb_table[] = {
     {OP_RR, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RR, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RR, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RR, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RR, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RR, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_SLA, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 20
@@ -332,7 +332,7 @@ const Opcode op_cb_table[] = {
     {OP_SLA, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SLA, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SLA, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SLA, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SLA, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SLA, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SRA, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 28
     {OP_SRA, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -340,7 +340,7 @@ const Opcode op_cb_table[] = {
     {OP_SRA, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SRA, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SRA, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SRA, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SRA, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SRA, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_SWAP, AM_B, AM_NONE, CC_ALWAYS, 8, 0},              // 30
@@ -349,7 +349,7 @@ const Opcode op_cb_table[] = {
     {OP_SWAP, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SWAP, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SWAP, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SWAP, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SWAP, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SWAP, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SRL, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 38
     {OP_SRL, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -357,7 +357,7 @@ const Opcode op_cb_table[] = {
     {OP_SRL, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SRL, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SRL, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SRL, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SRL, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SRL, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 40
@@ -366,7 +366,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 48
     {OP_BIT, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -374,7 +374,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 50
@@ -383,7 +383,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 58
     {OP_BIT, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -391,7 +391,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 60
@@ -400,7 +400,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 68
     {OP_BIT, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -408,7 +408,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 70
@@ -417,7 +417,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 78
     {OP_BIT, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -425,7 +425,7 @@ const Opcode op_cb_table[] = {
     {OP_BIT, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_BIT, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_BIT, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_BIT, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 80
@@ -434,7 +434,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 88
     {OP_RES, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -442,7 +442,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 90
@@ -451,7 +451,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // 98
     {OP_RES, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -459,7 +459,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // A0
@@ -468,7 +468,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // A8
     {OP_RES, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -476,7 +476,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // B0
@@ -485,7 +485,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // B8
     {OP_RES, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -493,7 +493,7 @@ const Opcode op_cb_table[] = {
     {OP_RES, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_RES, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_RES, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_RES, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // C0
@@ -502,7 +502,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // C8
     {OP_SET, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -510,7 +510,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // D0
@@ -519,7 +519,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // D8
     {OP_SET, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -527,7 +527,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // E0
@@ -536,7 +536,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // E8
     {OP_SET, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -544,7 +544,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // F0
@@ -553,7 +553,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_B, AM_NONE, CC_ALWAYS, 8, 0},               // F8
     {OP_SET, AM_C, AM_NONE, CC_ALWAYS, 8, 0},
@@ -561,7 +561,7 @@ const Opcode op_cb_table[] = {
     {OP_SET, AM_E, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_H, AM_NONE, CC_ALWAYS, 8, 0},
     {OP_SET, AM_L, AM_NONE, CC_ALWAYS, 8, 0},
-    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 8, 0},
+    {OP_SET, AM_MHL, AM_NONE, CC_ALWAYS, 16, 0},
     {OP_SET, AM_A, AM_NONE, CC_ALWAYS, 8, 0},
 };
 static_assert(sizeof(op_cb_table) == 256 * sizeof(op_cb_table[0]), "op_cb_table does not contain 256 elements");
