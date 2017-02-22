@@ -51,7 +51,7 @@ const Opcode op_table[] = {
     {OP_LD, AM_E, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RRA, AM_NONE, AM_NONE, CC_ALWAYS, 4, 0},
 
-    {OP_JR, AM_NONE, AM_IMM8, CC_NZ, 12, 8},                // 20
+    {OP_JR, AM_NONE, AM_IMM8, CC_NZ, 8, 4},                 // 20
     {OP_LD, AM_HL, AM_IMM16, CC_ALWAYS, 12, 0},
     {OP_LD, AM_MHLI, AM_A, CC_ALWAYS, 8, 0},
     {OP_INC16, AM_HL, AM_NONE, CC_ALWAYS, 8, 0},
@@ -59,7 +59,7 @@ const Opcode op_table[] = {
     {OP_DEC8, AM_H, AM_NONE, CC_ALWAYS, 4, 0},
     {OP_LD, AM_H, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_DAA, AM_NONE, AM_NONE, CC_ALWAYS, 4, 0},
-    {OP_JR, AM_NONE, AM_IMM8, CC_Z, 12, 8},                 // 28
+    {OP_JR, AM_NONE, AM_IMM8, CC_Z, 8, 4},                  // 28
     {OP_ADD16, AM_HL, AM_HL, CC_ALWAYS, 8, 0},
     {OP_LD, AM_A, AM_MHLI, CC_ALWAYS, 8, 0},
     {OP_DEC16, AM_HL, AM_NONE, CC_ALWAYS, 8, 0},
@@ -76,7 +76,7 @@ const Opcode op_table[] = {
     {OP_DEC8, AM_MHL, AM_NONE, CC_ALWAYS, 12, 0},
     {OP_LD, AM_MHL, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_SCF, AM_NONE, AM_NONE, CC_ALWAYS, 4, 0},
-    {OP_JR, AM_NONE, AM_IMM8, CC_C, 12, 8},                 // 38
+    {OP_JR, AM_NONE, AM_IMM8, CC_C, 8, 4},                  // 38
     {OP_ADD16, AM_HL, AM_SP, CC_ALWAYS, 8, 0},
     {OP_LD, AM_A, AM_MHLD, CC_ALWAYS, 8, 0},
     {OP_DEC16, AM_SP, AM_NONE, CC_ALWAYS, 8, 0},
@@ -221,36 +221,36 @@ const Opcode op_table[] = {
     {OP_CP, AM_NONE, AM_MHL, CC_ALWAYS, 8, 0},
     {OP_CP, AM_NONE, AM_A, CC_ALWAYS, 4, 0},
 
-    {OP_RET, AM_NONE, AM_NONE, CC_NZ, 20, 8},               // C0
+    {OP_RET, AM_NONE, AM_NONE, CC_NZ, 8, 12},               // C0
     {OP_POP, AM_BC, AM_NONE, CC_ALWAYS, 12, 0},
-    {OP_JP, AM_NONE, AM_IMM16, CC_NZ, 16, 12},
+    {OP_JP, AM_NONE, AM_IMM16, CC_NZ, 12, 4},
     {OP_JP, AM_NONE, AM_IMM16, CC_ALWAYS, 16, 0},
-    {OP_CALL, AM_NONE, AM_IMM16, CC_NZ, 24, 12},
+    {OP_CALL, AM_NONE, AM_IMM16, CC_NZ, 12, 12},
     {OP_PUSH, AM_NONE, AM_BC, CC_ALWAYS, 16, 0},
     {OP_ADD8, AM_A, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RST, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
-    {OP_RET, AM_NONE, AM_NONE, CC_Z, 20, 8},                // C8
-    {OP_RET, AM_NONE, AM_NONE, CC_ALWAYS, 12, 0},
-    {OP_JP, AM_NONE, AM_IMM16, CC_Z, 16, 12},
+    {OP_RET, AM_NONE, AM_NONE, CC_Z, 8, 12},                // C8
+    {OP_RET, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
+    {OP_JP, AM_NONE, AM_IMM16, CC_Z, 12, 4},
     {OP_CB, AM_NONE, AM_NONE, CC_ALWAYS, 0, 0},
-    {OP_CALL, AM_NONE, AM_IMM16, CC_Z, 24, 12},
+    {OP_CALL, AM_NONE, AM_IMM16, CC_Z, 12, 12},
     {OP_CALL, AM_NONE, AM_IMM16, CC_ALWAYS, 24, 0},
     {OP_ADC, AM_A, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RST, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
 
-    {OP_RET, AM_NONE, AM_NONE, CC_NC, 20, 8},               // D0
+    {OP_RET, AM_NONE, AM_NONE, CC_NC, 8, 12},               // D0
     {OP_POP, AM_DE, AM_NONE, CC_ALWAYS, 12, 0},
-    {OP_JP, AM_NONE, AM_IMM16, CC_NC, 16, 12},
+    {OP_JP, AM_NONE, AM_IMM16, CC_NC, 12, 4},
     {OP_UD, AM_NONE, AM_NONE, CC_ALWAYS, 0, 0},
-    {OP_CALL, AM_NONE, AM_IMM16, CC_NC, 24, 12},
+    {OP_CALL, AM_NONE, AM_IMM16, CC_NC, 12, 12},
     {OP_PUSH, AM_NONE, AM_DE, CC_ALWAYS, 16, 0},
     {OP_SUB, AM_NONE, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RST, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
-    {OP_RET, AM_NONE, AM_NONE, CC_C, 20, 8},                // D8
+    {OP_RET, AM_NONE, AM_NONE, CC_C, 8, 12},                // D8
     {OP_RETI, AM_NONE, AM_NONE, CC_ALWAYS, 12, 0},
-    {OP_JP, AM_NONE, AM_IMM16, CC_C, 16, 12},
+    {OP_JP, AM_NONE, AM_IMM16, CC_C, 12, 4},
     {OP_UD, AM_NONE, AM_NONE, CC_ALWAYS, 0, 0},
-    {OP_CALL, AM_NONE, AM_IMM16, CC_C, 24, 12},
+    {OP_CALL, AM_NONE, AM_IMM16, CC_C, 12, 12},
     {OP_UD, AM_NONE, AM_NONE, CC_ALWAYS, 0, 0},
     {OP_SBC, AM_A, AM_IMM8, CC_ALWAYS, 8, 0},
     {OP_RST, AM_NONE, AM_NONE, CC_ALWAYS, 16, 0},
