@@ -5,6 +5,8 @@
 #include "core/Base.hpp"
 #include "core/Serializer.hpp"
 
+#include <array>
+
 namespace gb1 {
 
 class Channel3;

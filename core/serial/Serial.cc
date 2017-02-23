@@ -10,7 +10,7 @@ namespace gb1 {
 bool Serial::Tick() {
     if (!(sc_ & 0x80) || !bits_) { return true; }
 
-    m_->frontend.OutputSerial(sb_ & 0x80);
+    m_->frontend.OutputSerial((sb_ & 0x80) != 0);
     sb_ <<= 1;
     if (m_->frontend.InputSerial()) {
         sb_ |= 0x01;
