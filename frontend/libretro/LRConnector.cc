@@ -31,9 +31,10 @@ void LRConnector::Run() {
 
     while (!frame_ready_) {
 		// clock is 4194304 Hz
+        // Tick does 8 ticks (524288 Hz)
 		// output is 60 Hz
-		// apx. 69905 ticks per frame
-		for (auto i=0; i < 10000; ++i) {
+		// apx. 8738 Tick()s per frame
+		for (auto i=0; i < 1000; ++i) {
 			m_.Tick();
 		}
     }

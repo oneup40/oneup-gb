@@ -59,7 +59,7 @@ struct Machine {
     Machine& operator=(const Machine&) = delete;
     Machine& operator=(Machine&&) = delete;
 
-    bool Tick();
+    void Tick();
     u8 Read(u16 addr, bool force = false);
     void Write(u16 addr, u8 val, bool force = false);
     void Interrupt(u8 num);

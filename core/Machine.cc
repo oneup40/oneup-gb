@@ -27,45 +27,45 @@ Machine::Machine(Frontend& frontend, const MachineObserver &observer)
     hram.fill(0);
 }
 
-bool Machine::Tick() {
+void Machine::Tick() {
     // This is the main 4 MHz system clock
 
 	using namespace std::chrono;
 
-    bool good = true;
-
-	//auto T0 = system_clock::now();
-
-    //auto t0 = system_clock::now();
-    good = lcd.Tick() && good;
-    //s_lcd_time += system_clock::now() - t0;
-
-    if ((t & 0x200) == 0x00) {
-        good = serial.Tick() && good;
-    }
-
-    if ((t & 0x07) == 0x00) {
-        //t0 = system_clock::now();
-        good = timer.Tick() && good;
-        //s_timer_time += system_clock::now() - t0;
-    }
-
-    if ((t & 0x03) == 0x00) {
-        //t0 = system_clock::now();
-        good = cpu.Tick() && good;
-        //s_cpu_time += system_clock::now() - t0;
-    }
-
-	if ((t & 0x01) == 0x00) {
-		//t0 = system_clock::now();
-		good = audio.Tick() && good;
-		//s_audio_time += system_clock::now() - t0;
-	}
-
+    lcd.Tick();
     ++t;
 
-	//s_total_time += system_clock::now() - T0;
-    return good;
+    lcd.Tick();
+    audio.Tick();
+    ++t;
+
+    lcd.Tick();
+    ++t;
+
+    lcd.Tick();
+    audio.Tick();
+    cpu.Tick();
+    ++t;
+
+    lcd.Tick();
+    ++t;
+
+    lcd.Tick();
+    audio.Tick();
+    ++t;
+
+    lcd.Tick();
+    ++t;
+
+    lcd.Tick();
+    audio.Tick();
+    cpu.Tick();
+    timer.Tick();
+    ++t;
+
+    if ((t & 0x200) == 0x00) {
+        serial.Tick();
+    }
 }
 
 u8 Machine::Read(u16 addr, bool force) { return io.Read(addr, force); }
